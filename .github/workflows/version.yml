@@ -1,0 +1,33 @@
+# À chaque étiquette vX.Y.Z poussée : assemble DragonTales.html et prépare la version GitHub en brouillon,
+# avec DragonTales-X.Y.Z.zip (la page et Jouer.bat). Les notes viennent de docs/versions/vX.Y.Z.md.
+name: Version
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Vérifier que l'étiquette correspond au fichier VERSION
+        run: test "v$(cat VERSION)" = "$GITHUB_REF_NAME"
+      - name: Assembler la page
+        run: python build.py
+      - name: Préparer l'archive
+        run: |
+          V="$(cat VERSION)"
+          mkdir "DragonTales-$V"
+          cp DragonTales.html Jouer.bat "DragonTales-$V/"
+          zip -r "DragonTales-$V.zip" "DragonTales-$V"
+      - name: Créer la version en brouillon
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NOTES="docs/versions/$GITHUB_REF_NAME.md"
+          if [ -f "$NOTES" ]; then set -- --notes-file "$NOTES"; else set -- --generate-notes; fi
+          gh release create "$GITHUB_REF_NAME" "DragonTales-$(cat VERSION).zip" --draft --title "DragonTales $(cat VERSION)" "$@"

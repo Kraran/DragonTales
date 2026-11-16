@@ -44,6 +44,13 @@ python build.py
 
 `DragonTales.html` est créé à la racine, à côté de `Jouer.bat`. Le numéro de version vient du fichier `VERSION`.
 
+## Publier une version
+
+1. Mettre le numéro dans `VERSION`, compléter `CHANGELOG.md` et écrire les notes dans `docs/versions/vX.Y.Z.md`.
+2. Pousser l'étiquette : `git tag vX.Y.Z && git push origin vX.Y.Z`.
+
+GitHub assemble alors la page et prépare la version en brouillon avec son archive ; il reste à la relire et à la publier.
+
 ## Organisation
 
 ```
@@ -54,7 +61,8 @@ moteur/             processeur 6809, machine Dragon, étagère et interface de j
 aventures/          un dossier par aventure (programme d'origine, traduction, lieux, dessins, indices, images, musique)
 tests/              essais automatiques
 outils/             extraction d'une cassette .cas, désassembleur de travail
-docs/               documentation
+docs/               documentation, notes des versions
+.github/workflows/  préparation automatique des versions
 ```
 
 Pour ajouter une aventure : [docs/AJOUTER-UNE-AVENTURE.md](docs/AJOUTER-UNE-AVENTURE.md).
