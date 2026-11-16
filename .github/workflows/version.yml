@@ -1,7 +1,9 @@
-# À chaque étiquette vX.Y.Z poussée : assemble DragonTales.html et prépare la version GitHub en brouillon,
-# avec DragonTales-X.Y.Z.zip (la page et Jouer.bat). Les notes viennent de docs/versions/vX.Y.Z.md.
+# Assemble DragonTales.html et prépare la version GitHub en brouillon, avec DragonTales-X.Y.Z.zip (la page et Jouer.bat).
+# Se lance à la main (onglet Actions > Version > Run workflow) ou quand on pousse une étiquette vX.Y.Z.
+# Le numéro vient du fichier VERSION ; les notes de docs/versions/vX.Y.Z.md. L'étiquette est créée à la publication.
 name: Version
 on:
+  workflow_dispatch:
   push:
     tags: ['v*']
 permissions:
@@ -15,6 +17,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Vérifier que l'étiquette correspond au fichier VERSION
+        if: github.ref_type == 'tag'
         run: test "v$(cat VERSION)" = "$GITHUB_REF_NAME"
       - name: Assembler la page
         run: python build.py
@@ -28,6 +31,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          NOTES="docs/versions/$GITHUB_REF_NAME.md"
+          TAG="v$(cat VERSION)"
+          NOTES="docs/versions/$TAG.md"
           if [ -f "$NOTES" ]; then set -- --notes-file "$NOTES"; else set -- --generate-notes; fi
-          gh release create "$GITHUB_REF_NAME" "DragonTales-$(cat VERSION).zip" --draft --title "DragonTales $(cat VERSION)" "$@"
+          gh release create "$TAG" "DragonTales-$(cat VERSION).zip" --draft --target "$GITHUB_SHA" --title "DragonTales $(cat VERSION)" "$@"

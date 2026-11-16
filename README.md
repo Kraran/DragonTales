@@ -47,7 +47,7 @@ python build.py
 ## Publier une version
 
 1. Mettre le numéro dans `VERSION`, compléter `CHANGELOG.md` et écrire les notes dans `docs/versions/vX.Y.Z.md`.
-2. Pousser l'étiquette : `git tag vX.Y.Z && git push origin vX.Y.Z`.
+2. Sur GitHub, onglet Actions, lancer « Version » (Run workflow) sur `main` — ou pousser l'étiquette : `git tag vX.Y.Z && git push origin vX.Y.Z`.
 
 GitHub assemble alors la page et prépare la version en brouillon avec son archive ; il reste à la relire et à la publier.
 
