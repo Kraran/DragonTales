@@ -112,7 +112,8 @@ function btn(parent,label,fn,main){ const b=el('button',main?'main':'',label); b
 let picked=0;
 function savedGame(a){ try{ const d=JSON.parse(LS.get(a.storage+'.slot.auto')||'null'); return d&&d.date?d:null; }catch(e){ return null; } }
 function renderShelf(){
-  const sh=$('shelf'); sh.textContent='';
+  const sh=$('shelf'); const old=sh.querySelector('.shRow'), keep=old?old.scrollLeft:0;   // garder la position de défilement
+  sh.textContent='';
   document.title='DragonTales';
   const head=el('header','shHead');
   const h=el('h1'), hb=el('button','shTitle'); hb.type='button'; hb.title=t0().about; hb.onclick=showAbout;
@@ -128,6 +129,11 @@ function renderShelf(){
   });
   const empty=el('div','shBox shEmpty'); empty.appendChild(el('span',null,t0().soon)); row.appendChild(empty);
   sh.appendChild(row);
+  row.scrollTo({left:keep,behavior:'instant'});
+  // la molette fait défiler l'étagère de gauche à droite
+  row.addEventListener('wheel',ev=>{ if(Math.abs(ev.deltaY)>Math.abs(ev.deltaX)&&row.scrollWidth>row.clientWidth){ ev.preventDefault(); row.scrollBy({left:ev.deltaY*1.5}); } },{passive:false});
+  // la boîte choisie reste visible (flèches du clavier)
+  const on=row.querySelector('.shBox.on'); if(on){ const l=on.offsetLeft-row.offsetLeft, r=l+on.offsetWidth; if(l<keep||r>keep+row.clientWidth) row.scrollTo({left:Math.max(0,l<keep?l-8:r-row.clientWidth+8)}); }
   const a=ADVENTURES[picked], info=el('section','shInfo');
   if(a){
     info.appendChild(el('h2',null,a.title));

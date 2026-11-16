@@ -3,6 +3,8 @@
 ## 0.5.1 — 16 novembre 2026
 
 - Fenêtre « À propos » : un clic sur le titre DragonTales de l'étagère l'ouvre (version, date, auteur, dépôt, aventures).
+- Étagère : barre de défilement aux couleurs du thème (rail sombre, curseur doré), défilement à la molette, la boîte choisie
+  reste visible. Corrigé : le bouton Jouer avait perdu sa couleur dorée.
 - Sauvegardes : export de la partie en cours dans un fichier et import d'un fichier, pour changer d'ordinateur ou de navigateur.
 - Le journal de la partie est conservé avec la sauvegarde : on le retrouve à la reprise, dans les deux versions et les deux langues.
 - Corrigé : recharger une sauvegarde ne rend plus les pièces magiques déjà dépensées dans la même partie.
