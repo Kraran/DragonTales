@@ -15,6 +15,7 @@ moteur/
   sfx.js                      effets sonores synthétisés
   template.html               page et styles
   dragon.ttf, mkfont.py       police de la version classique
+  auteur.jpg                  portrait de la fenêtre « À propos »
 aventures/eldiablero/
   aventure.js                 la fiche : tout ce que le moteur doit savoir de ce jeu
   fr.js                       traduction (textes par adresse, vocabulaire, commandes françaises -> anglaises)

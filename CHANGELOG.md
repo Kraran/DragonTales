@@ -1,5 +1,9 @@
 # Journal des versions
 
+## 0.5.1 — 16 novembre 2026
+
+- Fenêtre « À propos » : un clic sur le titre DragonTales de l'étagère l'ouvre (version, date, auteur, dépôt, aventures).
+
 ## 0.5.0 — 16 novembre 2026
 
 Première version publiée. Le portage d'El Diablero devient DragonTales, un moteur qui peut accueillir d'autres aventures.

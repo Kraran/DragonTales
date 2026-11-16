@@ -158,6 +158,9 @@ svg.links.top{pointer-events:none;z-index:2}
 #shelf[hidden]{display:none}
 .shHead{grid-column:1/3;display:flex;align-items:baseline;gap:40px;padding-bottom:40px}
 .shHead h1{margin:0;font-size:104px;line-height:1;white-space:nowrap}
+#shelf button.shTitle{all:unset;cursor:pointer;display:inline-block;border-radius:8px}
+#shelf button.shTitle:hover .shTales{color:#fff}
+#shelf button.shTitle:focus-visible{outline:2px solid var(--turquoise);outline-offset:8px}
 .shDragon{font-family:var(--sans);font-weight:800;letter-spacing:-3px;background:linear-gradient(90deg,#e5231b 0%,#f47b20 22%,#ffd400 45%,#3aa935 68%,#1c8fd6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .shTales{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--os);margin-left:6px}
 .shTag{margin:0;font:24px/1.3 var(--serif);color:var(--sourd)}
@@ -175,11 +178,35 @@ svg.links.top{pointer-events:none;z-index:2}
 .shBlurb{font:26px/1.5 var(--serif);color:var(--sable)}
 .shState{font:19px/1.4 var(--sans);color:var(--sourd)}
 .shInfo .row{display:flex;margin-top:30px}
-#shelf button:not(.shBox){background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:13px 26px;font-size:21px;color:var(--os)}
-#shelf button:not(.shBox):hover{border-color:var(--os)}
+#shelf button:not(.shBox):not(.shTitle){background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:13px 26px;font-size:21px;color:var(--os)}
+#shelf button:not(.shBox):not(.shTitle):hover{border-color:var(--os)}
 #shelf button.main{background:var(--souci);border-color:var(--souci);color:var(--nuit);font-weight:600;padding:18px 64px;font-size:26px}
 .shFoot{grid-column:1/3;grid-row:3;display:flex;justify-content:flex-end;align-items:center;gap:14px;padding-top:28px}
 .shVer{margin-right:auto;font:17px var(--sans);color:#6f6f6f}
+/* à propos */
+.about .card{padding:0;width:1080px;max-width:none;text-align:left;overflow:hidden;background:#141414;border-color:#3a3a3a}
+.abHead{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 18px 32px;border-bottom:1px solid #3a3a3a}
+.abHead h3{margin:0;font:600 24px var(--sans);color:var(--os)}
+.card button.abX{padding:2px 16px;font-size:30px;line-height:1.2;background:none;border-color:transparent;color:var(--sourd)}
+.card button.abX:hover{color:var(--os);border-color:#444}
+.abLayout{display:grid;grid-template-columns:330px minmax(0,1fr)}
+.abPortrait{position:relative;display:block;overflow:hidden;background:#000}
+.abPortrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.abFade{position:absolute;inset:0;background:linear-gradient(to right,transparent 60%,#141414)}
+.abPortrait:hover img{filter:brightness(1.15)}
+.abPortrait:focus-visible{outline:2px solid var(--turquoise);outline-offset:-4px}
+.abMain{padding:32px 36px 30px 28px;display:grid;gap:20px}
+.abHero{display:flex;align-items:baseline;gap:18px}
+.abHero h2{margin:0;font-size:58px;line-height:1;white-space:nowrap}
+.abHero h2 .shDragon{letter-spacing:-2px}
+.abVer{font:21px var(--sans);color:var(--sourd)}
+.card p.abDesc{margin:0;font:22px/1.5 var(--serif);color:var(--sable)}
+.abGrid{display:grid;grid-template-columns:auto 1fr;gap:8px 28px;margin:0;font:19px/1.4 var(--sans)}
+.abGrid dt{color:var(--sourd)} .abGrid dd{margin:0;color:var(--os);overflow-wrap:anywhere}
+.about a{color:var(--souci);text-decoration:none} .about a:hover{text-decoration:underline}
+.card p.abNote{margin:0;padding:14px 18px;border-radius:4px;background:#1f1f1f;font:17px/1.5 var(--sans);color:var(--sourd)}
+.abFoot{display:flex;justify-content:flex-end;gap:14px;padding:18px 32px;border-top:1px solid #3a3a3a}
+.about .card button:not(.main):not(.abX){background:#1a1a1a;border-color:#444}
 .help{text-align:left}
 .help p{font-size:22px}
 @media (prefers-reduced-motion:no-preference){ #log .turn:last-child{animation:fade .35s ease-out} @keyframes fade{from{opacity:0}to{opacity:1}} }
@@ -210,7 +237,7 @@ svg.links.top{pointer-events:none;z-index:2}
 </div>
 <script>
 // registre des aventures : chaque dossier de aventures/ s'y inscrit
-window.DragonTales={version:"@@VERSION@@",adventures:[],register(a){ this.adventures.push(a); }};
+window.DragonTales={version:"@@VERSION@@",date:"@@DATE@@",portrait:"@@AUTEUR@@",adventures:[],register(a){ this.adventures.push(a); }};
 </script>
 <script>
 @@CPU@@

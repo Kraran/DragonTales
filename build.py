@@ -1,6 +1,6 @@
 # Assemble DragonTales.html : le moteur (moteur/) et toutes les aventures (aventures/<nom>/) dans une seule page.
 #   python build.py            -> DragonTales.html à côté de ce script
-# Le numéro de version est lu dans le fichier VERSION.
+# Le numéro de version est lu dans le fichier VERSION, sa date dans CHANGELOG.md.
 # Une aventure est un dossier contenant :
 #   aventure.js      la fiche (DragonTales.register({...})), assemblée en dernier
 #   *.js             ses autres modules (traduction, lieux, dessins, indices…), assemblés par ordre alphabétique avant la fiche
@@ -31,7 +31,12 @@ names=sorted(n for n in os.listdir(os.path.join(ROOT,'aventures')) if os.path.ex
 t=rd('moteur','template.html')
 font='data:font/ttf;base64,'+b64('moteur','dragon.ttf')
 version=rd('VERSION').strip()
-for k,v in (('@@VERSION@@',version),('@@FONT@@',font),('@@CPU@@',strip(rd('moteur','cpu6809.js'))),('@@MACHINE@@',strip(rd('moteur','machine.js'))),('@@SFX@@',strip(rd('moteur','sfx.js'))),
+# date de la version : lue dans CHANGELOG.md, titre « ## X.Y.Z — 16 novembre 2026 »
+MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']
+m=re.search(r'^## %s — (\d{1,2})(?:er)? (\S+) (\d{4})'%re.escape(version),rd('CHANGELOG.md'),re.M)
+date='%s-%02d-%02d'%(m.group(3),MOIS.index(m.group(2).lower())+1,int(m.group(1))) if m and m.group(2).lower() in MOIS else ''
+auteur='data:image/jpeg;base64,'+b64('moteur','auteur.jpg')
+for k,v in (('@@VERSION@@',version),('@@DATE@@',date),('@@AUTEUR@@',auteur),('@@FONT@@',font),('@@CPU@@',strip(rd('moteur','cpu6809.js'))),('@@MACHINE@@',strip(rd('moteur','machine.js'))),('@@SFX@@',strip(rd('moteur','sfx.js'))),
             ('@@AVENTURES@@','\n'.join(aventure(n) for n in names)),('@@MOTEUR@@',rd('moteur','dragontales.js'))):
     assert k in t,k
     t=t.replace(k,v)

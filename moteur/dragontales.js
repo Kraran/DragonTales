@@ -39,6 +39,9 @@ const T={
    'Tu portes trois pièces magiques. Chacune donne un indice sur ce qu’il faut chercher à ce moment de l’aventure : clique une pièce, ou écris « utiliser une pièce ». Elles ne reviennent pas.'],
   toClassic:'Version classique',toModern:'Version moderne',
   cEnd:'\n\nFIN DE LA PARTIE.\nAPPUIE SUR UNE TOUCHE POUR REJOUER.',cWon:'\n\n*** BRAVO, TA TÂCHE EST ACCOMPLIE ! ***\nAPPUIE SUR UNE TOUCHE POUR REJOUER.',
+  about:'À propos',aboutDesc:'Un moteur pour rejouer sur PC les aventures textuelles du Dragon 32/64. Le programme d’origine tourne tel quel dans un émulateur 6809 ; DragonTales lui ajoute la traduction française, le jeu à la souris, une carte, des illustrations, des sauvegardes, des indices, de la musique et des sons.',
+  abVersion:'Version',abDate:'Date',abAuthor:'Auteur',abRepo:'Dépôt',abStack:'Techno',abStackText:'HTML, CSS, JavaScript (émulateur 6809), Python pour l’assemblage',abGames:'Aventures',
+  aboutNote:'Logiciel fourni « tel quel ». Les programmes, textes et illustrations d’origine des aventures appartiennent à leurs auteurs et éditeurs.',abProfile:'Profil Kraran',abGithub:'Dépôt GitHub',
   backShelf:'Retour à DragonTales',play:'Jouer',playing:'Partie en cours',noGame:'Pas encore commencée',by:'de',
   shelfTag:'Les aventures textuelles du Dragon 32/64, traduites et illustrées',soon:'D’autres aventures prendront place ici.',quitShelf:'Quitter DragonTales ?',quitShelfNote:'Les parties en cours sont sauvegardées automatiquement.',
   dirs:{W:'Ouest',N:'Nord',E:'Est',S:'Sud',U:'Haut',D:'Bas'}},
@@ -67,6 +70,9 @@ const T={
    'You carry three magic coins. Each gives a hint about what to look for at that point of the adventure: click a coin, or type “use a coin”. They do not come back.'],
   toClassic:'Classic version',toModern:'Modern version',
   cEnd:'\n\nGAME OVER.\nPRESS ANY KEY TO PLAY AGAIN.',cWon:'\n\n*** WELL DONE, YOUR TASK IS COMPLETE! ***\nPRESS ANY KEY TO PLAY AGAIN.',
+  about:'About',aboutDesc:'An engine for replaying Dragon 32/64 text adventures on a PC. The original program runs unchanged in a 6809 emulator; DragonTales adds a French translation, mouse play, a map, illustrations, saved games, hints, music and sound.',
+  abVersion:'Version',abDate:'Date',abAuthor:'Author',abRepo:'Repository',abStack:'Built with',abStackText:'HTML, CSS, JavaScript (6809 emulator), Python for the build',abGames:'Adventures',
+  aboutNote:'Software provided “as is”. The original programs, texts and artwork of the adventures belong to their authors and publishers.',abProfile:'Kraran’s profile',abGithub:'GitHub repository',
   backShelf:'Back to DragonTales',play:'Play',playing:'Game in progress',noGame:'Not started yet',by:'by',
   shelfTag:'Text adventures from the Dragon 32/64, translated and illustrated',soon:'More adventures will take their place here.',quitShelf:'Quit DragonTales?',quitShelfNote:'Games in progress are saved automatically.',
   dirs:{W:'West',N:'North',E:'East',S:'South',U:'Up',D:'Down'}}
@@ -105,7 +111,8 @@ function renderShelf(){
   const sh=$('shelf'); sh.textContent='';
   document.title='DragonTales';
   const head=el('header','shHead');
-  const h=el('h1'); h.appendChild(el('span','shDragon','Dragon')); h.appendChild(el('span','shTales','Tales')); head.appendChild(h);
+  const h=el('h1'), hb=el('button','shTitle'); hb.type='button'; hb.title=t0().about; hb.onclick=showAbout;
+  hb.appendChild(el('span','shDragon','Dragon')); hb.appendChild(el('span','shTales','Tales')); h.appendChild(hb); head.appendChild(h);
   head.appendChild(el('p','shTag',t0().shelfTag));
   sh.appendChild(head);
   const row=el('div','shRow');
@@ -142,6 +149,44 @@ function launch(a){
   if(!current) current=play(a);
   current.show();
 }
+// ---------- à propos ----------
+const ABOUT={author:'Franck Fornasari',handle:'Kraran',portraitTip:'King Kraran',authorUrl:'https://github.com/Kraran',repo:'https://github.com/Kraran/DragonTales',repoLabel:'github.com/Kraran/DragonTales'};
+function link(href,txt){ const a=el('a',null,txt); a.href=href; a.target='_blank'; a.rel='noopener'; return a; }
+function showAbout(){
+  const DT=window.DragonTales;
+  overlay('about',c=>{
+    const head=el('div','abHead'); head.appendChild(el('h3',null,t0().about));
+    const x=btn(head,'×',hideOverlay); x.className='abX'; x.title=t0().close; x.setAttribute('aria-label',t0().close);
+    c.appendChild(head);
+    const lay=el('div','abLayout');
+    const por=link(ABOUT.authorUrl,''); por.className='abPortrait'; por.title=ABOUT.portraitTip; por.setAttribute('aria-label',ABOUT.portraitTip+' — GitHub');
+    const im=el('img'); im.src=DT.portrait; im.alt=ABOUT.portraitTip; por.appendChild(im); por.appendChild(el('div','abFade'));
+    lay.appendChild(por);
+    const main=el('div','abMain');
+    const hero=el('div','abHero'), name=el('h2'); name.appendChild(el('span','shDragon','Dragon')); name.appendChild(el('span','shTales','Tales'));
+    hero.appendChild(name); hero.appendChild(el('span','abVer','v'+DT.version)); main.appendChild(hero);
+    main.appendChild(el('p','abDesc',t0().aboutDesc));
+    const dl=el('dl','abGrid');
+    const row=(k,v)=>{ if(v==null||v==='') return; dl.appendChild(el('dt',null,k)); const dd=el('dd'); if(typeof v==='string') dd.textContent=v; else dd.appendChild(v); dl.appendChild(dd); };
+    row(t0().abVersion,DT.version);
+    const d=DT.date&&new Date(DT.date+'T12:00:00');
+    row(t0().abDate,d&&!isNaN(d)?d.toLocaleDateString(lang,{day:'numeric',month:'long',year:'numeric'}):'');
+    const au=el('span'); au.appendChild(document.createTextNode(ABOUT.author+' (')); au.appendChild(link(ABOUT.authorUrl,ABOUT.handle)); au.appendChild(document.createTextNode(')'));
+    row(t0().abAuthor,au);
+    row(t0().abRepo,link(ABOUT.repo,ABOUT.repoLabel));
+    row(t0().abStack,t0().abStackText);
+    row(t0().abGames,ADVENTURES.map(a=>a.title+' ('+[a.author,a.publisher,a.year].filter(Boolean).join(', ')+')').join(' ; '));
+    main.appendChild(dl);
+    main.appendChild(el('p','abNote',t0().aboutNote));
+    lay.appendChild(main); c.appendChild(lay);
+    const r=el('div','abFoot');
+    btn(r,t0().abProfile,()=>window.open(ABOUT.authorUrl,'_blank','noopener'));
+    btn(r,t0().abGithub,()=>window.open(ABOUT.repo,'_blank','noopener'));
+    btn(r,t0().close,hideOverlay,true);
+    c.appendChild(r);
+  });
+}
+ov.addEventListener('click',ev=>{ if(ev.target===ov&&ov.classList.contains('about')) hideOverlay(); });
 function askQuitShelf(){
   overlay('',c=>{
     c.appendChild(el('h2',null,t0().quitShelf));
@@ -160,6 +205,7 @@ function quitShelf(){
   setTimeout(()=>{ if(gone){ try{ window.close(); }catch(e){} } },1700);   // ne ferme que si le navigateur l'autorise
 }
 document.addEventListener('keydown',ev=>{
+  if(shelfOpen&&!ov.hidden&&ov.classList.contains('about')&&ev.key==='Escape'){ hideOverlay(); return; }
   if(!shelfOpen||!ov.hidden) return;
   const d=ev.key==='ArrowRight'?1:ev.key==='ArrowLeft'?-1:0;
   if(d&&ADVENTURES.length>1){ ev.preventDefault(); picked=(picked+d+ADVENTURES.length)%ADVENTURES.length; renderShelf(); }
