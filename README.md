@@ -81,6 +81,7 @@ node tests/rejouer-solution.js      # sans navigateur : rejoue aventures/eldiabl
 python build.py
 node tests/essai.js                 # dans Chrome, avec Playwright : étagère, partie entière, retour, reprise
 node tests/sauvegardes.js           # dans Chrome : pièces magiques, journal conservé, export et import
+python build.py --tout && node tests/essai-dragonmountain.js   # Dragon Mountain (en cours d'intégration)
 ```
 
 Les deux derniers demandent `npm install playwright` et Chrome (variable `CHROME` pour indiquer son chemin).

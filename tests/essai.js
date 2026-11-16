@@ -33,7 +33,7 @@ let bad=0; const say=(k,v)=>{ if(v===false) bad++; console.log((v===false?'ÉCHE
      await p.click('#tool-quit'); say('fenêtre quitter en jeu',(await p.$$eval('#overlay button',l=>l.map(x=>x.textContent))).join(' / '));
      await p.click('#overlay button:has-text("Back to DragonTales")'); await p.waitForTimeout(300);
      say('étagère en pleine partie',await vis('#shelf')); say('état étagère',await p.innerText('.shState')); await p.screenshot({path:OUT+'/5-etagere-partie.png'});
-     await p.keyboard.press('ArrowLeft'); await p.keyboard.type('x');
+     await p.keyboard.press('ArrowLeft'); await p.keyboard.press('ArrowRight'); await p.keyboard.type('x');   // les flèches parcourent l'étagère : aller-retour
      await p.click('#shelf button.main'); await p.waitForTimeout(300);
      say('intro après retour',(await p.$$eval('#overlay button',l=>l.map(x=>x.textContent))).join(' / '));
      await p.click('#overlay button:has-text("Resume game")'); await p.waitForTimeout(300);

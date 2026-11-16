@@ -1,0 +1,41 @@
+// Dragon Mountain — les lieux : titre français, titre anglais, sorte de décor (pour les illustrations), et place sur la carte.
+// Clé : numéro du lieu dans le programme (1 à 35). POS : [colonne, ligne, étage] ; étage 0 = le château, 1 = le royaume des
+// gardiens (auquel mènent les escaliers 12, 18 et 21), 2 = la salle du trésor, au-dessus de l'antre du dragon.
+const ROOMS={
+  '1':["La grande caverne","The great cavern",'cave'],
+  '2':["Le couloir","The passageway",'passage'],
+  '3':["La salle chaude","The warm chamber",'hall'],
+  '4':["Le vestibule","The lofty hallway",'hall'],
+  '5':["La salle aux bougies","The candlelit room",'hall'],
+  '6':["La petite chambre","The small bedroom",'bedroom'],
+  '7':["La chambre du maître","The master bedroom",'bedroom'],
+  '8':["L'armoire","The wardrobe",'cupboard'],
+  '9':["La chambre d'enfant","The nursery",'bedroom'],
+  '10':["La pièce obscure","The dark room",'dark'],
+  '11':["La galerie des glaces","The hall of mirrors",'hall'],
+  '12':["Le couloir obscur","The dark passage",'passage'],
+  '13':["La salle du maître","The master chamber",'hall'],
+  '14':["La bibliothèque","The library",'library'],
+  '15':["Le cabinet de travail","The study",'library'],
+  '16':["Le grand placard","The large cupboard",'cupboard'],
+  '17':["La réserve","The store room",'cupboard'],
+  '18':["La pièce vide","The empty room",'hall'],
+  '19':["Le passage étroit","The narrow passage",'passage'],
+  '20':["Le garde-manger","The pantry",'kitchen'],
+  '21':["La salle secrète","The secret room",'hall'],
+  '22':["Le couloir sinueux","The twisting passage",'passage'],
+  '23':["Le salon","The drawing room",'hall'],
+  '24':["La salle à manger","The dining room",'hall'],
+  '25':["La cuisine","The kitchen",'kitchen'],
+  '26':["La salle des elfes","The hall of the elves",'cave'],
+  '27':["La caverne obscure","The dark cavern",'cave'],
+  '28':["Le repaire du démon","The demon's lair",'lair'],
+  '29':["La grotte humide","The dank cave",'cave'],
+  '30':["L'antre du dragon","The dragon's den",'lair'],
+  '31':["La salle du trône","The throne room",'throne'],
+  '32':["La salle de la magie","The hall of magic",'magic'],
+  '33':["L'antichambre","The ante chamber",'magic'],
+  '34':["La grotte enchantée","The enchanted grotto",'magic'],
+  '35':["La salle du trésor","The treasure room",'treasure']
+};
+const POS={1:[0,4,0],2:[1,4,0],3:[2,4,0],4:[3,4,0],5:[4,4,0],6:[0,3,0],7:[1,3,0],8:[2,3,0],9:[3,3,0],10:[4,3,0],11:[0,2,0],12:[1,2,0],13:[2,2,0],14:[3,2,0],15:[4,2,0],16:[0,1,0],17:[1,1,0],18:[2,1,0],19:[3,1,0],20:[4,1,0],21:[0,0,0],22:[1,0,0],23:[2,0,0],24:[3,0,0],25:[4,0,0],26:[0,2,1],27:[1,2,1],28:[2,2,1],29:[0,1,1],30:[1,1,1],31:[2,1,1],32:[0,0,1],33:[1,0,1],34:[2,0,1],35:[1,1,2]};

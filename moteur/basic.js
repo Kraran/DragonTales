@@ -333,7 +333,8 @@ function Basic(bin, io, cfg){
   function giveLine(text){
     const inp = S.input; if(!inp) return;
     const parts = String(text).toUpperCase().split(',');
-    io.out(String(text).toUpperCase() + '\n'); S.col = 0;
+    if(cfg.echo !== false) io.out(String(text).toUpperCase() + '\n');   // l'interface affiche elle-même la commande
+    S.col = 0;
     inp.refs.forEach((r, i) => {
       const raw = (parts[i] || '').trim(), target = r.a ? {n:r.n, a:S.arrs[r.a], k:r.k} : {n:r.n};
       set(target, isStr(r.n) ? raw : (parseFloat(raw) || 0));

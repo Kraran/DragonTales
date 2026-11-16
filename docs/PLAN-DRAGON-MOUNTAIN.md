@@ -40,26 +40,31 @@ Deuxième aventure de DragonTales : **Dragon Mountain** (Dragon Data, 1982, Drag
 - [x] Corrections du programme d'origine, écrites en BASIC dans la fiche (`machine.patches`) et appliquées au chargement :
       le dragon et le gobelet (voir plus haut). `--sans-correctifs` rejoue le programme d'origine.
 
-### 2. Adapter le moteur aux jeux en BASIC
+### 2. Adapter le moteur aux jeux en BASIC — presque terminé
 
-- [ ] Choisir la machine selon la fiche (`machine.kind: 'basic'`) ; sauvegardes, annulation et reprise avec l'état BASIC.
-- [ ] Texte par lignes : le jeu écrit des lignes entières (pas de routine d'affichage unique). Le journal garde les lignes
-      anglaises et les traduit à l'affichage, ce qui permet toujours de changer de langue en cours de partie.
-- [ ] Version classique : écran du Dragon de 32 colonnes ; le texte français est recoupé à 32 colonnes.
-- [ ] Deuxième sorte de saisie : la question « WHAT IS THE SPELL? » attend une formule, pas une commande à traduire.
-- [ ] Fins : victoire reconnue au texte final ; toute autre fin est une mort (avec Recommencer / Charger).
-- [ ] Carte sans grille unique : chaque aventure peut donner la position de ses lieux (colonne, ligne, étage) ;
-      la carte affiche un étage à la fois et marque les escaliers et les passages particuliers.
-- [ ] Combat : les éclairs de couleur du programme (`CLS 3`, `CLS 4`) deviennent un effet visuel et sonore.
+L'aventure se joue de bout en bout dans l'interface (`python build.py --tout`), testée par `tests/essai-dragonmountain.js`.
+
+- [x] Choisir la machine selon la fiche (`machine.kind: 'basic'`) ; sauvegardes, annulation et reprise avec l'état BASIC
+      (variables, pile, position dans le programme et hasard : une partie rechargée continue à l'identique).
+- [x] Texte par lignes : le journal garde les lignes anglaises du programme et les traduit à l'affichage
+      (`world.say`), ce qui permet toujours de changer de langue en cours de partie.
+- [x] Version classique : en anglais, l'écran d'origine ; en français, le texte recoupé à 32 colonnes.
+- [x] Deuxième sorte de saisie : la réponse à « WHAT IS THE SPELL? » passe telle quelle (`world.freeInput`).
+- [x] Fins : victoire reconnue au texte final ; toute autre fin est une mort (annuler, charger, recommencer).
+- [x] Carte sans grille unique : chaque lieu a sa colonne, sa ligne et son étage (`world.pos`) ; la petite carte montre
+      l'étage du joueur, la grande carte tous les étages côte à côte.
+- [x] Sons déclenchés par les lignes du jeu (`world.sfxFor`) ; les éclairs du combat (`CLS 3`, `CLS 4`) jouent l'éclair.
+- [ ] Textes du moteur encore propres à El Diablero : la légende de la grande carte parle de « rêve ».
+- [ ] Ordre de l'étagère : `order` dans la fiche (El Diablero 1, Dragon Mountain 2).
 
 ### 3. Contenu de l'aventure
 
-- [ ] Traduction française : 35 descriptions, 19 objets, une centaine de messages, les panneaux et le livre ;
+- [x] Traduction française (`textes.js`) : 35 descriptions, 19 objets, tous les messages, les panneaux et le livre ;
       vocabulaire français → commandes du jeu (le jeu ne lit que les deux premières lettres du verbe et du dernier mot).
-- [ ] Titres courts des lieux, verbes de l'interface (aller, prendre, poser, ouvrir, déverrouiller, manger, boire, lire,
-      soudoyer, tuer, porter, dormir, inventaire).
-- [ ] Positions des lieux sur la carte (deux étages et la salle du trésor).
-- [ ] Illustrations : intérieurs de château (chambres, bibliothèque, cuisine…) et grottes de l'étage (salle des elfes,
+      Première version, à relire en jouant.
+- [x] Titres courts des lieux (`data.js`), verbes de l'interface, texte d'introduction.
+- [x] Positions des lieux sur la carte (deux étages et la salle du trésor), vérifiées contre la table des passages.
+- [ ] Illustrations (pour l'instant un décor provisoire par sorte de lieu, `scenes.js`) : intérieurs de château (chambres, bibliothèque, cuisine…) et grottes de l'étage (salle des elfes,
       repaire du démon, antre du dragon, trésor), avec les objets et les monstres présents.
 - [ ] Indices des pièces magiques adaptés au tirage de la partie (ils lisent où sont vraiment les objets).
 - [ ] Sons : rugissement du dragon, démon, elfe, combat, porte, formule, eau, repas, sommeil.

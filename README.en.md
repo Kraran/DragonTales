@@ -76,6 +76,7 @@ node tests/rejouer-solution.js      # no browser: replays aventures/eldiablero/s
 python build.py
 node tests/essai.js                 # in Chrome, with Playwright: shelf, full game, back to the shelf, resume
 node tests/sauvegardes.js           # in Chrome: magic coins, kept history, export and import
+python build.py --tout && node tests/essai-dragonmountain.js   # Dragon Mountain (being integrated)
 ```
 
 The last two need `npm install playwright` and Chrome (set `CHROME` to its path if needed).

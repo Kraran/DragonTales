@@ -10,4 +10,9 @@ Fait :
 - `aventure.js` sait lire la partie : lieu courant, passages, objets, épreuves ;
 - deux bugs d'origine corrigés au chargement (`machine.patches`) : le dragon qui bloquait la partie, le gobelet qui nourrissait.
 
-Reste : l'interface (texte par lignes, carte sans grille, fins), la traduction, les illustrations, les indices, les sons.
+- l'interface sait jouer les jeux en BASIC : l'aventure se joue de bout en bout, en français et en anglais, en version
+  moderne et classique (`python build.py --tout`, essai : `tests/essai-dragonmountain.js`) ;
+- traduction française complète (première version), titres des lieux, carte sur deux étages.
+
+Reste : les illustrations (décors provisoires pour l'instant), les indices des pièces magiques, la musique, une relecture
+de la traduction en jouant.

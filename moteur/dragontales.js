@@ -8,7 +8,7 @@ const $=id=>document.getElementById(id);
 const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;};
 const LS={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return false;}}};
 const SS={get(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},set(k,v){try{sessionStorage.setItem(k,v);}catch(e){}},del(k){try{sessionStorage.removeItem(k);}catch(e){}}};
-const ADVENTURES=window.DragonTales.adventures;
+const ADVENTURES=window.DragonTales.adventures.slice().sort((a,b)=>(a.order||99)-(b.order||99));   // ordre sur l'étagère
 let lang='fr';   // toujours en français au lancement
 let shelfOpen=true, current=null;   // étagère affichée ? ; aventure chargée (une seule à la fois par page)
 
@@ -131,7 +131,7 @@ function renderShelf(){
   const a=ADVENTURES[picked], info=el('section','shInfo');
   if(a){
     info.appendChild(el('h2',null,a.title));
-    info.appendChild(el('p','shMeta',[t0().by+' '+a.author,a.publisher,a.year,a.system].filter(Boolean).join(', ')));
+    info.appendChild(el('p','shMeta',[a.author?t0().by+' '+a.author:'',a.publisher,a.year,a.system].filter(Boolean).join(', ')));
     info.appendChild(el('p','shBlurb',a.blurb[lang]));
     const d=savedGame(a);
     info.appendChild(el('p','shState',d?t0().playing+' ('+new Date(d.date).toLocaleDateString(lang,{day:'numeric',month:'long',year:'numeric'})+')':t0().noGame));
@@ -220,7 +220,19 @@ function play(ADV){
 const FR=ADV.FR, ROOMS=ADV.ROOMS, SCENES=ADV.SCENES, HINTS=ADV.HINTS||null, WORLD=ADV.world;
 const KEY=ADV.storage+'.';                       // préfixe des sauvegardes et réglages
 const VERBS=ADV.verbs, SFX_AT=ADV.sfxAt||{}, DIRS=WORLD.dirs, ALLW=WORLD.allWord||'';
-const COLS=WORLD.cols, NROOMS=WORLD.rooms, DELTA={W:-1,N:-COLS,E:1,S:COLS};
+const COLS=WORLD.cols||0, NROOMS=WORLD.rooms, DELTA={W:-1,N:-COLS,E:1,S:COLS};
+const BASIC=ADV.machine.kind==='basic';             // jeu écrit en BASIC (moteur/basic.js) plutôt qu'en code machine
+// Géométrie de la carte. Par défaut, la grille du programme (COLS colonnes) ; sinon la fiche donne pour chaque lieu
+// sa colonne, sa ligne et son étage (WORLD.pos) et la destination de chaque sortie (WORLD.links).
+const posOf=a=>WORLD.pos?WORLD.pos(a):[a%COLS,Math.floor(a/COLS),0];
+const GRIDW=WORLD.pos?Math.max(...Array.from({length:NROOMS},(_,a)=>posOf(a)[0]))+1:COLS;
+const LEVELS=[...new Set(Array.from({length:NROOMS},(_,a)=>posOf(a)[2]))].sort((a,b)=>a-b);
+function dest(a,d){ // lieu atteint depuis a dans la direction d (ou null)
+  if(WORLD.links){ const l=WORLD.links(mem,a)[d]; return typeof l==='number'?l:null; }
+  if(!DELTA[d]) return null; const n=a+DELTA[d]; if(n<0||n>=NROOMS) return null;
+  if((d==='W'||d==='E')&&Math.floor(a/COLS)!==Math.floor(n/COLS)) return null; return n;
+}
+const PROMPT_ITEM=WORLD.promptAddr!==undefined?{a:WORLD.promptAddr}:{b:WORLD.promptText||''};
 const TRANSIENT=new Set(WORLD.transient||[]), COINS=HINTS?3:0;
 const TA={fr:Object.assign({},T.fr,ADV.labels.fr),en:Object.assign({},T.en,ADV.labels.en)};
 const bin=Uint8Array.from(atob(ADV.assets.programme.b64),c=>c.charCodeAt(0));
@@ -230,7 +242,7 @@ const t=()=>TA[lang];
 // ---------- noms cliquables ----------
 const DIRWORDS=new Set(Object.values(DIRS));
 const FR_SKIP=new Set(ADV.frSkip||[]);
-const EN_NOUNS=new Set(Object.values(FR.NOUNS).filter(v=>!DIRWORDS.has(v)&&v!==ALLW));
+const EN_NOUNS=new Set(Object.values(FR.NOUNS).concat(WORLD.nouns||[]).filter(v=>!DIRWORDS.has(v)&&v!==ALLW));
 const strip=s=>s.toUpperCase().replace(/Œ/g,'OE').normalize('NFD').replace(/[̀-ͯ]/g,'');
 function nounOf(word){ // mot affiché -> mot-clé anglais du jeu, ou null
   const w=strip(word);
@@ -284,7 +296,14 @@ const io={
   load(){ const s=LS.get(KEY+'save.v1'); if(!s){ quickMsg='noSave'; return null; } quickMsg='quickLoaded'; return Uint8Array.from(atob(s),c=>c.charCodeAt(0)); },
   quit(v){ won=!!v; }
 };
-const m=Machine(bin,io,ADV.machine);
+// Jeu en BASIC : chaque PRINT arrive comme une ligne anglaise ({b:…}), traduite à l'affichage par WORLD.say.
+const ioBasic={
+  out(s){ pending+=s; pendItems.push({b:s}); if(WORLD.sfxFor){ const f=WORLD.sfxFor(s); if(f) pendSfx.push(f); } },
+  cls(c){ if(c){ if(!pendSfx.includes('flash')) pendSfx.push('flash'); return; } pending=''; pendItems=[]; },   // CLS n : éclair de couleur
+  end(){ won=!!(ADV.machine.victory&&ADV.machine.victory.test(pending)); }
+};
+const SEED=/[#&]graine=(\d+)/.exec(location.hash);   // essais : DragonTales.html#graine=2 fixe le hasard des jeux BASIC
+const m=BASIC?Basic(bin,ioBasic,Object.assign({echo:false},ADV.machine,SEED?{seed:+SEED[1]}:{})):Machine(bin,io,ADV.machine);
 const mem=m.mem;
 
 // ---------- lecture de l'état du jeu ----------
@@ -298,13 +317,16 @@ function exitsOf(off){ return WORLD.exits(mem,off); }
 function rawStr(a){ return WORLD.str(mem,a,700); }
 function textFor(addr,L){ const k=hex4(addr); return L==='fr'&&FR.TEXT[k]!==undefined?FR.TEXT[k]:rawStr(addr); }
 function memStr(a){ return WORLD.str(mem,a,80); }
+function objName(o){ // nom affiché d'un objet, dans la langue courante
+  if(o.np===undefined) return pretty(WORLD.objLabel?WORLD.objLabel(o,lang):o.name);
+  return pretty(lang==='fr'&&FR.TEXT[hex4(o.np)]||memStr(o.np));
+}
 function objects(){
   const here=[],inv=[],no=WORLD.locOf(roomOff());
-  for(const {n,np,loc} of WORLD.objects(mem)){
-    if(loc!==no&&loc!==WORLD.carried) continue;
-    const en=memStr(np), kw=en.split(' ').pop().replace(/[^A-Z]/g,'');
-    const name=pretty(lang==='fr'&&FR.TEXT[hex4(np)]||en);
-    (loc===WORLD.carried?inv:here).push({kw,name,n});
+  for(const o of WORLD.objects(mem)){
+    if(o.loc!==no&&o.loc!==WORLD.carried) continue;
+    const en=o.np===undefined?o.name:memStr(o.np), kw=o.word||en.split(' ').pop().replace(/[^A-Z]/g,'');
+    (o.loc===WORLD.carried?inv:here).push({kw,name:objName(o),n:o.n});
   }
   return {here,inv};
 }
@@ -368,6 +390,7 @@ function flush(echo,prevOff){ // transforme la sortie du jeu en entrée du journ
 }
 
 function step(echo){ // fait tourner le jeu jusqu'à la prochaine attente
+  if(BASIC&&!started) return;   // un jeu BASIC n'a pas d'écran titre à lui : il démarre au clic sur Commencer
   const prev=turns.length?roomOff():-1;
   let w;
   try{ w=m.run(); }catch(e){ note('raw',{text:'Erreur : '+e.message}); return; }
@@ -380,6 +403,7 @@ function step(echo){ // fait tourner le jeu jusqu'à la prochaine attente
   playSfx(prev,w);
   if(classicOn){ if(w==='end') classicItems.push({k:won?'cWon':'cEnd'}); }
   else if(w==='key'&&m.yesNo) showDeath(r.text);
+  else if(w==='end'&&BASIC&&!won) showDeath(r.text);
   else if(w==='end') showEnd();
   refresh(); scrollLog(); renderClassic();
   if(w==='line') autosave();
@@ -408,7 +432,7 @@ function send(en,echo){ // envoie une commande anglaise au jeu
   if(m.wait==='line'&&after!==before&&after>=0&&after<NROOMS&&before>=0&&before<NROOMS){
     const d=Object.keys(DIRS).find(k=>en===WORLD.go(DIRS[k]));
     const kind=WORLD.link?WORLD.link(en):null;
-    if(!(d&&DELTA[d]&&after===before+DELTA[d])&&kind!=='skip'){ const dream=kind==='dream'; links.set(dream?'r>'+after:before+'>'+after,{from:before,to:after,label:echo||en.toLowerCase(),cmd:cmdObj,dream}); drawMap(after,true); }
+    if(!(d&&after===dest(before,d))&&kind!=='skip'){ const dream=kind==='dream'; links.set(dream?'r>'+after:before+'>'+after,{from:before,to:after,label:echo||en.toLowerCase(),cmd:cmdObj,dream}); drawMap(after,true); }
   }
   return true;
 }
@@ -417,6 +441,7 @@ function typed(line){
   const up=line.toUpperCase();
   if(lang==='fr'&&(up==='AIDE'||up==='?')){ showHelp(); return; }
   if(!classicOn&&isCoinCommand(up)){ useCoin(); return; }
+  if(WORLD.freeInput&&WORLD.freeInput(mem)){ send(up,line); return; }   // réponse libre (une formule…) : rien à traduire
   send(lang==='fr'?FR.frToEn(line):up, line);
 }
 
@@ -481,7 +506,7 @@ function refresh(){
   chips($('inv'),t().inv,o.inv,coins?'':t().nothing);
   for(let i=0;i<coins;i++){ const b=el('button','coin'); b.type='button'; b.title=t().coinTip(coins); b.setAttribute('aria-label',t().coin); b.innerHTML=COIN_SVG; b.onclick=askCoin; $('inv').appendChild(b); }
   const shown=new Set([...o.here,...o.inv].map(x=>x.kw));
-  chips($('lex'),t().lex,[...lex].filter(([k])=>!shown.has(k)).map(([kw,name])=>({kw,name:lang==='fr'&&FR.NOUNS[strip(name)]===kw||lang==='en'&&nounOf(name)===kw?name:(lang==='en'?kw.toLowerCase():Object.keys(FR.NOUNS).find(w=>FR.NOUNS[w]===kw).toLowerCase())})),t().none,'lexi');
+  chips($('lex'),t().lex,[...lex].filter(([k])=>!shown.has(k)).map(([kw,name])=>({kw,name:lang==='fr'&&FR.NOUNS[strip(name)]===kw||lang==='en'&&nounOf(name)===kw?name:(lang==='en'?kw:Object.keys(FR.NOUNS).find(w=>FR.NOUNS[w]===kw)||kw).toLowerCase()})),t().none,'lexi');
   $('tool-undo').disabled=!undo.length;
   drawMap(off,ok);
   musicUpdate(3500);
@@ -492,12 +517,12 @@ function refresh(){
 const MINI={cw:112,ch:56,px:130,py:76,lab:0,icon:22}, BIG={cw:164,ch:78,px:184,py:154,lab:50,icon:28};
 function objectsIn(off){ // objets posés dans un lieu (numéro, nom affiché)
   const out=[],no=WORLD.locOf(off);
-  for(const {n,np,loc} of WORLD.objects(mem)){ if(loc!==no) continue;
-    out.push({n,name:pretty(lang==='fr'&&FR.TEXT[hex4(np)]||memStr(np))}); }
+  for(const o of WORLD.objects(mem)){ if(o.loc!==no) continue; out.push({n:o.n,name:objName(o)}); }
   return out;
 }
 function staticKey(off){ return WORLD.roomKey(mem,off); }
-function buildMap(host,geo,cur,origin){ // origin(off) -> [x,y] du coin de la case
+function buildMap(host,geo,cur,origin,shownAt){ // origin(off) -> [x,y] du coin de la case ; shownAt(off) : lieu affiché ?
+  shownAt=shownAt||(()=>true);
   host.textContent='';
   const NS='http://www.w3.org/2000/svg';
   const svg=document.createElementNS(NS,'svg'); svg.setAttribute('class','links'); host.appendChild(svg);
@@ -507,10 +532,10 @@ function buildMap(host,geo,cur,origin){ // origin(off) -> [x,y] du coin de la ca
   const bh=geo.ch+geo.lab;
   const cx=a=>origin(a)[0]+geo.cw/2, cy=a=>origin(a)[1]+bh/2;
   const hw=geo.cw/2, hh=bh/2;
-  visited.forEach(a=>{ const ex=exitsOf(a);
-    for(const d of ['E','S','W','N']){ if(!ex[d]) continue; const n=a+DELTA[d]; if(n<0||n>=NROOMS) continue;
-      if((d==='W'||d==='E')&&Math.floor(a/COLS)!==Math.floor(n/COLS)) continue;
-      const known=visited.has(n); if(known&&(d==='W'||d==='N')&&exitsOf(n)[d==='W'?'E':'S']) continue;
+  visited.forEach(a=>{ if(!shownAt(a)) return; const ex=exitsOf(a);
+    for(const d of ['E','S','W','N']){ if(!ex[d]) continue; const n=dest(a,d); if(n===null) continue;
+      if(!shownAt(n)&&visited.has(n)) continue;   // passage vers un autre étage
+      const known=visited.has(n); if(known&&(d==='W'||d==='N')&&dest(n,d==='W'?'E':'S')===a) continue;
       const dx=(d==='E')-(d==='W'), dy=(d==='S')-(d==='N');
       const x1=cx(a)+dx*hw, y1=cy(a)+dy*hh;
       if(known) mk('line',{x1,y1,x2:cx(n)-dx*hw,y2:cy(n)-dy*hh,stroke:'#b9a6cf','stroke-width':4,'stroke-linecap':'round'});
@@ -520,9 +545,9 @@ function buildMap(host,geo,cur,origin){ // origin(off) -> [x,y] du coin de la ca
     } });
   layer=top;
   const dreams=new Map();
-  links.forEach(l=>{ if(l.dream){ dreams.set(l.to,l.cmd?cmdText(l.cmd).toLocaleLowerCase(lang):l.label); return; } if(!visited.has(l.from)||!visited.has(l.to)) return;
+  links.forEach(l=>{ if(l.dream){ dreams.set(l.to,l.cmd?cmdText(l.cmd).toLocaleLowerCase(lang):l.label); return; } if(!visited.has(l.from)||!visited.has(l.to)||!shownAt(l.from)||!shownAt(l.to)) return;
     let x1=cx(l.from),y1=cy(l.from),x2=cx(l.to),y2=cy(l.to);
-    const far=Math.hypot(Math.floor(l.from/COLS)-Math.floor(l.to/COLS),(l.from%COLS)-(l.to%COLS))>2.9;
+    const pf=posOf(l.from), pt=posOf(l.to), far=Math.hypot(pf[0]-pt[0],pf[1]-pt[1])>2.9;
     const lab=l.cmd?cmdText(l.cmd).toLocaleLowerCase(lang):l.label;
     if(far){ // passage lointain : simple amorce fléchée avec la commande, pour ne pas barrer toute la carte
       const d0=Math.hypot(x2-x1,y2-y1)||1, ux=(x2-x1)/d0, uy=(y2-y1)/d0, e=Math.abs(ux)*hw+Math.abs(uy)*hh;
@@ -537,6 +562,7 @@ function buildMap(host,geo,cur,origin){ // origin(off) -> [x,y] du coin de la ca
   });
   let maxX=0,maxY=0;
   visited.forEach(a=>{
+    if(!shownAt(a)) return;
     const [x,y]=origin(a); maxX=Math.max(maxX,x+geo.cw); maxY=Math.max(maxY,y+geo.ch+geo.lab);
     const info=roomInfo(a), objs=objectsIn(a), ex=exitsOf(a);
     const c=el('div','cell mc'+(a===cur?' cur':'')); c.dataset.off=a;
@@ -556,27 +582,29 @@ function sceneKeyFor(off){ const sk=staticKey(off); return sceneKey&&ROOMS[scene
 function drawMap(off,ok){
   const host=$('mapView'); $('mapLabel').textContent='';
   if(!ok||!started){ host.textContent=''; return; }
-  const pc=off%COLS, pr=Math.floor(off/COLS), W=652, H=392;
+  const [pc,pr,lv]=posOf(off), W=652, H=392;
   // toute la largeur de la grille ne tient pas : on centre sur le joueur, sans dépasser les bords de la grille
-  const ox=Math.max(Math.min(W/2-MINI.cw/2-pc*MINI.px, 8), W-8-MINI.cw-9*MINI.px);
+  const ox=Math.max(Math.min(W/2-MINI.cw/2-pc*MINI.px, 8), W-8-MINI.cw-(GRIDW-1)*MINI.px);
   const oy=Math.min(H/2+12-MINI.ch/2-pr*MINI.py, 44);
-  buildMap(host,MINI,off,a=>[ox+(a%COLS)*MINI.px, oy+Math.floor(a/COLS)*MINI.py]);
-  $('mapLabel').textContent=roomInfo(off).title;
+  buildMap(host,MINI,off,a=>{ const p=posOf(a); return [ox+p[0]*MINI.px, oy+p[1]*MINI.py]; },a=>posOf(a)[2]===lv);   // l'étage du joueur seulement
+  $('mapLabel').textContent=roomInfo(off).title+(LEVELS.length>1&&WORLD.levelName?' — '+WORLD.levelName(lv,lang):'');
   if(!$('bigmap').hidden) drawBig(false);
 }
 function drawBig(center){
   const off=roomOff(), host=$('bigInner'), pad=40;
-  const [mx,my]=buildMap(host,BIG,off,a=>[pad+(a%COLS)*BIG.px, pad+Math.floor(a/COLS)*BIG.py]);
-  host.style.width=(pad+10*BIG.px)+'px'; host.style.height=(my+pad)+'px';
-  host.querySelectorAll('svg.links').forEach(svg=>{ svg.setAttribute('width',pad+10*BIG.px); svg.setAttribute('height',my+pad); });
-  if(center){ const sc=$('bigScroll'); sc.scrollTop=pad+Math.floor(off/COLS)*BIG.py-sc.clientHeight/2+BIG.ch/2; }
+  // plusieurs étages : côte à côte, de gauche à droite
+  const lx=lv=>LEVELS.indexOf(lv)*(GRIDW+1)*BIG.px, width=pad+(LEVELS.length*(GRIDW+1)-1)*BIG.px;
+  const [mx,my]=buildMap(host,BIG,off,a=>{ const p=posOf(a); return [pad+lx(p[2])+p[0]*BIG.px, pad+p[1]*BIG.py]; });
+  host.style.width=width+'px'; host.style.height=(my+pad)+'px';
+  host.querySelectorAll('svg.links').forEach(svg=>{ svg.setAttribute('width',width); svg.setAttribute('height',my+pad); });
+  if(center){ const sc=$('bigScroll'); sc.scrollTop=pad+posOf(off)[1]*BIG.py-sc.clientHeight/2+BIG.ch/2; }
 }
 function showBig(){ if(!started) return; $('bigmap').hidden=false; $('bigTitle').textContent=t().mapTitle; $('bigHint').textContent=t().mapHint; $('bigClose').textContent=t().close; drawBig(true); }
 function hideBig(){ $('bigmap').hidden=true; inEl.focus(); }
 function pathTo(from,to){
   const prev=new Map([[from,null]]),q=[from];
   while(q.length){ const a=q.shift(); if(a===to) break; const ex=exitsOf(a);
-    for(const d in DELTA){ if(!ex[d]) continue; const n=a+DELTA[d]; if(n<0||n>=NROOMS||prev.has(n)||!visited.has(n)) continue; prev.set(n,[a,d]); q.push(n); } }
+    for(const d in DIRS){ if(!ex[d]) continue; const n=dest(a,d); if(n===null||prev.has(n)||!visited.has(n)) continue; prev.set(n,[a,d]); q.push(n); } }
   if(!prev.has(to)) return null;
   const path=[]; let c=to; while(prev.get(c)){ const [a,d]=prev.get(c); path.unshift([d,c]); c=a; }
   return path;
@@ -795,7 +823,7 @@ function spendNote(){
 function slotData(id){ const s=LS.get(KEY+'slot.'+id); if(!s) return null; try{ return JSON.parse(s); }catch(e){ return null; } }
 function packGame(withLog){ // l'état complet de la partie, pour un emplacement ou un fichier
   const sn=m.snapshot();
-  const d={format:'dragontales-save',version:1,adventure:ADV.id,gid,m:b64(sn.m),c:sn.c,visited:[...visited],lex:[...lex],links:[...links],coins,hintUse,room:roomOff(),date:Date.now()};
+  const d={format:'dragontales-save',version:1,adventure:ADV.id,gid,m:typeof sn.m==='string'?sn.m:b64(sn.m),c:sn.c,visited:[...visited],lex:[...lex],links:[...links],coins,hintUse,room:roomOff(),date:Date.now()};
   if(withLog){ d.turns=turns.slice(-80); d.classic=classicItems.slice(-600); }
   return d;
 }
@@ -806,7 +834,7 @@ function saveSlot(id){
 function autosave(){ if(started&&!walking) saveSlot('auto'); }
 function loadSlot(id){ const d=slotData(id); if(d) loadData(d); }
 function loadData(d){
-  m.restore({m:unb64(d.m),c:d.c,w:'line'}); sceneKey=null;
+  m.restore({m:BASIC?d.m:unb64(d.m),c:d.c,w:'line'}); sceneKey=null;
   gid=d.gid||'ancienne';
   visited=new Set(d.visited); lex=new Map(d.lex); links=new Map(d.links||[]); coins=d.coins===undefined?COINS:d.coins; hintUse=Object.assign({},d.hintUse);
   const spent=ledger()[gid];
@@ -818,7 +846,7 @@ function loadData(d){
   const off=roomOff();
   note('loaded',{off});
   classicItems=Array.isArray(d.classic)&&d.classic.length?d.classic.concat([{r:'\n'}]):[];
-  classicItems.push({k:'loaded',off},{a:WORLD.promptAddr}); pendItems=[]; cbuf='';
+  classicItems.push({k:'loaded',off},PROMPT_ITEM); pendItems=[]; cbuf='';
   refreshVerbs(); refresh(); renderClassic();
 }
 // ---------- sauvegarde dans un fichier ----------
@@ -834,8 +862,9 @@ function importText(txt){ // renvoie null si la partie est chargée, sinon le me
   let d; try{ d=JSON.parse(txt); }catch(e){ return t().importBad; }
   if(!d||d.format!=='dragontales-save'||typeof d.m!=='string'||!d.c||typeof d.c!=='object'||!Array.isArray(d.visited)) return t().importBad;
   if(d.adventure!==ADV.id) return t().importOther(String(d.adventure).slice(0,40));
-  let bytes; try{ bytes=unb64(d.m); }catch(e){ return t().importBad; }
-  if(bytes.length!==m.snapshot().m.length) return t().importBad;
+  if(BASIC){ try{ const st=JSON.parse(d.m); if(!st||typeof st.vars!=='object') return t().importBad; }catch(e){ return t().importBad; } }
+  else { let bytes; try{ bytes=unb64(d.m); }catch(e){ return t().importBad; }
+    if(bytes.length!==m.snapshot().m.length) return t().importBad; }
   const back=m.snapshot(), state={gid,visited,lex,links,coins,hintUse,turns,classicItems,started};
   try{ loadData(d); }
   catch(e){ m.restore(back); ({gid,visited,lex,links,coins,hintUse,turns,classicItems,started}=state); rerenderLog(); refresh(); return t().importBad; }
@@ -879,12 +908,13 @@ const REV=(function(){ // anglais -> premier mot français, pour réafficher une
   return en=>{ const p=en.trim().split(/\s+/); if(!p[0]) return ''; return find(v,p[0])+(p.length>1?' '+find(n,p[p.length-1]):''); };
 })();
 const HELP_EN=ADV.helpEn||'';
-function composeItems(items){ // recompose une suite d'éléments du journal dans la langue courante
+function composeItems(items,classic){ // recompose une suite d'éléments du journal dans la langue courante (classic : écran d'origine)
   let s='';
   for(const it of items){
     let x;
     if(it.a!==undefined) x=textFor(it.a,lang).replace(/%/g,'\n');
     else if(it.r!==undefined) x=it.r;
+    else if(it.b!==undefined) x=WORLD.say?WORLD.say(it.b,lang,!!classic):it.b;
     else if(it.e) x=(it.e.tl===lang?it.e.typed.toLocaleUpperCase(lang):lang==='en'?it.e.en:REV(it.e.en))+'\n';
     else if(it.k==='loaded') x=t().loaded(roomInfo(it.off).title).toLocaleUpperCase(lang);
     else if(it.k==='help') x='\n'+(lang==='fr'?FR.HELP:HELP_EN).replace(/%/g,'\n')+'\n';
@@ -893,7 +923,7 @@ function composeItems(items){ // recompose une suite d'éléments du journal dan
   }
   return s;
 }
-function classicString(){ return composeItems(classicItems); }
+function classicString(){ return composeItems(classicItems,true); }
 function renderClassic(){
   if(!classicOn) return;
   const scr=$('cScreen');
@@ -924,7 +954,7 @@ function classicKey(ev){
   const arrows={ArrowLeft:'W',ArrowRight:'E',ArrowUp:'N',ArrowDown:'S'};
   if(k==='Enter'){ ev.preventDefault(); const line=cbuf.trim(); cbuf=''; if(!line){ renderClassic(); return; }
     const up=line.toUpperCase();
-    if(up==='AIDE'||up==='HELP'||up==='?'){ classicItems.push({e:{en:'HELP',typed:lang==='fr'?'AIDE':'HELP',tl:lang}},{k:'help'},{a:WORLD.promptAddr}); renderClassic(); return; }
+    if(up==='AIDE'||up==='HELP'||up==='?'){ classicItems.push({e:{en:'HELP',typed:lang==='fr'?'AIDE':'HELP',tl:lang}},{k:'help'},PROMPT_ITEM); renderClassic(); return; }
     typed(line.toLocaleLowerCase(lang)); }
   else if(k==='Backspace'){ ev.preventDefault(); cbuf=cbuf.slice(0,-1); renderClassic(); }
   else if(arrows[k]&&cbuf===''){ ev.preventDefault(); direction(arrows[k]); }

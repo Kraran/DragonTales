@@ -9,7 +9,7 @@ const hex4=v=>v.toString(16).toUpperCase().padStart(4,'0');
 const str=(mem,a,max)=>{ let s=''; while(mem[a]!==0x23&&s.length<max){ s+=String.fromCharCode(mem[a]); a++; } return s; };
 
 DragonTales.register({
- id:'eldiablero',
+ id:'eldiablero', order:1,
  storage:'eldiablero',                    // préfixe des sauvegardes et réglages dans le navigateur
  title:'El Diablero', author:'Kenneth Kalish', publisher:'Computerware', year:1982, system:'Dragon 32',
  blurb:{

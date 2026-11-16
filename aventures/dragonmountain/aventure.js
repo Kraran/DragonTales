@@ -1,14 +1,17 @@
 // Dragon Mountain (Dragon Data, 1982) — fiche de l'aventure pour DragonTales.
-// EN COURS (voir EN-COURS.md) : build.py ne l'inclut pas encore dans DragonTales.html.
+// EN COURS (voir EN-COURS.md) : build.py ne l'inclut pas encore dans DragonTales.html (python build.py --tout pour l'essayer).
+// Ce fichier est assemblé après data.js, scenes.js et textes.js du même dossier : ROOMS, POS, SCENES, FR et dmSay/dmClean.
 // Le jeu est écrit en Dragon BASIC : il tourne dans moteur/basic.js, et la partie se lit dans ses variables
 // (R : lieu courant, P(lieu,direction) : passages, L(objet) : lieu de chaque objet, 0 = porté).
 (function(){
 const DIRS=['U','D','N','S','E','W'];              // ordre des colonnes de P(lieu, 1..6) : haut, bas, nord, sud, est, ouest
 const OBJ_FIRST=7, OBJ_LAST=25;                      // objets que l'on peut voir et prendre (O$(7..25), OD$(7..25))
 const PASSAGE={200:'porte verrouillée',300:'porte noire',500:'sortie',600:'force invisible'};
+// mots du jeu (O$) que l'on peut cliquer dans le texte anglais
+const NOUNS_EN='LAMP FLASK BRACELET CLOAK KEY SWORD GOBLET TORCH PLATE CROWN DAGGER SPELLBOOK AXE FOOD WATER TREASURE SIGN DOOR FIRE FIREPLACE TABLE WINDOW CANDLES BED WARDROBE COT STAIRCASE CARPET BOOKS CHAIR CHAIRS BARREL SHELVES STOVE BONES STRAW THRONE GATE DEMON DRAGON ELF'.split(' ');
 
 DragonTales.register({
- id:'dragonmountain',
+ id:'dragonmountain', order:2,
  storage:'dragonmountain',
  title:'Dragon Mountain', author:'', publisher:'Dragon Data', year:1982, system:'Dragon 32',
  blurb:{
@@ -19,7 +22,8 @@ DragonTales.register({
  // ---- programme d'origine ----
  machine:{
   kind:'basic',                                      // programme BASIC : moteur/basic.js au lieu de l'émulateur 6809
-  victory:/I HAVE ALL THE TREASURE/,                 // texte affiché à la victoire ; toute autre fin est une mort
+  victory:/I HAVE ALL THE TREASURE/,
+  echo:false,                 // texte affiché à la victoire ; toute autre fin est une mort
   // Corrections du programme d'origine (décidées le 16/11/2026) :
   patches:{
    // Le dragon ne se montre qu'à qui porte la dague. À l'origine, s'il apparaissait avant, on ne pouvait plus quitter
@@ -31,11 +35,57 @@ DragonTales.register({
   }
  },
 
+ // ---- textes, lieux, dessins ----
+ FR, ROOMS, SCENES, HINTS:null,
+ labels:{
+  fr:{
+   sub:"Une aventure de Dragon Data, 1982. Version française.",
+   bye:"Que la montagne te soit clémente.",
+   sfxNote:"Dragon, démon, elfe, combat, portes… Ils ne jouent que dans la version moderne.",
+   musicNote:"Dragon Mountain n’a pas encore de musique.",
+   intro:[
+    "Au cœur de la Montagne du Dragon dort un trésor que nul n’a jamais rapporté. Des elfes rôdent dans ses salles, un démon garde ses profondeurs et un dragon veille sur l’or.",
+    "Pour en ressortir vivant, il te faudra manger, boire, dormir et te protéger du froid, trouver les armes qui viennent à bout des gardiens, et de quoi acheter les elfes.",
+    "Lis les panneaux : ils en disent plus long qu’il n’y paraît."]},
+  en:{
+   sub:"An adventure by Dragon Data, 1982.",
+   bye:"May the mountain be kind to you.",
+   sfxNote:"Dragon, demon, elf, fighting, doors… They only play in the modern version.",
+   musicNote:"Dragon Mountain has no music yet.",
+   intro:[
+    "Deep inside Dragon Mountain lies a treasure no one has ever brought back. Elves roam its halls, a demon guards its depths and a dragon watches over the gold.",
+    "To come out alive you will have to eat, drink, sleep and keep out the cold, find the weapons that can defeat the guardians, and something to buy off the elves.",
+    "Read the signs: they say more than you might think."]}
+ },
+ helpEn:'VERBS: GO (OR N, S, E, W, UP, DOWN), LOOK, GET, LEAVE, INVENTORY, OPEN, UNLOCK, EAT, DRINK, READ, WEAR, BRIBE, KILL, SLEEP.%EXAMPLES: GET LAMP, READ SIGN, BRIBE ELF.',
+ // [mot anglais du jeu, libellé français, libellé anglais, s'emploie sans cible ?] — le premier est le verbe par défaut
+ verbs:[['GET','Prendre','Take'],['LEAVE','Poser','Drop'],['LOOK','Regarder','Look',1],['INVENTORY','Inventaire','Inventory',1],
+  ['OPEN','Ouvrir','Open'],['UNLOCK','Déverrouiller','Unlock'],['READ','Lire','Read'],['WEAR','Porter','Wear'],
+  ['EAT','Manger','Eat'],['DRINK','Boire','Drink'],['SLEEP','Dormir','Sleep',1],['BRIBE','Soudoyer','Bribe'],['KILL','Tuer','Kill']],
+ sfxAt:{},
+ frSkip:['EST','PORTE'],                              // mots français à ne pas rendre cliquables (« est » la direction, « porte » le verbe)
+ revExtra:{GET:'PRENDRE',LEAVE:'POSER',INVENTORY:'INVENTAIRE',GO:'ALLER'},
+ nounEn:w=>{ const x=FR.frToEn('PRENDRE '+w).split(' '); return x.length>1?x[1]:''; },
+
  // ---- lecture de l'état du jeu ----
  world:{
   rooms:35,
   dirs:{N:'NORTH',S:'SOUTH',E:'EAST',W:'WEST',U:'UP',D:'DOWN'},
   go:w=>'GO '+w, goVerb:'GO',
+  promptText:'\nWHAT SHALL I DO?\n? ',      // invite remise après un chargement ou l'aide (version classique)
+  defaultScene:'1', transient:[],
+  nouns:NOUNS_EN,
+  // la carte : deux étages et la salle du trésor (data.js)
+  pos:off=>POS[off+1],
+  levelName:(lv,lang)=>[['le château','the castle'],['le royaume des gardiens','the kingdom of the guardians'],['le trésor','the treasure']][lv][lang==='fr'?0:1],
+  say:(text,lang,classic)=>dmSay(text,lang,classic),
+  objLabel:(o,lang)=>{ const a=DM_OBJ[DM_NORM(o.name)]; return a?(lang==='fr'?a[1]:a[0]).replace(/^(a|an|un|une) /i,''):o.name; },
+  clean:s=>dmClean(s),
+  proper:(s,lang)=>s.replace(/\borimiah\b/g,'Orimiah').replace(/\bdragon mountain\b/g,'Dragon Mountain').replace(/\bmontagne du dragon\b/g,'Montagne du Dragon'),
+  freeInput:mem=>mem.prompt()!==null&&mem.line()===1270,   // « WHAT IS THE SPELL? » : la formule passe telle quelle
+  sfxFor(line){ if(/DRAGON IS IN/.test(line)) return 'growl'; if(/DEMON IS IN/.test(line)) return 'rumble'; if(/ELF IS IN/.test(line)) return 'magic';
+   if(/IS DEAD|RAN AWAY/.test(line)) return 'smash'; if(/KILLED|DIED/.test(line)) return 'death'; if(/DOOR IS OPEN/.test(line)) return 'glow';
+   if(/ELF HAS TAKEN/.test(line)) return 'coin'; if(/RESTED/.test(line)) return 'dream'; if(/ALL THE TREASURE/.test(line)) return 'victory'; return null; },
   roomOff:mem=>mem.v('R')-1,
   roomKey:(mem,off)=>String(off+1),
   // destination de chaque sortie : numéro de lieu (0 = rien), ou le nom d'un passage particulier
