@@ -1,5 +1,6 @@
 # Assemble DragonTales.html : le moteur (moteur/) et toutes les aventures (aventures/<nom>/) dans une seule page.
 #   python build.py            -> DragonTales.html à côté de ce script
+#   python build.py --tout     -> y compris les aventures en cours d'intégration (dossiers avec EN-COURS.md)
 # Le numéro de version est lu dans le fichier VERSION, sa date dans CHANGELOG.md.
 # Une aventure est un dossier contenant :
 #   aventure.js      la fiche (DragonTales.register({...})), assemblée en dernier
@@ -27,7 +28,13 @@ def aventure(name):
     js='\n'.join(strip(rd('aventures',name,f)) for f in mods+['aventure.js'])
     return '<script>\n(function(){\nconst ASSETS=%s;\n%s\n})();\n</script>'%(json.dumps(assets),js)
 
-names=sorted(n for n in os.listdir(os.path.join(ROOT,'aventures')) if os.path.exists(os.path.join(ROOT,'aventures',n,'aventure.js')))
+TOUT='--tout' in sys.argv   # inclure aussi les aventures en cours d'intégration
+names=[]
+for n in sorted(os.listdir(os.path.join(ROOT,'aventures'))):
+    d=os.path.join(ROOT,'aventures',n)
+    if not os.path.exists(os.path.join(d,'aventure.js')): continue
+    if os.path.exists(os.path.join(d,'EN-COURS.md')) and not TOUT: print('aventures/%s : en cours d\'intégration, non incluse (python build.py --tout pour l\'inclure)'%n); continue
+    names.append(n)
 t=rd('moteur','template.html')
 font='data:font/ttf;base64,'+b64('moteur','dragon.ttf')
 version=rd('VERSION').strip()

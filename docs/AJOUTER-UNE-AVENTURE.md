@@ -11,6 +11,7 @@ VERSION                       numéro de version affiché sur l'étagère
 moteur/
   cpu6809.js                  processeur 6809
   machine.js                  mémoire du Dragon + appels à la ROM remplacés (affichage, clavier, saisie, CSAVE/CLOAD)
+  basic.js                    interpréteur Dragon BASIC, pour les jeux écrits en BASIC
   dragontales.js              étagère + interface de jeu (journal, verbes, carte, version classique, sauvegardes, pièces, musique)
   sfx.js                      effets sonores synthétisés
   template.html               page et styles
@@ -26,7 +27,8 @@ aventures/eldiablero/
   boite.jpg  couverture.jpg  musique.ogg
   solution.txt                suite de commandes menant à la victoire, pour les essais automatiques
 outils/
-  cas.py, dis.py              extraction du binaire d'une cassette, désassembleur de travail
+  cas.py, detok.py            extraction du programme d'une cassette, listing d'un programme BASIC
+  dis.py                      désassembleur 6809 de travail
 tests/
   rejouer-solution.js         rejoue une solution sans navigateur (doit finir par VICTOIRE)
   essai.js                    essai complet dans Chrome (étagère, partie entière, retour, reprise)
@@ -47,8 +49,10 @@ tests/
 3. **Écrire les modules** : `fr.js` (traduction), `data.js` (lieux), `scenes.js` (dessins), `hints.js` (indices).
    Ils sont assemblés par ordre alphabétique, `aventure.js` en dernier, dans une portée propre à l'aventure :
    deux aventures peuvent donc utiliser les mêmes noms (`FR`, `ROOMS`…) sans se gêner.
-4. **Écrire `solution.txt`** : une commande anglaise du jeu par ligne, jusqu'à la victoire. GitHub la rejouera à chaque modification.
-5. **Vérifier** : `node tests/rejouer-solution.js <nom>`, puis `python build.py` et ouvrir `DragonTales.html`.
+4. **Tant que l'aventure n'est pas prête**, laisser un fichier `EN-COURS.md` dans son dossier : `build.py` ne l'inclut pas
+   dans la page (`python build.py --tout` pour l'essayer quand même).
+5. **Écrire `solution.txt`** : une commande anglaise du jeu par ligne, jusqu'à la victoire. GitHub la rejouera à chaque modification.
+6. **Vérifier** : `node tests/rejouer-solution.js <nom>`, puis `python build.py` et ouvrir `DragonTales.html`.
 
 ## Ce que le moteur attend d'une aventure
 
@@ -58,8 +62,10 @@ tests/
   et le changement de langue en cours de partie ;
 - des **lieux sur une grille** (`world.cols` colonnes) pour la carte. Les passages hors grille sont tracés au fur et à mesure.
 
-Ce qui demandera du travail dans le moteur : un jeu écrit en BASIC (il faudrait la ROM BASIC ou un interpréteur), un jeu
-sans routine d'affichage unique, ou une carte qui n'est pas une grille. Dans tous les cas il faut d'abord désassembler le
+Les jeux écrits en **Dragon BASIC** tournent dans `moteur/basic.js` (`machine.kind: 'basic'`) : l'interpréteur lit le
+programme tokenisé de la cassette. L'interface ne sait pas encore les afficher : c'est l'étape en cours avec Dragon Mountain
+(voir `docs/PLAN-DRAGON-MOUNTAIN.md`). Ce qui demandera encore du travail : un jeu sans routine d'affichage unique, ou une
+carte qui n'est pas une grille. Dans tous les cas il faut d'abord désassembler le
 programme pour trouver ses tables : c'est la partie longue, propre à chaque jeu.
 
 ## Sauvegardes

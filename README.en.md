@@ -19,6 +19,7 @@ DragonTales dresses it up: translated texts, mouse play, a map, illustrations, s
 | Adventure | Author, publisher | Year | Machine | Languages |
 |---|---|---|---|---|
 | El Diablero | Kenneth Kalish, Computerware | 1982 | Dragon 32 | French, English |
+| Dragon Mountain *(being integrated)* | Dragon Data | 1982 | Dragon 32 | — |
 
 ## Play
 
@@ -57,7 +58,7 @@ python build.py
 build.py            builds DragonTales.html
 VERSION             version number
 Jouer.bat           Windows launcher
-moteur/             the engine: 6809 CPU, Dragon machine, shelf and game interface, sounds
+moteur/             the engine: 6809 CPU, Dragon machine, BASIC interpreter, shelf and game interface, sounds
 aventures/          one folder per adventure (original program, translation, places, drawings, hints, images, music)
 tests/              automated tests
 outils/             .cas tape extraction, working disassembler, original texts

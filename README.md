@@ -19,6 +19,7 @@ DragonTales l'habille : textes traduits, jeu à la souris, carte, illustrations,
 | Aventure | Auteur, éditeur | Année | Machine | Langues |
 |---|---|---|---|---|
 | El Diablero | Kenneth Kalish, Computerware | 1982 | Dragon 32 | français, anglais |
+| Dragon Mountain *(en cours d'intégration)* | Dragon Data | 1982 | Dragon 32 | — |
 
 ## Jouer
 
@@ -63,7 +64,7 @@ GitHub assemble alors la page et prépare la version en brouillon avec son archi
 build.py            assemble DragonTales.html
 VERSION             numéro de version
 Jouer.bat           lanceur Windows
-moteur/             processeur 6809, machine Dragon, étagère et interface de jeu, sons
+moteur/             processeur 6809, machine Dragon, interpréteur BASIC, étagère et interface de jeu, sons
 aventures/          un dossier par aventure (programme d'origine, traduction, lieux, dessins, indices, images, musique)
 tests/              essais automatiques
 outils/             extraction d'une cassette .cas, désassembleur de travail, textes d'origine relevés
