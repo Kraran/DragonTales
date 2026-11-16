@@ -18,10 +18,18 @@ let bad=0; const ok=(k,v,d)=>{ if(!v) bad++; console.log((v?'ok   ':'ÉCHEC ')+k
  // une commande tapée en français
  await p.fill('#in','lire le panneau'); await p.keyboard.press('Enter');
  ok('commande française comprise',/Montagne du Dragon/.test(await p.innerText('#log .turn:last-child')));
+ // pièce magique : le premier indice, puis le second qui nomme le lieu de la cape (placée au hasard ou non)
+ await p.click('.coin'); await p.click('#overlay button.main'); await p.click('.coin'); await p.click('#overlay button.main');
+ const hints=await p.$$eval('#log .hintText',l=>l.map(x=>x.textContent));
+ ok('deux indices, le second nomme un lieu',hints.length===2&&/armoire/i.test(hints[1]),hints.join(' | '));
+ await p.click('#tool-options'); await p.click('#overlay button:has-text("English")'); await p.click('#overlay button:has-text("Close")');
+ ok('indice recomposé en anglais',/wardrobe/i.test(await p.innerText('#log .turn.hint:last-of-type')));
+ await p.click('#tool-options'); await p.click('#overlay button:has-text("Français")'); await p.click('#overlay button:has-text("Fermer")');
  const send=c=>p.evaluate(c=>{const d=window.__dt; if(d.m.wait!=='line') return false; d.send(c,c.toLowerCase()); return true;},c);
- let n=0, spell=false;
+ let n=0, spell=false, dragonSeen=false;
  for(const c of sol.solution){ if(!await send(c)){ console.log('arrêt avant',c); break; } n++;
    if(c==='OPEN DOOR'&&/formule/.test(await p.innerText('#log .turn:last-child'))) spell=true;
+   if(/dragon est dans/i.test(await p.innerText('#log .turn:last-child'))) dragonSeen=await p.evaluate(()=>document.querySelector('#sceneArt').innerHTML.includes('#3f8a3f'));
    if(n===50){
      await p.click('#tool-saves'); await p.click('.slot:nth-child(2) button:has-text("Sauvegarder")'); await p.click('#overlay button.main');
      const st=await p.evaluate(()=>window.__dt.state()); await send('GO NORTH');
@@ -37,6 +45,7 @@ let bad=0; const ok=(k,v,d)=>{ if(!v) bad++; console.log((v?'ok   ':'ÉCHEC ')+k
      await p.click('#cLang'); await p.click('#cModern');
    } }
  ok('la porte noire demande la formule',spell);
+ ok('le dragon est dessiné quand il apparaît',dragonSeen);
  await p.waitForTimeout(300);
  ok('solution jouée jusqu’à la victoire',n===sol.solution.length&&/accomplie/.test(await p.innerText('#overlay')),n+' / '+sol.solution.length);
  await p.screenshot({path:OUT+'/dm-victoire.png'});

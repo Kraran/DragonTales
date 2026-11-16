@@ -33,6 +33,7 @@ DragonTales.register({
    bye:"À bientôt, apprenti.",
    sfxNote:"Corbeau, coup de feu, magie, eau… Ils ne jouent que dans la version moderne.",
    musicNote:"Elle joue dans le désert et s’efface en fondu dès qu’on le quitte.",
+   mapHint:"Clique un lieu pour t’y rendre. En pointillés turquoise : les passages particuliers déjà empruntés, avec la commande utilisée. ▲▼ : on peut monter ou descendre. « rêve » : lieu déjà atteint en rêvant.",
    intro:[
     "Tu te réveilles, hébété et désorienté, au beau milieu d’un désert. Tu apprenais les techniques de la sorcellerie auprès d’un vieil homme. Celui-ci t’avait dit qu’un sorcier maléfique, un « diablero », était devenu son ennemi. À présent, ton maître a disparu et tu es seul. Pire encore, tu ne te souviens plus des sorts que tu avais déjà appris. Tu te rappelles pourtant une strophe étrange :",
     ["Souviens-toi bien du mot de pouvoir,", "Souviens-toi de ce que tu as entendu deux fois.", "Réveille-toi à ce qui demeure en toi.", "Jette au loin le joug de l’ignorance."],
@@ -43,6 +44,7 @@ DragonTales.register({
    bye:"See you soon, apprentice.",
    sfxNote:"Crow, gunshot, magic, water… They only play in the modern version.",
    musicNote:"It plays in the desert and fades out as soon as you leave it.",
+   mapHint:"Click a place to walk there. Dashed turquoise lines: special passages already taken, with the command used. ▲▼: you can go up or down. “dream”: place already reached by dreaming.",
    intro:[
     "You awake, dazed and confused, in the middle of a desert. You had been learning the techniques of sorcery from an old man. The old man told you that an evil Sorcerer, a “diablero”, had become his enemy. Now, your teacher is missing and you are alone. Worse still, you cannot remember those spells you had already learnt. However, you can remember a strange verse:",
     ["Remember well the power word,", "Remember that which twice you heard.", "Awake to that which dwells within.", "Throw off the yoke of ignorance."],

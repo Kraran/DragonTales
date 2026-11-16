@@ -14,5 +14,6 @@ Fait :
   moderne et classique (`python build.py --tout`, essai : `tests/essai-dragonmountain.js`) ;
 - traduction française complète (première version), titres des lieux, carte sur deux étages.
 
-Reste : les illustrations (décors provisoires pour l'instant), les indices des pièces magiques, la musique, une relecture
-de la traduction en jouant.
+- illustrations des 35 lieux, des objets et des monstres ; indices des pièces magiques ; boîte alignée sur celle d'El Diablero.
+
+Reste : la musique (Suno), une relecture de la traduction en jouant, puis la publication en 0.6.0.

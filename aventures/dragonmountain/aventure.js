@@ -1,6 +1,6 @@
 // Dragon Mountain (Dragon Data, 1982) — fiche de l'aventure pour DragonTales.
 // EN COURS (voir EN-COURS.md) : build.py ne l'inclut pas encore dans DragonTales.html (python build.py --tout pour l'essayer).
-// Ce fichier est assemblé après data.js, scenes.js et textes.js du même dossier : ROOMS, POS, SCENES, FR et dmSay/dmClean.
+// Ce fichier est assemblé après data.js, hints.js, scenes.js et textes.js du même dossier : ROOMS, POS, HINTS, SCENES, FR et dmSay/dmClean.
 // Le jeu est écrit en Dragon BASIC : il tourne dans moteur/basic.js, et la partie se lit dans ses variables
 // (R : lieu courant, P(lieu,direction) : passages, L(objet) : lieu de chaque objet, 0 = porté).
 (function(){
@@ -36,13 +36,14 @@ DragonTales.register({
  },
 
  // ---- textes, lieux, dessins ----
- FR, ROOMS, SCENES, HINTS:null,
+ FR, ROOMS, SCENES, HINTS,
  labels:{
   fr:{
    sub:"Une aventure de Dragon Data, 1982. Version française.",
    bye:"Que la montagne te soit clémente.",
    sfxNote:"Dragon, démon, elfe, combat, portes… Ils ne jouent que dans la version moderne.",
    musicNote:"Dragon Mountain n’a pas encore de musique.",
+   mapHint:"Clique un lieu pour t’y rendre. De gauche à droite : le château, le royaume des gardiens et le trésor. ▲▼ : un escalier monte ou descend vers l’autre étage.",
    intro:[
     "Au cœur de la Montagne du Dragon dort un trésor que nul n’a jamais rapporté. Des elfes rôdent dans ses salles, un démon garde ses profondeurs et un dragon veille sur l’or.",
     "Pour en ressortir vivant, il te faudra manger, boire, dormir et te protéger du froid, trouver les armes qui viennent à bout des gardiens, et de quoi acheter les elfes.",
@@ -52,6 +53,7 @@ DragonTales.register({
    bye:"May the mountain be kind to you.",
    sfxNote:"Dragon, demon, elf, fighting, doors… They only play in the modern version.",
    musicNote:"Dragon Mountain has no music yet.",
+   mapHint:"Click a place to walk there. From left to right: the castle, the kingdom of the guardians and the treasure. ▲▼: a staircase leads up or down to the other level.",
    intro:[
     "Deep inside Dragon Mountain lies a treasure no one has ever brought back. Elves roam its halls, a demon guards its depths and a dragon watches over the gold.",
     "To come out alive you will have to eat, drink, sleep and keep out the cold, find the weapons that can defeat the guardians, and something to buy off the elves.",
@@ -94,6 +96,14 @@ DragonTales.register({
   exits(mem,off){ const l=this.links(mem,off), e={}; DIRS.forEach(d=>e[d]=typeof l[d]==='number'); return e; },
   locOf:off=>off+1, carried:0,
   objects(mem){ const out=[]; for(let n=OBJ_FIRST;n<=OBJ_LAST;n++) out.push({n,name:mem.a('OD$',n),word:mem.a('O$',n),loc:mem.a('L',n)}); return out; },
+  // éléments de scène : 101 elfe, 102 démon, 103 dragon présents ; 111 porte du couloir sinueux ouverte ;
+  // 112 porte noire ouverte (lieux 27, 29, 31) ; 113 force invisible levée (antre du dragon)
+  sceneExtras(mem,off){ const r=off+1, l=[];
+   if(mem.v('EP')===1) l.push(101); if(mem.v('DE')===1) l.push(102); if(mem.v('DP')===1) l.push(103);
+   if(r===22&&mem.a('P',22,6)===21) l.push(111);
+   if((r===27&&mem.a('P',27,3)===30)||(r===29&&mem.a('P',29,5)===30)||(r===31&&mem.a('P',31,6)===30)) l.push(112);
+   if(r===30&&mem.a('P',30,1)===35) l.push(113);
+   return l; },
   // état des épreuves : utile aux indices et à la carte
   flags(mem){ return {mange:mem.v('FE')===1, bu:mem.v('WD')===1, repose:mem.v('RF')===1, manteau:mem.v('CC')===1,
    elfe:mem.v('EP')===1, demon:mem.v('DE')===1, dragon:mem.v('DP')===1,

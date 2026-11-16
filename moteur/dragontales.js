@@ -30,7 +30,7 @@ const T={
   saved:'Partie sauvegardée.',loaded:t=>'Partie chargée : '+t+'.',undone:'Dernier coup annulé.',noSave:'Aucune sauvegarde rapide.',
   quick:'Sauvegarde rapide enregistrée.',quickLoaded:'Sauvegarde rapide rechargée.',confirm:'Recommencer la partie ?',confirmNote:'Tu repars du début avec trois pièces magiques. La partie en cours sera perdue, sauf si tu l’as enregistrée dans un emplacement de sauvegarde.',
   walkStop:'Je m’arrête : quelque chose a changé en chemin.',mapTitle:'Carte des lieux visités',enlarge:'Agrandir',
-  mapHint:'Clique un lieu pour t’y rendre. En pointillés turquoise : les passages particuliers déjà empruntés, avec la commande utilisée. ▲▼ : on peut monter ou descendre. « rêve » : lieu déjà atteint en rêvant.',dreamTag:'rêve',mapUnknown:'Lieu hors carte',
+  mapHint:'Clique un lieu pour t’y rendre. En pointillés turquoise : les passages particuliers déjà empruntés, avec la commande utilisée. ▲▼ : on peut monter ou descendre.',dreamTag:'rêve',mapUnknown:'Lieu hors carte',
   helpTitle:'Comment jouer',
   helpText:['Clique un verbe, puis sa cible : un mot souligné dans le texte, un objet de la liste « Ici » ou « Je porte », un mot déjà rencontré ou une direction.',
    'Un clic direct sur un mot ou un objet le regarde. Un second clic sur le verbe choisi le lance sans cible (Rêver, Nager, Regarder…).',
@@ -63,7 +63,7 @@ const T={
   saved:'Game saved.',loaded:t=>'Game loaded: '+t+'.',undone:'Last move undone.',noSave:'No quick save found.',
   quick:'Quick save stored.',quickLoaded:'Quick save restored.',confirm:'Restart the game?',confirmNote:'You start again from the beginning with three magic coins. The current game will be lost unless you stored it in a save slot.',
   walkStop:'I stop: something changed on the way.',mapTitle:'Map of visited places',enlarge:'Enlarge',
-  mapHint:'Click a place to walk there. Dashed turquoise lines: special passages already taken, with the command used. ▲▼: you can go up or down. “dream”: place already reached by dreaming.',dreamTag:'dream',mapUnknown:'Off the map',
+  mapHint:'Click a place to walk there. Dashed turquoise lines: special passages already taken, with the command used. ▲▼: you can go up or down.',dreamTag:'dream',mapUnknown:'Off the map',
   helpTitle:'How to play',
   helpText:['Click a verb, then its target: an underlined word in the text, an object under “Here” or “Carrying”, a word met earlier, or a direction.',
    'Clicking a word or an object directly looks at it. Clicking the chosen verb a second time runs it with no target (Dream, Swim, Look…).',
@@ -348,7 +348,9 @@ function cleanText(s){ return WORLD.clean(s); }
 function cmdText(c){ return c.tl===lang?c.typed:(lang==='en'?c.en:REV(c.en)).toLocaleLowerCase(lang); }
 function turnEl(d){
   const turn=el('div','turn');
-  if(d.note==='hint'){ turn.classList.add('hint'); turn.appendChild(el('p','note',t().coinHead(d.left))); const src=d.spot!=null?HINTS.SPOTS[d.spot][lang]:HINTS.STEPS[d.step][lang][d.lvl]; turn.appendChild(el('p','hintText',src)); return turn; }
+  if(d.note==='hint'){ turn.classList.add('hint'); turn.appendChild(el('p','note',t().coinHead(d.left))); let src=d.spot!=null?HINTS.SPOTS[d.spot][lang]:HINTS.STEPS[d.step][lang][d.lvl];
+    if(typeof src==='function') src=src(d.args||{},lang,n=>roomInfo(n-1).title);   // indice qui dépend de la partie (lieu d'un objet…)
+    turn.appendChild(el('p','hintText',src)); return turn; }
   if(d.note){ turn.appendChild(el('p','note',d.note==='raw'?d.text:d.note==='loaded'?t().loaded(roomInfo(d.off).title):t()[d.note])); return turn; }
   if(d.cmd) turn.appendChild(el('div','cmd',cmdText(d.cmd)));
   if(d.off!=null) turn.appendChild(el('h3',null,roomInfo(d.off).title));
@@ -501,7 +503,8 @@ function refresh(){
   [...$('compass').querySelectorAll('button')].forEach(b=>b.classList.toggle('off',!ex[b.dataset.dir]));
   const o=ok?objects():{here:[],inv:[]};
   const key=ok?(sceneKeyFor(off)||staticKey(off)):WORLD.defaultScene;
-  $('sceneArt').innerHTML=SCENES.render(key,ok?off:0,o.here.map(x=>x.n));
+  const extra=ok&&WORLD.sceneExtras?WORLD.sceneExtras(mem,off):[];   // éléments de scène propres à l'aventure (monstres, portes ouvertes…)
+  $('sceneArt').innerHTML=SCENES.render(key,ok?off:0,o.here.map(x=>x.n).concat(extra));
   chips($('here'),t().here,o.here,t().nothing);
   chips($('inv'),t().inv,o.inv,coins?'':t().nothing);
   for(let i=0;i<coins;i++){ const b=el('button','coin'); b.type='button'; b.title=t().coinTip(coins); b.setAttribute('aria-label',t().coin); b.innerHTML=COIN_SVG; b.onclick=askCoin; $('inv').appendChild(b); }
@@ -745,6 +748,7 @@ function useCoin(){
   if(sp>=0&&!hintUse['s'+sp]){ hintUse['s'+sp]=1; d={spot:sp}; }
   else { const k='e'+st, lvl=Math.min(hintUse[k]||0,1); hintUse[k]=(hintUse[k]||0)+1; d={step:st,lvl}; }
   coins--; spendNote(); if(opts.sfx) SFX.play('coin');
+  if(HINTS.args){ const a=HINTS.args(mem,d); if(a) d.args=a; }
   addTurn(Object.assign({note:'hint',left:coins},d));
   refresh(); scrollLog(); autosave();
 }

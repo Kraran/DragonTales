@@ -54,22 +54,25 @@ L'aventure se joue de bout en bout dans l'interface (`python build.py --tout`), 
 - [x] Carte sans grille unique : chaque lieu a sa colonne, sa ligne et son étage (`world.pos`) ; la petite carte montre
       l'étage du joueur, la grande carte tous les étages côte à côte.
 - [x] Sons déclenchés par les lignes du jeu (`world.sfxFor`) ; les éclairs du combat (`CLS 3`, `CLS 4`) jouent l'éclair.
-- [ ] Textes du moteur encore propres à El Diablero : la légende de la grande carte parle de « rêve ».
+- [x] La légende de la grande carte est propre à chaque aventure (`labels.mapHint`).
 - [x] Ordre de l'étagère : `order` dans la fiche (El Diablero 1, Dragon Mountain 2).
 
-### 3. Contenu de l'aventure
+### 3. Contenu de l'aventure — presque terminé
 
 - [x] Traduction française (`textes.js`) : 35 descriptions, 19 objets, tous les messages, les panneaux et le livre ;
       vocabulaire français → commandes du jeu (le jeu ne lit que les deux premières lettres du verbe et du dernier mot).
       Première version, à relire en jouant.
 - [x] Titres courts des lieux (`data.js`), verbes de l'interface, texte d'introduction.
 - [x] Positions des lieux sur la carte (deux étages et la salle du trésor), vérifiées contre la table des passages.
-- [ ] Illustrations (pour l'instant un décor provisoire par sorte de lieu, `scenes.js`) : intérieurs de château (chambres, bibliothèque, cuisine…) et grottes de l'étage (salle des elfes,
-      repaire du démon, antre du dragon, trésor), avec les objets et les monstres présents.
-- [ ] Indices des pièces magiques adaptés au tirage de la partie (ils lisent où sont vraiment les objets).
-- [ ] Sons : rugissement du dragon, démon, elfe, combat, porte, formule, eau, repas, sommeil.
-- [ ] Image de la boîte (`boite.jpg`) et de l'introduction (`couverture.jpg`) : fournies. Texte d'introduction à écrire.
-- [ ] Musique : aucune pour l'instant (facultative).
+- [x] Illustrations (`scenes.js`) : un décor par lieu d'après sa description, les 19 objets (posés sur la table là où le
+      jeu le dit), l'elfe, le démon et le dragon quand ils sont là, les portes ouvertes (`world.sceneExtras`).
+- [x] Indices des pièces magiques (`hints.js`) : dix étapes et six indices de situation ; le second indice d'une étape
+      nomme le lieu où se trouve vraiment l'objet dans cette partie (textes calculés au moment de la dépense).
+- [x] Sons liés aux lignes du jeu : dragon, démon, elfe, combat, mort, porte, or donné, sommeil, victoire.
+- [x] Image de la boîte alignée sur celle d'El Diablero (même cadre jaune, même bandeau DRAGON 32), image d'introduction,
+      texte d'introduction.
+- [ ] Musique : à faire avec Suno (décision du 16 novembre).
+- [ ] Relecture de la traduction par l'auteur du projet, en jouant.
 
 ### 4. Vérifier et publier
 
