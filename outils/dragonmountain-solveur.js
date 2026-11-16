@@ -2,11 +2,11 @@
 // et écrit la suite de commandes gagnante. Sert à fabriquer aventures/dragonmountain/solution.txt.
 //   node outils/dragonmountain-solveur.js [première graine] [nombre de graines]
 const Basic=require('../moteur/basic.js');const fs=require('fs');const path=require('path');
-const bin=fs.readFileSync(path.join(__dirname,'..','aventures','dragonmountain','programme.bin'));
+const adv=require('../tests/charger.js')('dragonmountain'), bin=adv.bin;   // avec les corrections de la fiche
 const NAMES={7:'LAMP',8:'FLASK',9:'BRACELET',10:'CLOAK',11:'KEY',12:'SWORD',13:'GOBLET',14:'TORCH',15:'PLATE',16:'CROWN',17:'DAGGER',18:'SPELLBOOK',19:'AXE',20:'FOOD',21:'FOOD',22:'FOOD',23:'WATER',24:'WATER'};
 const DIRW=[null,'UP','DOWN','NORTH','SOUTH','EAST','WEST'];
 function attempt(seed,verbose){
-  let buf='';const b=Basic(bin,{out(s){buf+=s;}},{seed});
+  let buf='';const b=Basic(bin,{out(s){buf+=s;}},Object.assign({},adv.machine,{seed}));
   let w=b.run(); const cmds=[]; const M=b.mem;
   const R=()=>M.v('R'), L=i=>M.a('L',i), P=(r,d)=>M.a('P',r,d);
   let last='';

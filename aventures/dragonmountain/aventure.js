@@ -19,7 +19,16 @@ DragonTales.register({
  // ---- programme d'origine ----
  machine:{
   kind:'basic',                                      // programme BASIC : moteur/basic.js au lieu de l'émulateur 6809
-  victory:/I HAVE ALL THE TREASURE/                  // texte affiché à la victoire ; toute autre fin est une mort
+  victory:/I HAVE ALL THE TREASURE/,                 // texte affiché à la victoire ; toute autre fin est une mort
+  // Corrections du programme d'origine (décidées le 16/11/2026) :
+  patches:{
+   // Le dragon ne se montre qu'à qui porte la dague. À l'origine, s'il apparaissait avant, on ne pouvait plus quitter
+   // la pièce ni le tuer : partie bloquée. Le tirage au hasard reste le même (RND est appelé comme avant).
+   4240:'IF DR<>R OR L(17)<>0 THEN 4260',
+   // Manger demande un panier de nourriture. À l'origine le programme testait le gobelet (L(13)) au lieu du
+   // troisième panier (L(22)) : on pouvait manger en ne portant que le gobelet.
+   1470:'IF L(22)<>0 AND L(20)<>0 AND L(21)<>0 THEN 5290'
+  }
  },
 
  // ---- lecture de l'état du jeu ----

@@ -17,10 +17,12 @@ Deuxième aventure de DragonTales : **Dragon Mountain** (Dragon Data, 1982, Drag
 - **Particularités du programme d'origine** :
   - seuls les deux premiers caractères des noms de variables comptent (`DR` et `DRD` sont la même variable) ;
     l'interpréteur reproduit ce comportement, le jeu en dépend ;
-  - on peut « manger » en portant seulement le gobelet (le programme teste le gobelet au lieu du troisième panier) ;
+  - on peut « manger » en portant seulement le gobelet, et pas avec le troisième panier de nourriture (le programme teste
+    le gobelet au lieu de ce panier) — **corrigé** ;
   - si le dragon apparaît avant qu'on ait la dague, on ne peut plus quitter la pièce : la partie est bloquée sans mourir.
-    Avec la stratégie simple du solveur, cela arrive dans plus de 9 parties sur 10 ; un joueur prudent fera mieux,
-    mais le risque reste élevé.
+    Avec la stratégie simple du solveur, cela arrivait dans plus de 9 parties sur 10 — **corrigé** : le dragon ne se montre
+    qu'à qui porte la dague. La même stratégie gagne maintenant 95 parties sur 100 ; les échecs restants viennent d'un
+    elfe rencontré sans objet en or pour le payer, ce qui fait partie du jeu.
 - La solution fournie (`DragonMountain-walkthrough.pdf`) ne correspond qu'à un tirage particulier et numérote les lieux
   autrement que le programme : elle sert de guide, pas d'essai automatique.
 
@@ -35,6 +37,8 @@ Deuxième aventure de DragonTales : **Dragon Mountain** (Dragon Data, 1982, Drag
       `outils/dragonmountain-solveur.js` ; `node tests/rejouer-solution.js dragonmountain` la rejoue jusqu'à la victoire.
 - [x] Fiche provisoire (`aventure.js`) : lieu courant, passages et leur nature, objets, épreuves (faim, soif, monstres…).
 - [x] `build.py` ignore une aventure tant que son dossier contient `EN-COURS.md` (`--tout` pour l'inclure quand même).
+- [x] Corrections du programme d'origine, écrites en BASIC dans la fiche (`machine.patches`) et appliquées au chargement :
+      le dragon et le gobelet (voir plus haut). `--sans-correctifs` rejoue le programme d'origine.
 
 ### 2. Adapter le moteur aux jeux en BASIC
 
@@ -67,10 +71,9 @@ Deuxième aventure de DragonTales : **Dragon Mountain** (Dragon Data, 1982, Drag
 - [ ] Essais dans Chrome : partie entière en version moderne et classique, en français et en anglais, sauvegardes.
 - [ ] Retirer `EN-COURS.md`, mettre à jour l'étagère, le README et le journal des versions ; publier la 0.6.0.
 
-## Décisions à prendre
+## Décisions (16 novembre 2026)
 
-1. **Le hasard** : garder le placement aléatoire du jeu d'origine (proposé) ou fixer un tirage.
-2. **Le blocage par le dragon** : le garder tel quel, ou le corriger comme on a corrigé l'inventaire d'El Diablero
-   (par exemple : le dragon ne se montre qu'une fois la dague trouvée, ou l'on peut fuir sans pouvoir avancer).
-3. **Le gobelet qui nourrit** : garder ce bug amusant ou le corriger.
-4. **Musique** : en faire une pour Dragon Mountain, ou rester sans musique.
+1. **Le hasard** est gardé : il fait partie du jeu, chaque partie est différente.
+2. **Le blocage par le dragon** est corrigé : c'était une mort injuste, plus un bug qu'un choix de l'auteur.
+3. **Le gobelet qui nourrit** est corrigé.
+4. **La musique** sera faite avec Suno dans un deuxième temps.

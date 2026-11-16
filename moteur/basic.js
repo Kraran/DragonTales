@@ -7,7 +7,9 @@
 //   io.cls(couleur)    effacement de l'écran (CLS, CLS n)
 //   io.input(prompt)   appelé au début d'une saisie (prompt = texte de INPUT "…" ou '')
 //   io.end()           fin du programme
-// cfg (fiche de l'aventure, facultatif) : seed (graine du hasard, pour les essais), maxSteps (garde-fou)
+// cfg (fiche de l'aventure, facultatif) : seed (graine du hasard, pour les essais), maxSteps (garde-fou),
+//   patches : {numéro de ligne: 'texte BASIC'} — corrections du programme d'origine ('' supprime la ligne) ;
+//             appliquées sauf si io.fixes === false (pour comparer avec le programme d'origine).
 function Basic(bin, io, cfg){
   cfg = cfg || {};
   // ---------- tokens du BASIC du Dragon ----------
@@ -30,6 +32,13 @@ function Basic(bin, io, cfg){
       const n = d[p+2]<<8 | d[p+3], t = tokenize(d.subarray(p+4, e));
       byNum.set(n, lines.length); lines.push({n, t});
       p = nxt - base;
+    }
+    // corrections du programme d'origine, écrites en BASIC lisible
+    if(cfg.patches && io.fixes !== false) for(const k of Object.keys(cfg.patches)){
+      const n = +k, src = cfg.patches[k], i = byNum.get(n);
+      if(!src){ if(i !== undefined) lines.splice(i, 1); }
+      else { const l = {n, t: tokenize(crunch(src))}; if(i !== undefined) lines[i] = l; else { let j = lines.findIndex(x => x.n > n); if(j < 0) j = lines.length; lines.splice(j, 0, l); } }
+      byNum.clear(); lines.forEach((l, j) => byNum.set(l.n, j));
     }
     // valeurs des DATA, dans l'ordre du programme
     lines.forEach((l, li) => l.t.forEach(tk => { if(tk.k === 'data') splitData(tk.v).forEach(v => data.push(v)); }));
@@ -67,6 +76,19 @@ function Basic(bin, io, cfg){
       t.push({k:'p', v:ch(i)}); i++;
     }
     return t;
+  }
+  // texte BASIC -> octets tokenisés, comme le fait le Dragon quand on tape une ligne (mot-clé le plus long d'abord)
+  function crunch(src){
+    const words = KW.map((w, i) => [w, [0x80 + i]]).concat(FN.map((w, i) => [w, [0xFF, 0x80 + i]])).sort((a, b) => b[0].length - a[0].length);
+    const out = []; let i = 0, q = false, raw = false;
+    while(i < src.length){
+      const c = src[i];
+      if(raw || q || c === '"'){ if(c === '"' && !raw) q = !q; out.push(c.charCodeAt(0)); i++; continue; }
+      const w = words.find(([k]) => src.startsWith(k, i));
+      if(w){ out.push(...w[1]); i += w[0].length; if(w[0] === 'REM' || w[0] === "'" || w[0] === 'DATA') raw = true; continue; }
+      out.push(c.toUpperCase().charCodeAt(0)); i++;
+    }
+    return Uint8Array.from(out);
   }
   function splitData(s){
     const out = []; let cur = '', q = false, quoted = false;

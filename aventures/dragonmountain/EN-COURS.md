@@ -7,6 +7,7 @@ Fait :
 - programme extrait de la cassette (`programme.bin`) et listing lisible (`programme.bas`, par `outils/detok.py`) ;
 - le programme tourne dans l'interpréteur Dragon BASIC du moteur (`moteur/basic.js`) ;
 - `solution.txt` gagne la partie avec la graine 2 ; `node tests/rejouer-solution.js dragonmountain` le vérifie ;
-- `aventure.js` sait lire la partie : lieu courant, passages, objets, épreuves.
+- `aventure.js` sait lire la partie : lieu courant, passages, objets, épreuves ;
+- deux bugs d'origine corrigés au chargement (`machine.patches`) : le dragon qui bloquait la partie, le gobelet qui nourrissait.
 
 Reste : l'interface (texte par lignes, carte sans grille, fins), la traduction, les illustrations, les indices, les sons.

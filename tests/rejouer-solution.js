@@ -8,7 +8,7 @@ const basic=adv.machine.kind==='basic';
 let won=false, texts=0, missing=new Set(), shown='';
 const io={out(s){ shown+=s; },puts(){},cls(){},save(){},load(){return null;},quit(v){won=!!v;},fixes:!process.argv.includes('--sans-correctifs'),
   text:basic?undefined:(a=>{ texts++; const k=a.toString(16).toUpperCase().padStart(4,'0'); if(adv.FR.TEXT[k]===undefined) missing.add(k); return null; })};
-const m=basic?require('../moteur/basic.js')(adv.bin,io,{seed:adv.seed}):Machine(adv.bin,io,adv.machine), W=adv.world, vis=new Set();
+const m=basic?require('../moteur/basic.js')(adv.bin,io,Object.assign({},adv.machine,{seed:adv.seed})):Machine(adv.bin,io,adv.machine), W=adv.world, vis=new Set();
 let w=m.run(); if(!basic){ m.key(32); w=m.run(); } let n=0, step=-1, back=0;
 for(const c of cmds){ if(w!=='line'){ console.log('arrêt avant',c,'état',w); break; }
   m.line(c); w=m.run(); n++; vis.add(W.roomOff(m.mem));
