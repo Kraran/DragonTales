@@ -1,0 +1,5 @@
+# page assemblée par build.py (publiée dans les versions GitHub, pas dans le dépôt)
+/DragonTales.html
+/tests/out/
+__pycache__/
+node_modules/

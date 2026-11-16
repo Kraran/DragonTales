@@ -1,0 +1,872 @@
+// DragonTales — moteur d'aventures textuelles du Dragon 32/64.
+// Ce fichier contient : l'étagère (page de garde où l'on choisit une aventure) et l'interface de jeu commune
+// (journal, verbes, carte, illustrations, version classique, sauvegardes, pièces magiques, musique, sons).
+// Chaque aventure est un dossier de aventures/ qui s'enregistre avec DragonTales.register({...}) : voir AJOUTER-UNE-AVENTURE.md.
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;};
+const LS={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return false;}}};
+const SS={get(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},set(k,v){try{sessionStorage.setItem(k,v);}catch(e){}},del(k){try{sessionStorage.removeItem(k);}catch(e){}}};
+const ADVENTURES=window.DragonTales.adventures;
+let lang='fr';   // toujours en français au lancement
+let shelfOpen=true, current=null;   // étagère affichée ? ; aventure chargée (une seule à la fois par page)
+
+// ---------- libellés ----------
+const T={
+ fr:{here:'Ici',inv:'Je porte',lex:'Mots rencontrés',nothing:'rien',none:'aucun pour l’instant',
+  ph:'Clique un verbe puis un mot, ou écris ta commande…',cancel:'Annuler',
+  armed:v=>v+'… choisis une cible (ou reclique le verbe)',
+  undo:'Défaire',saves:'Sauvegardes',restart:'Recommencer',lang:'English',full:'Plein écran',help:'Aide',options:'Options',quit:'Quitter',quitAsk:'Quitter le jeu ?',quitNote:'Ta partie est sauvegardée automatiquement : tu pourras la reprendre au prochain lancement.',quitNoSave:'Aucune partie n’est en cours.',stay:'Rester',
+  bye:'À bientôt.',byeNote:'Tu peux fermer cette fenêtre.',back:'Revenir au jeu',language:'Langue',sfx:'Effets sonores',sfxVol:'Volume des effets',sfxNote:'Ils ne jouent que dans la version moderne.',
+  musicInGame:'Musique pendant le jeu',musicNote:'Sans cette option, elle ne joue que sur l’écran d’introduction.',volume:'Volume de la musique',on:'Activée',off:'Désactivée',
+  musicBlocked:'Clique n’importe où pour lancer la musique.',
+  start:'Commencer',resume:'Reprendre la partie',
+  dead:'Tu es mort',retry:'Recommencer du début',undoLast:'Annuler le dernier coup',loadSave:'Charger une sauvegarde',
+  won:'Ta tâche est accomplie',again:'Rejouer',over:'Fin de la partie',
+  save:'Sauvegarder',load:'Charger',close:'Fermer',slot:n=>'Emplacement '+n,emptySlot:'vide',auto:'Sauvegarde automatique',
+  coin:'Pièce magique',coinTip:n=>'Pièce magique : un indice pour te mettre sur la voie (il en reste '+n+')',coinAsk:n=>'Chaque pièce magique donne un indice sur ce qu’il faut chercher maintenant. Il t’en reste '+n+' pour toute la partie.',
+  coinUse:'Utiliser une pièce',coinKeep:'La garder',coinNone:'Tu n’as plus de pièce magique.',coinHead:n=>n?'La pièce se dissout dans ta main. Il t’en reste '+n+'.':'La dernière pièce se dissout dans ta main.',
+  saved:'Partie sauvegardée.',loaded:t=>'Partie chargée : '+t+'.',undone:'Dernier coup annulé.',noSave:'Aucune sauvegarde rapide.',
+  quick:'Sauvegarde rapide enregistrée.',quickLoaded:'Sauvegarde rapide rechargée.',confirm:'Recommencer la partie ?',confirmNote:'Tu repars du début avec trois pièces magiques. La partie en cours sera perdue, sauf si tu l’as enregistrée dans un emplacement de sauvegarde.',
+  walkStop:'Je m’arrête : quelque chose a changé en chemin.',mapTitle:'Carte des lieux visités',enlarge:'Agrandir',
+  mapHint:'Clique un lieu pour t’y rendre. En pointillés turquoise : les passages particuliers déjà empruntés, avec la commande utilisée. ▲▼ : on peut monter ou descendre. « rêve » : lieu déjà atteint en rêvant.',dreamTag:'rêve',mapUnknown:'Lieu hors carte',
+  helpTitle:'Comment jouer',
+  helpText:['Clique un verbe, puis sa cible : un mot souligné dans le texte, un objet de la liste « Ici » ou « Je porte », un mot déjà rencontré ou une direction.',
+   'Un clic direct sur un mot ou un objet le regarde. Un second clic sur le verbe choisi le lance sans cible (Rêver, Nager, Regarder…).',
+   'Sur la carte, clique un lieu déjà visité pour t’y rendre. La boussole ou les flèches du clavier déplacent d’une case.',
+   'Tu peux toujours écrire : « prendre la clé », « n », « regarder ». Ctrl+Z annule le dernier coup, Échap annule le verbe choisi.',
+   'Tu portes trois pièces magiques. Chacune donne un indice sur ce qu’il faut chercher à ce moment de l’aventure : clique une pièce, ou écris « utiliser une pièce ». Elles ne reviennent pas.'],
+  toClassic:'Version classique',toModern:'Version moderne',
+  cEnd:'\n\nFIN DE LA PARTIE.\nAPPUIE SUR UNE TOUCHE POUR REJOUER.',cWon:'\n\n*** BRAVO, TA TÂCHE EST ACCOMPLIE ! ***\nAPPUIE SUR UNE TOUCHE POUR REJOUER.',
+  backShelf:'Retour à DragonTales',play:'Jouer',playing:'Partie en cours',noGame:'Pas encore commencée',by:'de',
+  shelfTag:'Les aventures textuelles du Dragon 32/64, traduites et illustrées',soon:'D’autres aventures prendront place ici.',quitShelf:'Quitter DragonTales ?',quitShelfNote:'Les parties en cours sont sauvegardées automatiquement.',
+  dirs:{W:'Ouest',N:'Nord',E:'Est',S:'Sud',U:'Haut',D:'Bas'}},
+ en:{here:'Here',inv:'Carrying',lex:'Words met so far',nothing:'nothing',none:'none yet',
+  ph:'Click a verb then a word, or type a command…',cancel:'Cancel',
+  armed:v=>v+'… pick a target (or click the verb again)',
+  undo:'Undo',saves:'Saved games',restart:'Restart',lang:'Français',full:'Full screen',help:'Help',options:'Options',quit:'Quit',quitAsk:'Quit the game?',quitNote:'Your game is saved automatically: you can resume it next time.',quitNoSave:'No game is in progress.',stay:'Stay',
+  bye:'See you soon.',byeNote:'You can close this window.',back:'Back to the game',language:'Language',sfx:'Sound effects',sfxVol:'Effects volume',sfxNote:'They only play in the modern version.',
+  musicInGame:'Music during the game',musicNote:'Without this option it only plays on the intro screen.',volume:'Music volume',on:'On',off:'Off',
+  musicBlocked:'Click anywhere to start the music.',
+  start:'Begin',resume:'Resume game',
+  dead:'You are dead',retry:'Start over',undoLast:'Undo the last move',loadSave:'Load a saved game',
+  won:'Your task is complete',again:'Play again',over:'Game over',
+  save:'Save',load:'Load',close:'Close',slot:n=>'Slot '+n,emptySlot:'empty',auto:'Autosave',
+  coin:'Magic coin',coinTip:n=>'Magic coin: a hint to put you on the right track ('+n+' left)',coinAsk:n=>'Each magic coin gives a hint about what to look for now. You have '+n+' left for the whole game.',
+  coinUse:'Use a coin',coinKeep:'Keep it',coinNone:'You have no magic coin left.',coinHead:n=>n?'The coin dissolves in your hand. You have '+n+' left.':'The last coin dissolves in your hand.',
+  saved:'Game saved.',loaded:t=>'Game loaded: '+t+'.',undone:'Last move undone.',noSave:'No quick save found.',
+  quick:'Quick save stored.',quickLoaded:'Quick save restored.',confirm:'Restart the game?',confirmNote:'You start again from the beginning with three magic coins. The current game will be lost unless you stored it in a save slot.',
+  walkStop:'I stop: something changed on the way.',mapTitle:'Map of visited places',enlarge:'Enlarge',
+  mapHint:'Click a place to walk there. Dashed turquoise lines: special passages already taken, with the command used. ▲▼: you can go up or down. “dream”: place already reached by dreaming.',dreamTag:'dream',mapUnknown:'Off the map',
+  helpTitle:'How to play',
+  helpText:['Click a verb, then its target: an underlined word in the text, an object under “Here” or “Carrying”, a word met earlier, or a direction.',
+   'Clicking a word or an object directly looks at it. Clicking the chosen verb a second time runs it with no target (Dream, Swim, Look…).',
+   'On the map, click a place you have visited to walk there. The compass or the arrow keys move one step.',
+   'You can always type: “get key”, “go north”, “look”. Ctrl+Z undoes the last move, Esc cancels the chosen verb.',
+   'You carry three magic coins. Each gives a hint about what to look for at that point of the adventure: click a coin, or type “use a coin”. They do not come back.'],
+  toClassic:'Classic version',toModern:'Modern version',
+  cEnd:'\n\nGAME OVER.\nPRESS ANY KEY TO PLAY AGAIN.',cWon:'\n\n*** WELL DONE, YOUR TASK IS COMPLETE! ***\nPRESS ANY KEY TO PLAY AGAIN.',
+  backShelf:'Back to DragonTales',play:'Play',playing:'Game in progress',noGame:'Not started yet',by:'by',
+  shelfTag:'Text adventures from the Dragon 32/64, translated and illustrated',soon:'More adventures will take their place here.',quitShelf:'Quit DragonTales?',quitShelfNote:'Games in progress are saved automatically.',
+  dirs:{W:'West',N:'North',E:'East',S:'South',U:'Up',D:'Down'}}
+};
+const t0=()=>T[lang];
+function flipLang(){ lang=lang==='fr'?'en':'fr'; LS.set('dragontales.lang',lang); document.documentElement.lang=lang; }
+
+// ---------- fichiers embarqués ----------
+const urls=new Map();
+function assetURL(a){ // {mime,b64} -> adresse utilisable par <img>, <audio> ou CSS
+  if(!a||!a.b64) return '';
+  if(!urls.has(a)) urls.set(a,URL.createObjectURL(new Blob([Uint8Array.from(atob(a.b64),c=>c.charCodeAt(0))],{type:a.mime})));
+  return urls.get(a);
+}
+
+// ---------- écran ----------
+let firstGesture=false, autoFullAt=0;
+function enterFullscreen(){ const d=document.documentElement; if(!document.fullscreenElement&&d.requestFullscreen) d.requestFullscreen().catch(()=>{}); }
+function fullscreen(){ const d=document.documentElement; if(Date.now()-autoFullAt<900) return;   // le plein écran vient d'être mis par ce même clic
+  if(document.fullscreenElement) document.exitFullscreen(); else if(d.requestFullscreen) d.requestFullscreen().catch(()=>{}); }
+function fit(){ const s=Math.min(innerWidth/1920,innerHeight/1080), st=$('stage').style; st.transform='translate('+((innerWidth-1920*s)/2)+'px,'+((innerHeight-1080*s)/2)+'px) scale('+s+')'; }
+addEventListener('resize',fit);
+['pointerdown','keydown'].forEach(e=>document.addEventListener(e,ev=>{   // premier geste : passage en plein écran
+  if(!firstGesture&&!(ev.type==='keydown'&&(ev.key==='Escape'||ev.key==='F11'))){ firstGesture=true; if(!document.fullscreenElement){ autoFullAt=Date.now(); enterFullscreen(); } } },true));
+
+// ---------- fenêtres ----------
+const ov=$('overlay');
+function overlay(cls,build){ ov.className=cls||''; ov.textContent=''; const c=el('div','card'); build(c); ov.appendChild(c); ov.hidden=false; const b=c.querySelector('button.main')||c.querySelector('button'); if(b) b.focus(); }
+function hideOverlay(){ ov.hidden=true; ov.textContent=''; if(shelfOpen){ const b=$('shelf').querySelector('button.main'); if(b) b.focus(); } else $('in').focus(); }
+function btn(parent,label,fn,main){ const b=el('button',main?'main':'',label); b.type='button'; b.onclick=fn; parent.appendChild(b); return b; }
+
+// ---------- étagère : la page de garde de DragonTales ----------
+let picked=0;
+function savedGame(a){ try{ const d=JSON.parse(LS.get(a.storage+'.slot.auto')||'null'); return d&&d.date?d:null; }catch(e){ return null; } }
+function renderShelf(){
+  const sh=$('shelf'); sh.textContent='';
+  document.title='DragonTales';
+  const head=el('header','shHead');
+  const h=el('h1'); h.appendChild(el('span','shDragon','Dragon')); h.appendChild(el('span','shTales','Tales')); head.appendChild(h);
+  head.appendChild(el('p','shTag',t0().shelfTag));
+  sh.appendChild(head);
+  const row=el('div','shRow');
+  ADVENTURES.forEach((a,i)=>{
+    const b=el('button','shBox'+(i===picked?' on':'')); b.type='button'; b.setAttribute('aria-label',a.title); b.setAttribute('aria-pressed',i===picked?'true':'false');
+    const im=el('img'); im.src=assetURL(a.assets.boite); im.alt=''; b.appendChild(im);
+    b.onclick=()=>{ if(picked===i) launch(a); else { picked=i; renderShelf(); } };
+    row.appendChild(b);
+  });
+  const empty=el('div','shBox shEmpty'); empty.appendChild(el('span',null,t0().soon)); row.appendChild(empty);
+  sh.appendChild(row);
+  const a=ADVENTURES[picked], info=el('section','shInfo');
+  if(a){
+    info.appendChild(el('h2',null,a.title));
+    info.appendChild(el('p','shMeta',[t0().by+' '+a.author,a.publisher,a.year,a.system].filter(Boolean).join(', ')));
+    info.appendChild(el('p','shBlurb',a.blurb[lang]));
+    const d=savedGame(a);
+    info.appendChild(el('p','shState',d?t0().playing+' ('+new Date(d.date).toLocaleDateString(lang,{day:'numeric',month:'long',year:'numeric'})+')':t0().noGame));
+    const r=el('div','row'); btn(r,t0().play,()=>launch(a),true); info.appendChild(r);
+  }
+  sh.appendChild(info);
+  const foot=el('footer','shFoot');
+  foot.appendChild(el('span','shVer','DragonTales '+(window.DragonTales.version||'')));
+  btn(foot,t0().lang,()=>{ flipLang(); renderShelf(); if(current) current.relang(); });
+  btn(foot,t0().quit,askQuitShelf);
+  sh.appendChild(foot);
+  const m=info.querySelector('button.main'); if(m&&ov.hidden) m.focus();
+}
+function openShelf(){ shelfOpen=true; picked=Math.max(0,ADVENTURES.findIndex(a=>current&&a.id===current.id)); $('shelf').hidden=false; renderShelf(); }
+function launch(a){
+  enterFullscreen();
+  if(current&&current.id!==a.id){ SS.set('dragontales.go',a.id); location.reload(); return; }   // une autre aventure : on repart d'une page neuve
+  shelfOpen=false; $('shelf').hidden=true;
+  if(!current) current=play(a);
+  current.show();
+}
+function askQuitShelf(){
+  overlay('',c=>{
+    c.appendChild(el('h2',null,t0().quitShelf));
+    c.appendChild(el('p',null,t0().quitShelfNote));
+    const r=el('div','row'); btn(r,t0().quit,quitShelf,true); btn(r,t0().stay,hideOverlay); c.appendChild(r);
+  });
+}
+function quitShelf(){
+  let gone=true;
+  if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+  overlay('bye',c=>{
+    c.appendChild(el('h2',null,t0().bye));
+    c.appendChild(el('p',null,t0().byeNote));
+    const r=el('div','row'); btn(r,t0().backShelf,()=>{ gone=false; hideOverlay(); }); c.appendChild(r);
+  });
+  setTimeout(()=>{ if(gone){ try{ window.close(); }catch(e){} } },1700);   // ne ferme que si le navigateur l'autorise
+}
+document.addEventListener('keydown',ev=>{
+  if(!shelfOpen||!ov.hidden) return;
+  const d=ev.key==='ArrowRight'?1:ev.key==='ArrowLeft'?-1:0;
+  if(d&&ADVENTURES.length>1){ ev.preventDefault(); picked=(picked+d+ADVENTURES.length)%ADVENTURES.length; renderShelf(); }
+});
+
+// ---------- une aventure ----------
+function play(ADV){
+const FR=ADV.FR, ROOMS=ADV.ROOMS, SCENES=ADV.SCENES, HINTS=ADV.HINTS||null, WORLD=ADV.world;
+const KEY=ADV.storage+'.';                       // préfixe des sauvegardes et réglages
+const VERBS=ADV.verbs, SFX_AT=ADV.sfxAt||{}, DIRS=WORLD.dirs, ALLW=WORLD.allWord||'';
+const COLS=WORLD.cols, NROOMS=WORLD.rooms, DELTA={W:-1,N:-COLS,E:1,S:COLS};
+const TRANSIENT=new Set(WORLD.transient||[]), COINS=HINTS?3:0;
+const TA={fr:Object.assign({},T.fr,ADV.labels.fr),en:Object.assign({},T.en,ADV.labels.en)};
+const bin=Uint8Array.from(atob(ADV.assets.programme.b64),c=>c.charCodeAt(0));
+$('stage').style.setProperty('--cover','url("'+assetURL(ADV.assets.couverture)+'")');
+const t=()=>TA[lang];
+
+// ---------- noms cliquables ----------
+const DIRWORDS=new Set(Object.values(DIRS));
+const FR_SKIP=new Set(ADV.frSkip||[]);
+const EN_NOUNS=new Set(Object.values(FR.NOUNS).filter(v=>!DIRWORDS.has(v)&&v!==ALLW));
+const strip=s=>s.toUpperCase().replace(/Œ/g,'OE').normalize('NFD').replace(/[̀-ͯ]/g,'');
+function nounOf(word){ // mot affiché -> mot-clé anglais du jeu, ou null
+  const w=strip(word);
+  if(w.length<3) return null;
+  if(lang==='fr'){ if(FR_SKIP.has(w)) return null; const v=FR.NOUNS[w]; return v&&!DIRWORDS.has(v)&&v!==ALLW?v:null; }
+  if(EN_NOUNS.has(w)) return w;
+  if(w.endsWith('S')&&EN_NOUNS.has(w.slice(0,-1))) return w.slice(0,-1);
+  if(EN_NOUNS.has(w+'S')) return w+'S';
+  return null;
+}
+
+// ---------- mise en forme du texte ----------
+function pretty(s){
+  s=s.toLocaleLowerCase(lang);
+  s=s.replace(/(^[\s"'«(]*|[.!?]["']?\s+["'«]?)(\p{Ll})/gmu,(m,a,b)=>a+b.toLocaleUpperCase(lang));
+  s=s.replace(/(:\s*["'])(\p{Ll})/gu,(m,a,b)=>a+b.toLocaleUpperCase(lang));
+  if(lang==='en') s=s.replace(/\bi\b/g,'I');
+  if(WORLD.proper) s=WORLD.proper(s,lang);
+  return s;
+}
+function richText(parent,s,lexSink){ // texte -> paragraphes avec mots cliquables
+  s.split(/\n{2,}/).forEach(par=>{
+    if(!par.trim()) return;
+    const p=el('p');
+    par.split('\n').forEach((line,i)=>{
+      if(i) p.appendChild(el('br'));
+      let last=0; const re=/[\p{L}]+/gu; let mt;
+      while((mt=re.exec(line))){
+        const kw=nounOf(mt[0]);
+        if(!kw) continue;
+        if(mt.index>last) p.appendChild(document.createTextNode(line.slice(last,mt.index)));
+        const sp=el('span','w',mt[0]); sp.dataset.kw=kw; sp.tabIndex=0; p.appendChild(sp);
+        last=mt.index+mt[0].length;
+        if(lexSink) lexSink(kw,mt[0].toLocaleLowerCase(lang));
+      }
+      if(last<line.length) p.appendChild(document.createTextNode(line.slice(last)));
+    });
+    parent.appendChild(p);
+  });
+}
+
+// ---------- machine ----------
+let pendSfx=[];
+let pending='', won=false, started=false, quickMsg=null, sceneKey=null;
+const io={
+  out(c){ if(c===8){ pending=pending.slice(0,-1); pendItems.push({r:'\b'}); } else if(c===13){ pending+='\n'; pendItems.push({r:'\n'}); } else if(c>=32){ pending+=String.fromCharCode(c); pendItems.push({r:String.fromCharCode(c)}); } },
+  puts(s){ for(const ch of s){ if(ch==='\b') pending=pending.slice(0,-1); else pending+=(ch==='%'?'\n':ch); } },
+  text(addr){ const k=hex4(addr); if(ROOMS[k]) sceneKey=k; if(SFX_AT[k]) pendSfx.push(SFX_AT[k]); pendItems.push({a:addr}); return textFor(addr,lang); },
+  cls(){ pending=''; pendItems=[]; },
+  save(d){ quickMsg=LS.set(KEY+'save.v1',btoa(String.fromCharCode.apply(null,d)))?'quick':null; },
+  load(){ const s=LS.get(KEY+'save.v1'); if(!s){ quickMsg='noSave'; return null; } quickMsg='quickLoaded'; return Uint8Array.from(atob(s),c=>c.charCodeAt(0)); },
+  quit(v){ won=!!v; }
+};
+const m=Machine(bin,io,ADV.machine);
+const mem=m.mem;
+
+// ---------- lecture de l'état du jeu ----------
+const hex4=v=>v.toString(16).toUpperCase().padStart(4,'0');
+function roomOff(){ return WORLD.roomOff(mem); }
+function roomInfo(off){
+  const d=ROOMS[WORLD.roomKey(mem,off)];
+  return d?{title:d[lang==='fr'?0:1],kind:d[2]}:{title:t().mapUnknown,kind:'under'};
+}
+function exitsOf(off){ return WORLD.exits(mem,off); }
+function rawStr(a){ return WORLD.str(mem,a,700); }
+function textFor(addr,L){ const k=hex4(addr); return L==='fr'&&FR.TEXT[k]!==undefined?FR.TEXT[k]:rawStr(addr); }
+function memStr(a){ return WORLD.str(mem,a,80); }
+function objects(){
+  const here=[],inv=[],no=WORLD.locOf(roomOff());
+  for(const {n,np,loc} of WORLD.objects(mem)){
+    if(loc!==no&&loc!==WORLD.carried) continue;
+    const en=memStr(np), kw=en.split(' ').pop().replace(/[^A-Z]/g,'');
+    const name=pretty(lang==='fr'&&FR.TEXT[hex4(np)]||en);
+    (loc===WORLD.carried?inv:here).push({kw,name,n});
+  }
+  return {here,inv};
+}
+
+// ---------- état de l'interface ----------
+let armed=null;                    // verbe choisi (entrée de VERBS)
+let visited=new Set();             // lieux visités (décalages)
+let lex=new Map();                 // mots rencontrés : mot-clé -> mot affiché
+let coins=COINS, hintUse={};            // pièces magiques restantes ; nombre d'indices déjà donnés par étape ou lieu
+let links=new Map();                // passages spéciaux découverts : 'de>vers' -> {from,to,label}
+let undo=[];                       // pile d'annulation
+let walking=false;
+let classicOn=false, classicItems=[], pendItems=[], lastCmd=null, cbuf='';   // version classique : même partie, affichage texte sur fond vert
+const logEl=$('log'), inEl=$('in');
+
+// Le journal moderne est conservé sous forme de données (turns) pour pouvoir être réaffiché dans l'autre langue.
+let turns=[];
+function cleanText(s){ return WORLD.clean(s); }
+function cmdText(c){ return c.tl===lang?c.typed:(lang==='en'?c.en:REV(c.en)).toLocaleLowerCase(lang); }
+function turnEl(d){
+  const turn=el('div','turn');
+  if(d.note==='hint'){ turn.classList.add('hint'); turn.appendChild(el('p','note',t().coinHead(d.left))); const src=d.spot!=null?HINTS.SPOTS[d.spot][lang]:HINTS.STEPS[d.step][lang][d.lvl]; turn.appendChild(el('p','hintText',src)); return turn; }
+  if(d.note){ turn.appendChild(el('p','note',d.note==='raw'?d.text:d.note==='loaded'?t().loaded(roomInfo(d.off).title):t()[d.note])); return turn; }
+  if(d.cmd) turn.appendChild(el('div','cmd',cmdText(d.cmd)));
+  if(d.off!=null) turn.appendChild(el('h3',null,roomInfo(d.off).title));
+  const s=cleanText(composeItems(d.items)).text;
+  if(s) richText(turn,pretty(s),addLex);
+  if(d.quick) turn.appendChild(el('p','note',t()[d.quick]));
+  return turn;
+}
+function addTurn(d){
+  const e=turnEl(d); if(!e.childNodes.length) return;
+  [...logEl.querySelectorAll('.turn:not(.old)')].forEach(x=>x.classList.add('old'));
+  turns.push(d); logEl.appendChild(e);
+  while(turns.length>300){ turns.shift(); logEl.removeChild(logEl.firstChild); undo.forEach(x=>{ x.n=Math.max(0,x.n-1); }); }
+}
+function rerenderLog(){
+  logEl.textContent='';
+  turns.forEach((d,i)=>{ const e=turnEl(d); if(i<turns.length-1) e.classList.add('old'); logEl.appendChild(e); });
+  scrollLog();
+}
+function note(key,extra){ addTurn(Object.assign({note:key},extra||{})); scrollLog(); }
+function scrollLog(){ logEl.scrollTop=logEl.scrollHeight; }
+function addLex(kw,word){ if(!lex.has(kw)) lex.set(kw,word); }
+
+function flush(echo,prevOff){ // transforme la sortie du jeu en entrée du journal
+  const cmd=echo?(lastCmd||{en:echo.toUpperCase(),typed:echo,tl:lang}):null;
+  lastCmd=null; pending='';
+  const items=pendItems; pendItems=[];
+  if(cmd) classicItems.push({e:cmd});
+  classicItems.push(...items);
+  const r=cleanText(composeItems(items));
+  const off=roomOff(), inMap=off>=0&&off<NROOMS;
+  if(inMap) visited.add(off);
+  addTurn({cmd,off:inMap&&off!==prevOff?off:null,items,quick:quickMsg});
+  quickMsg=null;
+  return r;
+}
+
+function step(echo){ // fait tourner le jeu jusqu'à la prochaine attente
+  const prev=turns.length?roomOff():-1;
+  let w;
+  try{ w=m.run(); }catch(e){ note('raw',{text:'Erreur : '+e.message}); return; }
+  if(w==='key'&&!m.yesNo){            // écran titre du jeu d'origine
+    pending='';
+    if(!started){ showTitle(); return; }
+    m.key(32); pendSfx=[]; return step(echo);
+  }
+  const r=flush(echo,prev);
+  playSfx(prev,w);
+  if(classicOn){ if(w==='end') classicItems.push({k:won?'cWon':'cEnd'}); }
+  else if(w==='key'&&m.yesNo) showDeath(r.text);
+  else if(w==='end') showEnd();
+  refresh(); scrollLog(); renderClassic();
+  if(w==='line') autosave();
+}
+
+function pushUndo(){
+  undo.push({snap:m.snapshot(),n:turns.length,ct:classicItems.length,visited:new Set(visited),lex:new Map(lex),links:new Map(links)});
+  if(undo.length>60) undo.shift();
+}
+function doUndo(){
+  const u=undo.pop(); if(!u) return;
+  m.restore(u.snap); sceneKey=null; visited=u.visited; lex=u.lex; links=u.links; won=false; pending='';
+  while(turns.length>u.n){ turns.pop(); logEl.removeChild(logEl.lastChild); }
+  classicItems.length=Math.min(classicItems.length,u.ct); pendItems=[]; cbuf='';
+  hideOverlay(); note('undone'); refresh(); renderClassic();
+}
+
+function send(en,echo){ // envoie une commande anglaise au jeu
+  if(m.wait!=='line') return false;
+  pushUndo(); disarm();
+  lastCmd={en,typed:echo||en,tl:lang};
+  const cmdObj=lastCmd;
+  const before=roomOff();
+  m.line(en); step(echo);
+  const after=roomOff();
+  if(m.wait==='line'&&after!==before&&after>=0&&after<NROOMS&&before>=0&&before<NROOMS){
+    const d=Object.keys(DIRS).find(k=>en===WORLD.go(DIRS[k]));
+    const kind=WORLD.link?WORLD.link(en):null;
+    if(!(d&&DELTA[d]&&after===before+DELTA[d])&&kind!=='skip'){ const dream=kind==='dream'; links.set(dream?'r>'+after:before+'>'+after,{from:before,to:after,label:echo||en.toLowerCase(),cmd:cmdObj,dream}); drawMap(after,true); }
+  }
+  return true;
+}
+function typed(line){
+  line=line.trim(); if(!line) return;
+  const up=line.toUpperCase();
+  if(lang==='fr'&&(up==='AIDE'||up==='?')){ showHelp(); return; }
+  if(!classicOn&&isCoinCommand(up)){ useCoin(); return; }
+  send(lang==='fr'?FR.frToEn(line):up, line);
+}
+
+// ---------- verbes, cibles ----------
+const verbLabel=v=>v[lang==='fr'?1:2];
+function arm(v){
+  if(m.wait!=='line') return;
+  if(armed===v){ send(v[0],verbLabel(v)); return; }
+  if(v[3]){ send(v[0],verbLabel(v)); return; }
+  armed=v; refreshVerbs();
+}
+function disarm(){ if(armed){ armed=null; refreshVerbs(); } }
+function target(kw,label){
+  const v=armed||VERBS[0];
+  send(v[0]+' '+kw, verbLabel(v)+' '+label);
+}
+function direction(d){
+  if(armed&&armed[0]!==WORLD.goVerb) target(DIRS[d],t().dirs[d].toLocaleLowerCase(lang));
+  else send(WORLD.go(DIRS[d]),t().dirs[d]);
+}
+
+// ---------- affichage ----------
+function chips(box,title,list,emptyTxt,cls){
+  box.textContent='';
+  box.appendChild(el('h2',null,title));
+  if(!list.length){ box.appendChild(el('span','empty',emptyTxt)); return; }
+  const c=el('span','chips');
+  list.forEach(o=>{ const b=el('button','chip'+(cls?' '+cls:''),o.name); b.type='button'; b.dataset.kw=o.kw; b.dataset.label=o.name.toLocaleLowerCase(lang); c.appendChild(b); });
+  box.appendChild(c);
+}
+function refreshVerbs(){
+  [...$('verbs').children].forEach((b,i)=>b.classList.toggle('on',VERBS[i]===armed));
+  $('armed').textContent=armed?t().armed(verbLabel(armed)):'';
+  $('cancel').hidden=!armed;
+  inEl.placeholder=armed?'':t().ph;
+}
+function buildStatic(){
+  document.documentElement.lang=lang;
+  const vb=$('verbs'); vb.textContent='';
+  VERBS.forEach(v=>{ const b=el('button',v[4]?'sorc':'',verbLabel(v)); b.type='button'; b.onclick=()=>{arm(v);inEl.focus();}; vb.appendChild(b); });
+  const cp=$('compass'); cp.textContent='';
+  const lay=['','N','U','W','','E','','S','D'];
+  lay.forEach(d=>{ if(!d){ cp.appendChild(el('span')); return; } const b=el('button',null,t().dirs[d]); b.type='button'; b.dataset.dir=d; b.onclick=()=>{direction(d);inEl.focus();}; cp.appendChild(b); });
+  const tb=$('tools'); tb.textContent='';
+  [['undo',doUndo],['saves',showSaves],['restart',askRestart],['help',showHelp],['options',showOptions],['quit',askQuit]]
+    .forEach(([k,f])=>{ const b=el('button',null,t()[k]); b.type='button'; b.id='tool-'+k; b.onclick=()=>{f();inEl.focus();}; tb.appendChild(b); });
+  $('cancel').textContent=t().cancel;
+  $('mapBig').textContent=t().enlarge;
+  $('toClassic').textContent=t().toClassic; $('cModern').textContent=t().toModern; $('cLang').textContent=t().lang; $('cFull').textContent=t().full; $('cQuit').textContent=t().quit;
+  refreshVerbs();
+}
+function refresh(){
+  const off=roomOff(), ok=off>=0&&off<NROOMS;
+  const info=ok?roomInfo(off):{title:'',kind:'under'};
+  $('sceneTitle').textContent=started?info.title:'';
+  const ex=ok?exitsOf(off):{};
+  [...$('compass').querySelectorAll('button')].forEach(b=>b.classList.toggle('off',!ex[b.dataset.dir]));
+  const o=ok?objects():{here:[],inv:[]};
+  const key=ok?(sceneKeyFor(off)||staticKey(off)):WORLD.defaultScene;
+  $('sceneArt').innerHTML=SCENES.render(key,ok?off:0,o.here.map(x=>x.n));
+  chips($('here'),t().here,o.here,t().nothing);
+  chips($('inv'),t().inv,o.inv,coins?'':t().nothing);
+  for(let i=0;i<coins;i++){ const b=el('button','coin'); b.type='button'; b.title=t().coinTip(coins); b.setAttribute('aria-label',t().coin); b.innerHTML=COIN_SVG; b.onclick=askCoin; $('inv').appendChild(b); }
+  const shown=new Set([...o.here,...o.inv].map(x=>x.kw));
+  chips($('lex'),t().lex,[...lex].filter(([k])=>!shown.has(k)).map(([kw,name])=>({kw,name:lang==='fr'&&FR.NOUNS[strip(name)]===kw||lang==='en'&&nounOf(name)===kw?name:(lang==='en'?kw.toLowerCase():Object.keys(FR.NOUNS).find(w=>FR.NOUNS[w]===kw).toLowerCase())})),t().none,'lexi');
+  $('tool-undo').disabled=!undo.length;
+  drawMap(off,ok);
+  musicUpdate(3500);
+}
+
+// ---------- carte ----------
+// La carte suit la grille du programme : COLS colonnes, ouest -1, nord -COLS, est +1, sud +COLS.
+const MINI={cw:112,ch:56,px:130,py:76,lab:0,icon:22}, BIG={cw:164,ch:78,px:184,py:154,lab:50,icon:28};
+function objectsIn(off){ // objets posés dans un lieu (numéro, nom affiché)
+  const out=[],no=WORLD.locOf(off);
+  for(const {n,np,loc} of WORLD.objects(mem)){ if(loc!==no) continue;
+    out.push({n,name:pretty(lang==='fr'&&FR.TEXT[hex4(np)]||memStr(np))}); }
+  return out;
+}
+function staticKey(off){ return WORLD.roomKey(mem,off); }
+function buildMap(host,geo,cur,origin){ // origin(off) -> [x,y] du coin de la case
+  host.textContent='';
+  const NS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(NS,'svg'); svg.setAttribute('class','links'); host.appendChild(svg);
+  const top=document.createElementNS(NS,'svg'); top.setAttribute('class','links top');
+  let layer=svg;
+  const mk=(tag,attrs)=>{ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); layer.appendChild(e); return e; };
+  const bh=geo.ch+geo.lab;
+  const cx=a=>origin(a)[0]+geo.cw/2, cy=a=>origin(a)[1]+bh/2;
+  const hw=geo.cw/2, hh=bh/2;
+  visited.forEach(a=>{ const ex=exitsOf(a);
+    for(const d of ['E','S','W','N']){ if(!ex[d]) continue; const n=a+DELTA[d]; if(n<0||n>=NROOMS) continue;
+      if((d==='W'||d==='E')&&Math.floor(a/COLS)!==Math.floor(n/COLS)) continue;
+      const known=visited.has(n); if(known&&(d==='W'||d==='N')&&exitsOf(n)[d==='W'?'E':'S']) continue;
+      const dx=(d==='E')-(d==='W'), dy=(d==='S')-(d==='N');
+      const x1=cx(a)+dx*hw, y1=cy(a)+dy*hh;
+      if(known) mk('line',{x1,y1,x2:cx(n)-dx*hw,y2:cy(n)-dy*hh,stroke:'#b9a6cf','stroke-width':4,'stroke-linecap':'round'});
+      else { const gx=(geo.px-geo.cw)*.5, gy=(geo.py-bh)*.5;
+        mk('line',{x1,y1,x2:x1+dx*gx,y2:y1+dy*gy,stroke:'#b9a6cf','stroke-width':3,'stroke-dasharray':'2 5','stroke-linecap':'round'});
+        mk('circle',{cx:x1+dx*(gx+5),cy:y1+dy*(gy+5),r:4,fill:'none',stroke:'#b9a6cf','stroke-width':2}); }
+    } });
+  layer=top;
+  const dreams=new Map();
+  links.forEach(l=>{ if(l.dream){ dreams.set(l.to,l.cmd?cmdText(l.cmd).toLocaleLowerCase(lang):l.label); return; } if(!visited.has(l.from)||!visited.has(l.to)) return;
+    let x1=cx(l.from),y1=cy(l.from),x2=cx(l.to),y2=cy(l.to);
+    const far=Math.hypot(Math.floor(l.from/COLS)-Math.floor(l.to/COLS),(l.from%COLS)-(l.to%COLS))>2.9;
+    const lab=l.cmd?cmdText(l.cmd).toLocaleLowerCase(lang):l.label;
+    if(far){ // passage lointain : simple amorce fléchée avec la commande, pour ne pas barrer toute la carte
+      const d0=Math.hypot(x2-x1,y2-y1)||1, ux=(x2-x1)/d0, uy=(y2-y1)/d0, e=Math.abs(ux)*hw+Math.abs(uy)*hh;
+      x1+=ux*e; y1+=uy*e; x2=x1+ux*34; y2=y1+uy*34;
+    }
+    const mx=(x1+x2)/2, my=(y1+y2)/2, dx=x2-x1, dy=y2-y1, len=Math.hypot(dx,dy)||1, k=far?0:Math.min(60,len*.22);
+    const qx=mx-dy/len*k, qy=my+dx/len*k;
+    mk('path',{d:`M${x1} ${y1} Q${qx} ${qy} ${x2} ${y2}`,fill:'none',stroke:'#45c2b6','stroke-width':3,'stroke-dasharray':'7 6',opacity:.9});
+    const a=Math.atan2(y2-qy,x2-qx), back=far?0:Math.abs(Math.cos(a))*hw+Math.abs(Math.sin(a))*hh+4, ax=x2-Math.cos(a)*back, ay=y2-Math.sin(a)*back;
+    mk('path',{d:`M${ax} ${ay} l${-12*Math.cos(a-.45)} ${-12*Math.sin(a-.45)} M${ax} ${ay} l${-12*Math.cos(a+.45)} ${-12*Math.sin(a+.45)}`,stroke:'#45c2b6','stroke-width':3,fill:'none','stroke-linecap':'round'});
+    if(geo.lab){ const t=mk('text',{x:far?x2+Math.cos(a)*10:(mx+qx)/2,y:far?y2+Math.sin(a)*18+5:(my+qy)/2-4,'text-anchor':'middle',class:'linkLabel'}); t.textContent=far?lab+' → '+roomInfo(l.to).title:lab; }
+  });
+  let maxX=0,maxY=0;
+  visited.forEach(a=>{
+    const [x,y]=origin(a); maxX=Math.max(maxX,x+geo.cw); maxY=Math.max(maxY,y+geo.ch+geo.lab);
+    const info=roomInfo(a), objs=objectsIn(a), ex=exitsOf(a);
+    const c=el('div','cell mc'+(a===cur?' cur':'')); c.dataset.off=a;
+    c.style.cssText=`left:${x}px;top:${y}px;width:${geo.cw}px;height:${bh}px`;
+    c.title=info.title+(objs.length?' : '+objs.map(o=>o.name.toLocaleLowerCase(lang)).join(', '):'');
+    const th=el('div','th'); th.style.height=geo.ch+'px'; th.innerHTML=SCENES.render(a===cur&&sceneKeyFor(a)||staticKey(a),a,[],{crop:'330 40 680 340'}); c.appendChild(th);
+    if(objs.length){ const ic=el('div','ic'); ic.style.top=(geo.ch-geo.icon-6)+'px'; ic.innerHTML=objs.slice(0,4).map(o=>SCENES.icon(o.n,geo.icon)).join('')+(objs.length>4?`<span>+${objs.length-4}</span>`:''); c.appendChild(ic); }
+    if(ex.U||ex.D) c.appendChild(el('span','ud',(ex.U?'▲':'')+(ex.D?'▼':'')));
+    if(dreams.has(a)){ c.appendChild(el('span','dr',t().dreamTag)); c.title+=' — '+dreams.get(a); }
+    if(geo.lab){ const lb=el('div','lb'); lb.style.cssText=`top:${geo.ch}px;height:${geo.lab}px`; lb.appendChild(el('b',null,info.title)); if(objs.length) lb.appendChild(el('span',null,objs.map(o=>o.name.toLocaleLowerCase(lang)).join(', '))); c.appendChild(lb); }
+    host.appendChild(c);
+  });
+  host.appendChild(top);
+  return [maxX,maxY];
+}
+function sceneKeyFor(off){ const sk=staticKey(off); return sceneKey&&ROOMS[sceneKey]&&(ROOMS[sceneKey][0]===(ROOMS[sk]||[])[0]||TRANSIENT.has(sceneKey))?sceneKey:null; }
+function drawMap(off,ok){
+  const host=$('mapView'); $('mapLabel').textContent='';
+  if(!ok||!started){ host.textContent=''; return; }
+  const pc=off%COLS, pr=Math.floor(off/COLS), W=652, H=392;
+  // toute la largeur de la grille ne tient pas : on centre sur le joueur, sans dépasser les bords de la grille
+  const ox=Math.max(Math.min(W/2-MINI.cw/2-pc*MINI.px, 8), W-8-MINI.cw-9*MINI.px);
+  const oy=Math.min(H/2+12-MINI.ch/2-pr*MINI.py, 44);
+  buildMap(host,MINI,off,a=>[ox+(a%COLS)*MINI.px, oy+Math.floor(a/COLS)*MINI.py]);
+  $('mapLabel').textContent=roomInfo(off).title;
+  if(!$('bigmap').hidden) drawBig(false);
+}
+function drawBig(center){
+  const off=roomOff(), host=$('bigInner'), pad=40;
+  const [mx,my]=buildMap(host,BIG,off,a=>[pad+(a%COLS)*BIG.px, pad+Math.floor(a/COLS)*BIG.py]);
+  host.style.width=(pad+10*BIG.px)+'px'; host.style.height=(my+pad)+'px';
+  host.querySelectorAll('svg.links').forEach(svg=>{ svg.setAttribute('width',pad+10*BIG.px); svg.setAttribute('height',my+pad); });
+  if(center){ const sc=$('bigScroll'); sc.scrollTop=pad+Math.floor(off/COLS)*BIG.py-sc.clientHeight/2+BIG.ch/2; }
+}
+function showBig(){ if(!started) return; $('bigmap').hidden=false; $('bigTitle').textContent=t().mapTitle; $('bigHint').textContent=t().mapHint; $('bigClose').textContent=t().close; drawBig(true); }
+function hideBig(){ $('bigmap').hidden=true; inEl.focus(); }
+function pathTo(from,to){
+  const prev=new Map([[from,null]]),q=[from];
+  while(q.length){ const a=q.shift(); if(a===to) break; const ex=exitsOf(a);
+    for(const d in DELTA){ if(!ex[d]) continue; const n=a+DELTA[d]; if(n<0||n>=NROOMS||prev.has(n)||!visited.has(n)) continue; prev.set(n,[a,d]); q.push(n); } }
+  if(!prev.has(to)) return null;
+  const path=[]; let c=to; while(prev.get(c)){ const [a,d]=prev.get(c); path.unshift([d,c]); c=a; }
+  return path;
+}
+function walkTo(to){
+  if(walking||m.wait!=='line') return;
+  const path=pathTo(roomOff(),to); if(!path||!path.length) return;
+  walking=true;
+  (function next(){
+    if(!path.length||m.wait!=='line'){ walking=false; return; }
+    const [d,expect]=path.shift();
+    send(WORLD.go(DIRS[d]),t().dirs[d]);
+    if(roomOff()!==expect){ walking=false; if(m.wait==='line') note('walkStop'); return; }
+    setTimeout(next,path.length?260:0);
+  })();
+}
+
+// ---------- musique ----------
+// En boucle sur l'écran d'introduction ; long fondu au démarrage du jeu ; en option, elle revient dans le désert.
+const num=(k,d)=>{ const v=parseFloat(LS.get(k)); return isNaN(v)?d:Math.max(0,Math.min(1,v)); };
+const opts={sfx:LS.get(KEY+'sfx')!=='0',sfxVol:num(KEY+'sfxvol',0.7),music:LS.get(KEY+'music')==='1',vol:(v=>isNaN(v)?0.6:Math.max(0,Math.min(1,v)))(parseFloat(LS.get(KEY+'vol')))};
+const MUSIC=assetURL(ADV.assets.musique);
+const audio=new Audio(MUSIC||''); audio.loop=true; audio.volume=0; audio.preload='auto';
+let gate=0, gateTarget=0, fadeMs=3000, fadeTimer=null, musicBlocked=false;
+function inDesert(){
+  const off=roomOff(); if(off<0||off>=NROOMS) return false;
+  const k=sceneKeyFor(off)||staticKey(off), r=ROOMS[k];
+  return !!r&&!!WORLD.musicZone&&WORLD.musicZone(k,r[2]);
+}
+let quitting=false;
+function musicWant(){ if(quitting||shelfOpen) return 0; if(!started) return 1; if(m.wait==='end') return 0; return opts.music&&inDesert()?1:0; }
+function applyVol(){ audio.volume=Math.max(0,Math.min(1,opts.vol*gate*gate)); }
+function musicTick(){
+  const s=50/fadeMs;
+  gate=gate<gateTarget?Math.min(gateTarget,gate+s):Math.max(gateTarget,gate-s);
+  applyVol();
+  if(gate===gateTarget){ clearInterval(fadeTimer); fadeTimer=null; if(gate===0) audio.pause(); }
+}
+function musicUpdate(ms){
+  if(!MUSIC) return;
+  const want=musicWant();
+  if(want!==gateTarget){ gateTarget=want; fadeMs=ms||3500; }
+  if(want&&audio.paused){ const p=audio.play(); if(p&&p.catch) p.then(()=>{ musicBlocked=false; }).catch(()=>{ musicBlocked=true; gate=0; applyVol(); if(!started&&!ov.hidden&&ov.classList.contains('title')&&!ov.querySelector('.blocked')){ const n=el('p','credit blocked',t().musicBlocked); ov.querySelector('.card').appendChild(n); } }); }
+  if(gate!==gateTarget&&!fadeTimer) fadeTimer=setInterval(musicTick,50);
+  applyVol();
+}
+function showOptions(){
+  overlay('',c=>{
+    c.classList.add('opts');
+    c.appendChild(el('h2',null,t().options));
+    const row1=el('div','optRow'); row1.appendChild(el('span',null,t().musicInGame));
+    const tog=btn(row1,opts.music?t().on:t().off,()=>{ opts.music=!opts.music; LS.set(KEY+'music',opts.music?'1':'0'); tog.textContent=opts.music?t().on:t().off; tog.classList.toggle('main',opts.music); musicUpdate(2500); },opts.music);
+    c.appendChild(row1);
+    c.appendChild(el('p','small',t().musicNote));
+    const row2=el('div','optRow'); row2.appendChild(el('span',null,t().volume));
+    const sl=el('input'); sl.type='range'; sl.min=0; sl.max=100; sl.value=Math.round(opts.vol*100);
+    const val=el('b',null,sl.value+' %');
+    sl.oninput=()=>{ opts.vol=sl.value/100; LS.set(KEY+'vol',String(opts.vol)); val.textContent=sl.value+' %'; applyVol(); };
+    row2.appendChild(sl); row2.appendChild(val); c.appendChild(row2);
+    const row3=el('div','optRow'); row3.appendChild(el('span',null,t().sfx));
+    const tog2=btn(row3,opts.sfx?t().on:t().off,()=>{ opts.sfx=!opts.sfx; LS.set(KEY+'sfx',opts.sfx?'1':'0'); SFX.setEnabled(opts.sfx); tog2.textContent=opts.sfx?t().on:t().off; tog2.classList.toggle('main',opts.sfx); if(opts.sfx) SFX.play('coin'); },opts.sfx);
+    c.appendChild(row3);
+    c.appendChild(el('p','small',t().sfxNote));
+    const row4=el('div','optRow'); row4.appendChild(el('span',null,t().sfxVol));
+    const sl2=el('input'); sl2.type='range'; sl2.min=0; sl2.max=100; sl2.value=Math.round(opts.sfxVol*100);
+    const val2=el('b',null,sl2.value+' %');
+    sl2.oninput=()=>{ opts.sfxVol=sl2.value/100; LS.set(KEY+'sfxvol',String(opts.sfxVol)); val2.textContent=sl2.value+' %'; SFX.setVolume(opts.sfxVol); };
+    sl2.onchange=()=>{ SFX.play('click'); };
+    row4.appendChild(sl2); row4.appendChild(val2); c.appendChild(row4);
+    const row5=el('div','optRow'); row5.appendChild(el('span',null,t().language));
+    btn(row5,t().lang,()=>{ toggleLang(); showOptions(); });
+    c.appendChild(row5);
+    const r=el('div','row'); btn(r,t().full,fullscreen); btn(r,t().close,closeOverlay,true); c.appendChild(r);
+  });
+}
+function closeOverlay(){ if(!started) showTitle(); else if(!classicOn&&m.wait==='key'&&m.yesNo) showDeath(''); else if(!classicOn&&m.wait==='end') showEnd(); else hideOverlay(); }
+SFX.setEnabled(opts.sfx); SFX.setVolume(opts.sfxVol);
+function playSfx(prevOff,w){ // joue les sons du tour (version moderne seulement)
+  const list=pendSfx; pendSfx=[];
+  if(classicOn||!opts.sfx||!started) return;
+  const off=roomOff();
+  if(off!==prevOff&&off>=0&&off<NROOMS&&WORLD.ambient) list.unshift(...WORLD.ambient(mem,off));
+  if(w==='key'&&m.yesNo&&!list.includes('shot')) list.push('death');
+  [...new Set(list)].slice(0,3).forEach((n,i)=>SFX.play(n,i*.45));
+}
+
+// ---------- recommencer ----------
+function askRestart(){
+  overlay('',c=>{
+    c.appendChild(el('h2',null,t().confirm));
+    c.appendChild(el('p',null,t().confirmNote));
+    const r=el('div','row'); btn(r,t().restart,restart,true); btn(r,t().cancel,closeOverlay); c.appendChild(r);
+  });
+}
+
+// ---------- quitter ----------
+function askQuit(){
+  overlay('',c=>{
+    c.appendChild(el('h2',null,t().quitAsk));
+    c.appendChild(el('p',null,started?t().quitNote:t().quitNoSave));
+    const r=el('div','row'); btn(r,t().quit,doQuit,true); btn(r,t().backShelf,leave); btn(r,t().stay,closeOverlay); c.appendChild(r);
+  });
+}
+function doQuit(){
+  if(started&&m.wait==='line') saveSlot('auto');
+  quitting=true; musicUpdate(1500);
+  if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+  overlay('bye',c=>{
+    c.appendChild(el('h2',null,t().bye));
+    c.appendChild(el('p',null,t().byeNote));
+    const r=el('div','row'); btn(r,t().back,()=>{ quitting=false; closeOverlay(); musicUpdate(2500); }); c.appendChild(r);
+  });
+  setTimeout(()=>{ if(quitting){ try{ window.close(); }catch(e){} } },1700);   // ne ferme que si le navigateur l'autorise
+}
+
+// ---------- pièces magiques (indices) ----------
+const COIN_SVG='<svg viewBox="0 0 40 40" width="34" height="34"><defs><radialGradient id="cg" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff3c4"/><stop offset=".45" stop-color="#eaa93b"/><stop offset="1" stop-color="#a8701f"/></radialGradient></defs><circle cx="20" cy="20" r="18" fill="url(#cg)" stroke="#7a4f12" stroke-width="2"/><circle cx="20" cy="20" r="13" fill="none" stroke="#7a4f12" stroke-width="1.5" opacity=".7"/><path d="M20 12c5 0 8 4 8 8s-3 7-7 7-6-3-6-6 2-5 5-5 4 2 4 4-1 3-3 3" fill="none" stroke="#7a4f12" stroke-width="2" stroke-linecap="round"/></svg>';
+function isCoinCommand(up){
+  const w=strip(up).replace(/[^A-Z ]/g,' ').trim().split(/\s+/).filter(x=>!['LA','LE','UNE','UN','A','THE','MAGIQUE','MAGIC'].includes(x));
+  const noun=w[w.length-1], verb=w.length>1?w[0]:'';
+  if(['INDICE','HINT','HINTS','INDICES'].includes(noun)&&w.length<=2) return true;
+  return ['PIECE','COIN'].includes(noun)&&['','UTILISER','UTILISE','USE','LANCER','LANCE','FROTTER','FROTTE','DEPENSER','DEPENSE','SPEND','RUB'].includes(verb);
+}
+function askCoin(){
+  if(m.wait!=='line'||classicOn) return;
+  overlay('',c=>{
+    c.appendChild(el('h2',null,t().coin));
+    c.appendChild(el('p',null,t().coinAsk(coins)));
+    const r=el('div','row'); btn(r,t().coinUse,()=>{ hideOverlay(); useCoin(); },true); btn(r,t().coinKeep,hideOverlay); c.appendChild(r);
+  });
+}
+function useCoin(){
+  if(m.wait!=='line') return;
+  if(!coins){ note('coinNone'); return; }
+  if(!HINTS) return;
+  const off=roomOff(), sp=HINTS.spot(mem,off), st=HINTS.step(mem,visited);
+  let d;
+  if(sp>=0&&!hintUse['s'+sp]){ hintUse['s'+sp]=1; d={spot:sp}; }
+  else { const k='e'+st, lvl=Math.min(hintUse[k]||0,1); hintUse[k]=(hintUse[k]||0)+1; d={step:st,lvl}; }
+  coins--; if(opts.sfx) SFX.play('coin');
+  addTurn(Object.assign({note:'hint',left:coins},d));
+  refresh(); scrollLog(); autosave();
+}
+
+// ---------- fenêtres ----------
+function showTitle(){
+  overlay('title',c=>{
+    c.classList.add('intro');
+    t().intro.forEach(x=>{
+      if(Array.isArray(x)){ const v=el('p','verse'); x.forEach((l,i)=>{ if(i) v.appendChild(el('br')); v.appendChild(document.createTextNode(l)); }); c.appendChild(v); }
+      else c.appendChild(el('p',null,x));
+    });
+    const r=el('div','row');
+    btn(r,t().start,()=>{ enterFullscreen(); started=true; musicUpdate(9000); hideOverlay(); m.key(32); step(null); },true);
+    if(slotData('auto')) btn(r,t().resume,()=>{ enterFullscreen(); started=true; musicUpdate(9000); m.key(32); m.run(); pending=''; hideOverlay(); loadSlot('auto'); });
+    btn(r,t().lang,()=>{ toggleLang(); showTitle(); });
+    btn(r,t().options,showOptions);
+    btn(r,t().backShelf,leave);
+    btn(r,t().quit,askQuit);
+    c.appendChild(r);
+    c.appendChild(el('p','credit',t().sub));
+    if(musicBlocked) c.appendChild(el('p','credit blocked',t().musicBlocked));
+  });
+}
+function showDeath(text){
+  overlay('',c=>{
+    c.appendChild(el('h2',null,t().dead));
+    if(text){ const last=text.split(/\n{2,}/).pop(); c.appendChild(el('p',null,pretty(last))); }
+    const r=el('div','row');
+    const u=btn(r,t().undoLast,doUndo,true); u.disabled=!undo.length;
+    btn(r,t().loadSave,showSaves);
+    btn(r,t().retry,restart);
+    c.appendChild(r);
+  });
+}
+function showEnd(){
+  overlay('',c=>{
+    c.appendChild(el('h2',null,won?t().won:t().over));
+    const r=el('div','row'); btn(r,t().again,restart,true); c.appendChild(r);
+  });
+}
+function showHelp(){
+  overlay('',c=>{ c.classList.add('help');
+    c.appendChild(el('h2',null,t().helpTitle));
+    t().helpText.forEach(x=>c.appendChild(el('p',null,x)));
+    const r=el('div','row'); btn(r,t().close,hideOverlay,true); c.appendChild(r);
+  });
+}
+function clearGame(){
+  hideOverlay(); logEl.textContent=''; turns=[]; undo=[]; visited=new Set(); lex=new Map(); links=new Map(); coins=COINS; hintUse={}; won=false; pending=''; armed=null; classicItems=[]; pendItems=[]; cbuf=''; pendSfx=[]; sceneKey=null;
+}
+function restart(){ clearGame(); m.reset(); started=true; step(null); }
+// retour à l'étagère DragonTales : la partie est sauvegardée, l'aventure revient à son écran d'introduction
+function leave(){
+  if(started&&m.wait==='line') saveSlot('auto');
+  if(classicOn) setClassic(false);
+  $('bigmap').hidden=true; quitting=false;
+  clearGame(); started=false; m.reset(); step(null);
+  ov.hidden=true; ov.textContent='';
+  openShelf(); musicUpdate(1500);
+}
+function show(){ document.title=ADV.title+' — DragonTales'; showTitle(); refresh(); musicUpdate(2500); }
+
+// ---------- sauvegardes ----------
+const b64=u8=>{ let s=''; for(let i=0;i<u8.length;i+=8192) s+=String.fromCharCode.apply(null,u8.subarray(i,i+8192)); return btoa(s); };
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+function slotData(id){ const s=LS.get(KEY+'slot.'+id); if(!s) return null; try{ return JSON.parse(s); }catch(e){ return null; } }
+function saveSlot(id){
+  if(m.wait!=='line') return false;
+  const sn=m.snapshot();
+  return LS.set(KEY+'slot.'+id,JSON.stringify({m:b64(sn.m),c:sn.c,visited:[...visited],lex:[...lex],links:[...links],coins,hintUse,room:roomOff(),date:Date.now()}));
+}
+function autosave(){ if(started&&!walking) saveSlot('auto'); }
+function loadSlot(id){
+  const d=slotData(id); if(!d) return;
+  m.restore({m:unb64(d.m),c:d.c,w:'line'}); sceneKey=null;
+  visited=new Set(d.visited); lex=new Map(d.lex); links=new Map(d.links||[]); coins=d.coins===undefined?COINS:d.coins; hintUse=d.hintUse||{}; undo=[]; won=false; pending=''; armed=null; started=true;
+  logEl.textContent=''; turns=[]; hideOverlay();
+  const off=roomOff();
+  note('loaded',{off});
+  classicItems=[{k:'loaded',off},{a:WORLD.promptAddr}]; pendItems=[]; cbuf='';
+  refreshVerbs(); refresh(); renderClassic();
+}
+function showSaves(){
+  overlay('',c=>{
+    c.appendChild(el('h2',null,t().saves));
+    const list=el('div','slots');
+    ['auto',1,2,3].forEach(id=>{
+      const d=slotData(id), row=el('div','slot'), lab=el('span',null,id==='auto'?t().auto:t().slot(id));
+      const sm=el('small',null,d?roomTitleAt(d)+' · '+new Date(d.date).toLocaleString(lang):t().emptySlot); lab.appendChild(sm);
+      row.appendChild(lab);
+      if(id==='auto') row.appendChild(el('span'));
+      else { const s=btn(row,t().save,()=>{ if(saveSlot(id)) showSaves(); }); s.disabled=m.wait!=='line'; }
+      const l=btn(row,t().load,()=>loadSlot(id)); l.disabled=!d;
+      list.appendChild(row);
+    });
+    c.appendChild(list);
+    const r=el('div','row'); btn(r,t().close,()=>{ if(m.wait==='key'&&m.yesNo) showDeath(''); else hideOverlay(); },true); c.appendChild(r);
+  });
+}
+function roomTitleAt(d){ const k=WORLD.roomKey(mem,d.room); const r=ROOMS[k]; return r?r[lang==='fr'?0:1]:''; }
+
+// ---------- version classique (texte sur fond vert) ----------
+const REV=(function(){ // anglais -> premier mot français, pour réafficher une commande dans l'autre langue
+  const v={},n={};
+  for(const w in FR.VERBS){ const e=FR.VERBS[w]; if(!v[e]) v[e]=w; }
+  for(const w in FR.NOUNS){ const e=FR.NOUNS[w]; if(!n[e]) n[e]=w; }
+  Object.assign(v,ADV.revExtra||{});
+  const find=(tab,w)=>{ if(tab[w]) return tab[w]; const p=w.slice(0,4); for(const e in tab){ if(e.slice(0,4)===p) return tab[e]; } return w; };
+  return en=>{ const p=en.trim().split(/\s+/); if(!p[0]) return ''; return find(v,p[0])+(p.length>1?' '+find(n,p[p.length-1]):''); };
+})();
+const HELP_EN=ADV.helpEn||'';
+function composeItems(items){ // recompose une suite d'éléments du journal dans la langue courante
+  let s='';
+  for(const it of items){
+    let x;
+    if(it.a!==undefined) x=textFor(it.a,lang).replace(/%/g,'\n');
+    else if(it.r!==undefined) x=it.r;
+    else if(it.e) x=(it.e.tl===lang?it.e.typed.toLocaleUpperCase(lang):lang==='en'?it.e.en:REV(it.e.en))+'\n';
+    else if(it.k==='loaded') x=t().loaded(roomInfo(it.off).title).toLocaleUpperCase(lang);
+    else if(it.k==='help') x='\n'+(lang==='fr'?FR.HELP:HELP_EN).replace(/%/g,'\n')+'\n';
+    else x=t()[it.k]||'';
+    for(const ch of x){ if(ch==='\b') s=s.slice(0,-1); else s+=ch; }
+  }
+  return s;
+}
+function classicString(){ return composeItems(classicItems); }
+function renderClassic(){
+  if(!classicOn) return;
+  const scr=$('cScreen');
+  scr.textContent=classicString().slice(-6000)+(m.wait==='line'?cbuf:'');
+  scr.appendChild(el('span','cursor','\u00a0'));
+  scr.scrollTop=scr.scrollHeight;
+}
+function setClassic(on){
+  if(on&&!started) return;
+  classicOn=on; LS.set(KEY+'view',on?'classic':'modern');
+  $('classic').hidden=!on; cbuf='';
+  if(on){ hideOverlay(); $('bigmap').hidden=true; disarm(); inEl.blur(); renderClassic(); }
+  else { if(m.wait==='key'&&m.yesNo) showDeath(''); else if(m.wait==='end') showEnd(); else inEl.focus(); refresh(); scrollLog(); }
+}
+function classicKey(ev){
+  if(ev.ctrlKey||ev.metaKey||(ev.altKey&&!ev.getModifierState('AltGraph'))) return;
+  if(ev.target&&ev.target.tagName==='BUTTON'&&(ev.key==='Enter'||ev.key===' ')) return;
+  const k=ev.key, w=m.wait, one=k.length===1;
+  const last=classicItems[classicItems.length-1];
+  if(w==='end'||(w==='key'&&m.yesNo&&last&&last.k==='cEnd')){ if(one||k==='Enter'){ ev.preventDefault(); restart(); } return; }
+  if(w==='key'&&m.yesNo){
+    if(!one) return; ev.preventDefault();
+    const c=k.toUpperCase(); classicItems.push({r:c});
+    if(c==='Y'||c==='O') restart(); else { classicItems.push({k:'cEnd'}); renderClassic(); }
+    return;
+  }
+  if(w!=='line') return;
+  const arrows={ArrowLeft:'W',ArrowRight:'E',ArrowUp:'N',ArrowDown:'S'};
+  if(k==='Enter'){ ev.preventDefault(); const line=cbuf.trim(); cbuf=''; if(!line){ renderClassic(); return; }
+    const up=line.toUpperCase();
+    if(up==='AIDE'||up==='HELP'||up==='?'){ classicItems.push({e:{en:'HELP',typed:lang==='fr'?'AIDE':'HELP',tl:lang}},{k:'help'},{a:WORLD.promptAddr}); renderClassic(); return; }
+    typed(line.toLocaleLowerCase(lang)); }
+  else if(k==='Backspace'){ ev.preventDefault(); cbuf=cbuf.slice(0,-1); renderClassic(); }
+  else if(arrows[k]&&cbuf===''){ ev.preventDefault(); direction(arrows[k]); }
+  else if(one&&cbuf.length<60){ ev.preventDefault(); cbuf+=k.toLocaleUpperCase(lang); renderClassic(); }
+}
+
+// ---------- divers ----------
+function toggleLang(){ flipLang(); relang(); }
+function relang(){ buildStatic(); if(started){ rerenderLog(); refresh(); } renderClassic(); if(!started&&!shelfOpen&&!ov.hidden&&ov.classList.contains('title')) showTitle(); }
+
+$('cmd').addEventListener('submit',ev=>{ ev.preventDefault(); const v=inEl.value; inEl.value=''; if(armed&&!v.trim()){ arm(armed); return; } if(armed&&v.trim()){ const a=armed; const line=verbLabel(a)+' '+v.trim(); send(a[0]+' '+(lang==='fr'?(ADV.nounEn(v)||v.trim().toUpperCase()):v.trim().toUpperCase()),line); return; } typed(v); });
+$('cancel').onclick=()=>{ disarm(); inEl.focus(); };
+document.addEventListener('click',ev=>{
+  if(shelfOpen) return;
+  const w=ev.target.closest&&ev.target.closest('.w,.chip');
+  if(w&&w.dataset.kw){ target(w.dataset.kw,w.dataset.label||w.textContent.toLocaleLowerCase(lang)); inEl.focus(); return; }
+  const cell=ev.target.closest&&ev.target.closest('.cell');
+  if(cell){ const big=!$('bigmap').hidden; if(big) hideBig(); walkTo(+cell.dataset.off); inEl.focus(); }
+});
+document.addEventListener('keydown',ev=>{
+  if(shelfOpen) return;
+  if(classicOn){ classicKey(ev); return; }
+  if(!$('bigmap').hidden){ if(ev.key==='Escape'||ev.key.toLowerCase()==='m') hideBig(); return; }
+  if(!ov.hidden){ if(ev.key==='Escape'&&!ov.classList.contains('title')&&m.wait==='line') hideOverlay(); return; }
+  if(ev.key==='Escape'){ disarm(); return; }
+  if((ev.ctrlKey||ev.metaKey)&&ev.key.toLowerCase()==='z'){ ev.preventDefault(); doUndo(); return; }
+  if(ev.key==='Enter'&&ev.target.classList&&ev.target.classList.contains('w')){ ev.target.click(); return; }
+  const arrows={ArrowLeft:'W',ArrowRight:'E',ArrowUp:'N',ArrowDown:'S'};
+  if(arrows[ev.key]&&inEl.value===''&&!ev.ctrlKey&&!ev.altKey){ ev.preventDefault(); direction(arrows[ev.key]); return; }
+  if(ev.key.length===1&&!ev.ctrlKey&&!ev.metaKey&&document.activeElement!==inEl) inEl.focus();
+});
+
+$('mapBig').onclick=showBig; $('bigClose').onclick=hideBig;
+$('toClassic').onclick=()=>setClassic(true); $('cModern').onclick=()=>{ setClassic(false); };
+$('cLang').onclick=()=>{ toggleLang(); $('cLang').blur(); }; $('cFull').onclick=()=>{ fullscreen(); $('cFull').blur(); }; $('cQuit').onclick=()=>{ $('cQuit').blur(); askQuit(); };
+['pointerdown','keydown'].forEach(e=>document.addEventListener(e,()=>{   // un geste débloque la musique si le navigateur l'avait retenue
+  if(musicBlocked){ musicBlocked=false; const n=ov.querySelector('.blocked'); if(n) n.style.visibility='hidden'; musicUpdate(2500); } },true));
+buildStatic(); refresh(); step(null); ov.hidden=true; ov.textContent='';
+window.__dt=window.__diablero={m,send,state:()=>({off:roomOff(),visited:[...visited],coins,started}),sfxLog:()=>window.__sfxLog||[],music:()=>({gate:+gate.toFixed(2),target:gateTarget,paused:audio.paused,vol:+audio.volume.toFixed(3),t:+audio.currentTime.toFixed(1),opt:opts.music,desert:inDesert()})};
+return {id:ADV.id,show,relang};
+}
+
+// ---------- démarrage ----------
+document.documentElement.lang=lang; fit();
+const go=SS.get('dragontales.go'); SS.del('dragontales.go');
+const direct=go&&ADVENTURES.find(a=>a.id===go);
+if(direct){ picked=ADVENTURES.indexOf(direct); launch(direct); } else openShelf();
+})();
