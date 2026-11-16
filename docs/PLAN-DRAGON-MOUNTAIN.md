@@ -55,7 +55,7 @@ L'aventure se joue de bout en bout dans l'interface (`python build.py --tout`), 
       l'étage du joueur, la grande carte tous les étages côte à côte.
 - [x] Sons déclenchés par les lignes du jeu (`world.sfxFor`) ; les éclairs du combat (`CLS 3`, `CLS 4`) jouent l'éclair.
 - [ ] Textes du moteur encore propres à El Diablero : la légende de la grande carte parle de « rêve ».
-- [ ] Ordre de l'étagère : `order` dans la fiche (El Diablero 1, Dragon Mountain 2).
+- [x] Ordre de l'étagère : `order` dans la fiche (El Diablero 1, Dragon Mountain 2).
 
 ### 3. Contenu de l'aventure
 
