@@ -69,6 +69,9 @@ function play(name,delay){
   try{ E[name](c,master,c.currentTime+.03+(delay||0)); }catch(e){ return false; }
   return true;
 }
-return {play,E,names:()=>Object.keys(E),setVolume(v){ vol=v; if(master) master.gain.value=v; },setEnabled(b){ enabled=b; },get enabled(){ return enabled; }};
+// une aventure peut ajouter ses propres sons : fn(contexte, sortie, instant, outils)
+const H={tone,hiss,noiseSrc,env,swell};
+function define(name,fn){ E[name]=(c,o,t)=>fn(c,o,t,H); }
+return {play,define,E,names:()=>Object.keys(E),setVolume(v){ vol=v; if(master) master.gain.value=v; },setEnabled(b){ enabled=b; },get enabled(){ return enabled; }};
 })();
 if(typeof module!=='undefined')module.exports=SFX;

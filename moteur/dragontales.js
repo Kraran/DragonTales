@@ -234,6 +234,8 @@ function dest(a,d){ // lieu atteint depuis a dans la direction d (ou null)
 }
 const PROMPT_ITEM=WORLD.promptAddr!==undefined?{a:WORLD.promptAddr}:{b:WORLD.promptText||''};
 const TRANSIENT=new Set(WORLD.transient||[]), COINS=HINTS?3:0;
+if(ADV.sfx) for(const k in ADV.sfx) SFX.define(k,ADV.sfx[k]);   // sons propres à l'aventure
+let curEn='';                                     // commande anglaise en cours (pour les sons liés à une action)
 const TA={fr:Object.assign({},T.fr,ADV.labels.fr),en:Object.assign({},T.en,ADV.labels.en)};
 const bin=Uint8Array.from(atob(ADV.assets.programme.b64),c=>c.charCodeAt(0));
 $('stage').style.setProperty('--cover','url("'+assetURL(ADV.assets.couverture)+'")');
@@ -298,8 +300,8 @@ const io={
 };
 // Jeu en BASIC : chaque PRINT arrive comme une ligne anglaise ({b:…}), traduite à l'affichage par WORLD.say.
 const ioBasic={
-  out(s){ pending+=s; pendItems.push({b:s}); if(WORLD.sfxFor){ const f=WORLD.sfxFor(s); if(f) pendSfx.push(f); } },
-  cls(c){ if(c){ if(!pendSfx.includes('flash')) pendSfx.push('flash'); return; } pending=''; pendItems=[]; },   // CLS n : éclair de couleur
+  out(s){ pending+=s; pendItems.push({b:s}); if(WORLD.sfxFor){ const f=WORLD.sfxFor(s,curEn,mem); if(f) pendSfx.push(f); } },
+  cls(c){ if(c){ const f=WORLD.flashSfx||'flash'; if(!pendSfx.includes(f)) pendSfx.push(f); return; } pending=''; pendItems=[]; },   // CLS n : éclair de couleur
   end(){ won=!!(ADV.machine.victory&&ADV.machine.victory.test(pending)); }
 };
 const SEED=/[#&]graine=(\d+)/.exec(location.hash);   // essais : DragonTales.html#graine=2 fixe le hasard des jeux BASIC
@@ -429,7 +431,7 @@ function send(en,echo){ // envoie une commande anglaise au jeu
   lastCmd={en,typed:echo||en,tl:lang};
   const cmdObj=lastCmd;
   const before=roomOff();
-  m.line(en); step(echo);
+  curEn=en; m.line(en); step(echo); curEn='';
   const after=roomOff();
   if(m.wait==='line'&&after!==before&&after>=0&&after<NROOMS&&before>=0&&before<NROOMS){
     const d=Object.keys(DIRS).find(k=>en===WORLD.go(DIRS[k]));

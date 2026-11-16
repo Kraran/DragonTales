@@ -43,6 +43,7 @@ tests/
    - l'identité : `id`, `storage` (préfixe des sauvegardes), `title`, `author`, `publisher`, `year`, `system`, `blurb.fr/en` ;
    - `machine` : adresse de chargement, routine d'affichage des textes, adresse de victoire, attente de l'écran titre, correctifs ;
      pour un jeu en BASIC : `kind: 'basic'`, le texte de victoire et les lignes corrigées (`patches`, écrites en BASIC) ;
+   - `sfx` (facultatif) : des sons propres à l'aventure, synthétisés comme ceux de `moteur/sfx.js` (voir Dragon Mountain, `sons.js`) ;
    - `world` : comment lire la partie en mémoire (lieu courant, sorties, objets et où ils sont), le format des commandes de
      déplacement, le nettoyage des textes (invite, listes), les zones où la musique revient, les sons d'ambiance ;
    - `labels.fr/en` : texte d'introduction, crédit, mot d'adieu ; `verbs` : les boutons de verbes ; `sfxAt` : sons liés aux textes ;

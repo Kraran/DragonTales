@@ -1,6 +1,7 @@
 // Dragon Mountain (Dragon Data, 1982) — fiche de l'aventure pour DragonTales.
 // EN COURS (voir EN-COURS.md) : build.py ne l'inclut pas encore dans DragonTales.html (python build.py --tout pour l'essayer).
-// Ce fichier est assemblé après data.js, hints.js, scenes.js et textes.js du même dossier : ROOMS, POS, HINTS, SCENES, FR et dmSay/dmClean.
+// Ce fichier est assemblé après data.js, hints.js, scenes.js, sons.js et textes.js du même dossier : ROOMS, POS, HINTS, SCENES,
+// DM_SFX et dmSfxFor, FR et dmSay/dmClean.
 // Le jeu est écrit en Dragon BASIC : il tourne dans moteur/basic.js, et la partie se lit dans ses variables
 // (R : lieu courant, P(lieu,direction) : passages, L(objet) : lieu de chaque objet, 0 = porté).
 (function(){
@@ -41,7 +42,7 @@ DragonTales.register({
   fr:{
    sub:"Une aventure de Dragon Data, 1982. Version française.",
    bye:"Que la montagne te soit clémente.",
-   sfxNote:"Dragon, démon, elfe, combat, portes… Ils ne jouent que dans la version moderne.",
+   sfxNote:"Rugissement du dragon, ricanement du démon, elfes, combats, portes, feu… Ils ne jouent que dans la version moderne.",
    musicNote:"Elle joue dans le château et s’efface en fondu quand on monte au royaume des gardiens.",
    mapHint:"Clique un lieu pour t’y rendre. De gauche à droite : le château, le royaume des gardiens et le trésor. ▲▼ : un escalier monte ou descend vers l’autre étage.",
    intro:[
@@ -51,7 +52,7 @@ DragonTales.register({
   en:{
    sub:"An adventure by Dragon Data, 1982.",
    bye:"May the mountain be kind to you.",
-   sfxNote:"Dragon, demon, elf, fighting, doors… They only play in the modern version.",
+   sfxNote:"Dragon roar, demon laugh, elves, fights, doors, fire… They only play in the modern version.",
    musicNote:"It plays in the castle and fades out when you climb to the kingdom of the guardians.",
    mapHint:"Click a place to walk there. From left to right: the castle, the kingdom of the guardians and the treasure. ▲▼: a staircase leads up or down to the other level.",
    intro:[
@@ -65,6 +66,7 @@ DragonTales.register({
   ['OPEN','Ouvrir','Open'],['UNLOCK','Déverrouiller','Unlock'],['READ','Lire','Read'],['WEAR','Porter','Wear'],
   ['EAT','Manger','Eat'],['DRINK','Boire','Drink'],['SLEEP','Dormir','Sleep',1],['BRIBE','Soudoyer','Bribe'],['KILL','Tuer','Kill']],
  sfxAt:{},
+ sfx:DM_SFX,                                           // sons propres à l'aventure (sons.js)
  frSkip:['EST','PORTE'],                              // mots français à ne pas rendre cliquables (« est » la direction, « porte » le verbe)
  revExtra:{GET:'PRENDRE',LEAVE:'POSER',INVENTORY:'INVENTAIRE',GO:'ALLER'},
  nounEn:w=>{ const x=FR.frToEn('PRENDRE '+w).split(' '); return x.length>1?x[1]:''; },
@@ -86,9 +88,9 @@ DragonTales.register({
   musicZone:key=>+key>=1&&+key<=25,                   // la musique revient dans le château (étage du bas)
   proper:(s,lang)=>s.replace(/\borimiah\b/g,'Orimiah').replace(/\bdragon mountain\b/g,'Dragon Mountain').replace(/\bmontagne du dragon\b/g,'Montagne du Dragon'),
   freeInput:mem=>mem.prompt()!==null&&mem.line()===1270,   // « WHAT IS THE SPELL? » : la formule passe telle quelle
-  sfxFor(line){ if(/DRAGON IS IN/.test(line)) return 'growl'; if(/DEMON IS IN/.test(line)) return 'rumble'; if(/ELF IS IN/.test(line)) return 'magic';
-   if(/IS DEAD|RAN AWAY/.test(line)) return 'smash'; if(/KILLED|DIED/.test(line)) return 'death'; if(/DOOR IS OPEN/.test(line)) return 'glow';
-   if(/ELF HAS TAKEN/.test(line)) return 'coin'; if(/RESTED/.test(line)) return 'dream'; if(/ALL THE TREASURE/.test(line)) return 'victory'; return null; },
+  sfxFor:(line,cmd)=>dmSfxFor(line,cmd),              // sons.js
+  flashSfx:'dm_clash',                                  // les éclairs du combat (CLS 3, CLS 4) : lames qui s'entrechoquent
+  ambient(mem,off){ const r=off+1; return r===3||r===26?['dm_fire']:r===29?['dm_drip']:[]; },
   roomOff:mem=>mem.v('R')-1,
   roomKey:(mem,off)=>String(off+1),
   // destination de chaque sortie : numéro de lieu (0 = rien), ou le nom d'un passage particulier

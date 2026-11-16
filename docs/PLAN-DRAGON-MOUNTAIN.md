@@ -68,7 +68,10 @@ L'aventure se joue de bout en bout dans l'interface (`python build.py --tout`), 
       jeu le dit), l'elfe, le démon et le dragon quand ils sont là, les portes ouvertes (`world.sceneExtras`).
 - [x] Indices des pièces magiques (`hints.js`) : dix étapes et six indices de situation ; le second indice d'une étape
       nomme le lieu où se trouve vraiment l'objet dans cette partie (textes calculés au moment de la dépense).
-- [x] Sons liés aux lignes du jeu : dragon, démon, elfe, combat, mort, porte, or donné, sommeil, victoire.
+- [x] Sons propres à l'aventure (`sons.js`, déclarés par `sfx` dans la fiche) : rugissement du dragon, ricanement du démon,
+      elfe, lames qui s'entrechoquent pendant le combat, gardien abattu, elfe qui s'enfuit, porte qui grince, porte noire qui
+      cède à la formule, clé, repas, eau bue, ronflements, vent glacé, ventre qui gargouille, cascade d'or ; ambiances de feu
+      (salle chaude, salle des elfes) et de gouttes (grotte humide). Déclenchés par la ligne affichée et la commande.
 - [x] Image de la boîte alignée sur celle d'El Diablero (même cadre jaune, même bandeau DRAGON 32), image d'introduction,
       texte d'introduction.
 - [x] Musique « The Guardian's Hoard » (Suno) : en boucle sur l'introduction, fondu au démarrage ; avec l'option
