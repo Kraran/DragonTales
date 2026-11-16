@@ -74,12 +74,12 @@ function cabinOut(r,o){
   let s=fillRect(['#f0b765','#d9774a','#7a3550']);
   s+=`<circle cx="${(200+r()*200).toFixed(0)}" cy="110" r="50" fill="#fbe3a4"/>`+wave(300,20,r,'#9c4a3c');
   if(o.window){ s+=planks('#6e4032','#4b2a26',260,40,700,300,58)+`<rect x="520" y="110" width="190" height="150" fill="#1d0f1c"/><path d="M510 100 h210 v170 h-210Z M615 110 v150 M520 185 h190" fill="none" stroke="#3b2020" stroke-width="12"/>`; }
-  let doorX=0;
-  if(!o.window){ const x=460+r()*160; doorX=x+70; s+=`<path d="M${x-40} 318 V200 L${x+170} 120 L${x+380} 200 V318Z" fill="#6e4032"/><path d="M${x-70} 206 L${x+170} 110 L${x+410} 206" stroke="#3b2020" stroke-width="16" fill="none" stroke-linejoin="round"/>`;
+  let doorX=0, eyes=o.window?[615,305,1]:null;   // le regard qu'on sent sur soi apparaît à la fenêtre
+  if(!o.window){ const x=460+r()*160; doorX=x+70; eyes=[x+241,305,.55,1]; s+=`<path d="M${x-40} 318 V200 L${x+170} 120 L${x+380} 200 V318Z" fill="#6e4032"/><path d="M${x-70} 206 L${x+170} 110 L${x+410} 206" stroke="#3b2020" stroke-width="16" fill="none" stroke-linejoin="round"/>`;
     for(let i=0;i<6;i++) s+=`<path d="M${x-10+i*62} 215 V318" stroke="#4b2a26" stroke-width="3"/>`;
     s+=`<rect x="${x+210}" y="226" width="62" height="52" fill="#f6c979"/><path d="M${x+241} 226 v52 M${x+210} 252 h62" stroke="#3b2020" stroke-width="4"/>`; }
   s+=wave(338,16,r,'#5f2c3b');
-  return {s,G:334,x0:o.window?330:140,x1:o.window?900:430,door:o.window?null:[doorX,322,.6]};
+  return {s,G:334,x0:o.window?330:140,x1:o.window?900:430,door:o.window?null:[doorX,322,.6],eyes};
 }
 function cabinIn(r,o){
   o=o||{};
@@ -250,7 +250,7 @@ function render(key,off,objs,opt){
   // inscriptions (objet 44) : gravées sur la paroi
   if(objs.includes(44)&&key!=='165A'&&key!=='19FB') s+=glyphs(p.x0+span*.2,p.G-150,8,'#eaa93b',r,16);
   objs.filter(n=>BIG[n]&&OBJ[n]).forEach(n=>{ const b=BIG[n];
-    if(n===43&&p.eyes){ s+=`<g transform="translate(${p.eyes[0]} ${p.eyes[1]})">${OBJ[n]()}</g>`; return; }
+    if(n===43&&p.eyes){ s+=`<g transform="translate(${p.eyes[0].toFixed(0)} ${p.eyes[1]}) scale(${p.eyes[2]||1})">${p.eyes[3]?'<rect x="-52" y="-138" width="104" height="36" fill="#1d0f1c" opacity=".8"/>':''}${OBJ[n]()}</g>`; return; }
     if((n===20||n===21)&&p.door){ s+=`<g transform="translate(${p.door[0].toFixed(0)} ${p.door[1]}) scale(${p.door[2]})">${OBJ[n]()}</g>`; return; } s+=`<g transform="translate(${(p.x0+span*b[0]).toFixed(0)} ${p.G-6}) scale(${b[1]})">${OBJ[n]()}</g>`; });
   const small=objs.filter(n=>!BIG[n]&&OBJ[n]).sort((a,b)=>a-b);
   const slots=Math.max(5,small.length), used=new Set();

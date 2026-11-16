@@ -22,7 +22,8 @@ DragonTales l'habille : textes traduits, jeu à la souris, carte, illustrations,
 2. Sous Windows, lance `Jouer.bat` : la page s'ouvre en plein écran dans Edge ou Chrome, sans barre d'adresse.
    Ailleurs, ouvre `DragonTales.html` dans un navigateur récent.
 
-Rien à installer, aucune connexion nécessaire. Les parties sont sauvegardées dans le navigateur.
+Rien à installer, aucune connexion nécessaire. Les parties sont sauvegardées dans le navigateur ; la fenêtre
+Sauvegardes permet de les exporter dans un fichier pour les reprendre ailleurs.
 
 ## Ce que propose le moteur
 
@@ -32,7 +33,8 @@ Rien à installer, aucune connexion nécessaire. Les parties sont sauvegardées 
 - **Jeu à la souris** : un verbe, puis un mot du texte, un objet ou une direction. On peut toujours écrire ses commandes.
 - **Carte** dessinée au fil de l'exploration, avec les objets visibles et les passages particuliers ; un clic y conduit.
 - **Trois pièces magiques** par partie : chacune donne un indice adapté à l'endroit où l'on en est.
-- **Sauvegardes** (automatique et trois emplacements), annulation du dernier coup, musique et effets sonores réglables.
+- **Sauvegardes** (automatique et trois emplacements, export et import par fichier), annulation du dernier coup,
+  musique et effets sonores réglables.
 
 ## Fabriquer la page
 
@@ -72,6 +74,7 @@ Pour ajouter une aventure : [docs/AJOUTER-UNE-AVENTURE.md](docs/AJOUTER-UNE-AVEN
 ```
 node tests/rejouer-solution.js eldiablero solution.txt     # sans navigateur : doit finir par VICTOIRE
 node tests/essai.js solution.txt                           # dans Chrome, avec Playwright (npm install playwright)
+node tests/sauvegardes.js                                  # pièces magiques, journal conservé, export et import
 ```
 
 `solution.txt` est une suite de commandes anglaises séparées par des virgules, après une ligne `START`.

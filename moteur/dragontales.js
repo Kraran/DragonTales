@@ -39,6 +39,8 @@ const T={
    'Tu portes trois pièces magiques. Chacune donne un indice sur ce qu’il faut chercher à ce moment de l’aventure : clique une pièce, ou écris « utiliser une pièce ». Elles ne reviennent pas.'],
   toClassic:'Version classique',toModern:'Version moderne',
   cEnd:'\n\nFIN DE LA PARTIE.\nAPPUIE SUR UNE TOUCHE POUR REJOUER.',cWon:'\n\n*** BRAVO, TA TÂCHE EST ACCOMPLIE ! ***\nAPPUIE SUR UNE TOUCHE POUR REJOUER.',
+  exportGame:'Exporter vers un fichier',importGame:'Importer un fichier',portNote:'Un fichier de sauvegarde permet de reprendre la partie en cours sur un autre ordinateur ou dans un autre navigateur.',
+  exported:n=>'Partie exportée dans « '+n+' ».',importBad:'Ce fichier n’est pas une sauvegarde DragonTales lisible.',importOther:a=>'Cette sauvegarde vient d’une autre aventure ('+a+').',
   about:'À propos',aboutDesc:'Un moteur pour rejouer sur PC les aventures textuelles du Dragon 32/64. Le programme d’origine tourne tel quel dans un émulateur 6809 ; DragonTales lui ajoute la traduction française, le jeu à la souris, une carte, des illustrations, des sauvegardes, des indices, de la musique et des sons.',
   abVersion:'Version',abDate:'Date',abAuthor:'Auteur',abRepo:'Dépôt',abStack:'Techno',abStackText:'HTML, CSS, JavaScript (émulateur 6809), Python pour l’assemblage',abGames:'Aventures',
   aboutNote:'Logiciel fourni « tel quel ». Les programmes, textes et illustrations d’origine des aventures appartiennent à leurs auteurs et éditeurs.',abProfile:'Profil Kraran',abGithub:'Dépôt GitHub',
@@ -70,6 +72,8 @@ const T={
    'You carry three magic coins. Each gives a hint about what to look for at that point of the adventure: click a coin, or type “use a coin”. They do not come back.'],
   toClassic:'Classic version',toModern:'Modern version',
   cEnd:'\n\nGAME OVER.\nPRESS ANY KEY TO PLAY AGAIN.',cWon:'\n\n*** WELL DONE, YOUR TASK IS COMPLETE! ***\nPRESS ANY KEY TO PLAY AGAIN.',
+  exportGame:'Export to a file',importGame:'Import a file',portNote:'A save file lets you carry on the current game on another computer or in another browser.',
+  exported:n=>'Game exported to “'+n+'”.',importBad:'This file is not a readable DragonTales save.',importOther:a=>'This save belongs to another adventure ('+a+').',
   about:'About',aboutDesc:'An engine for replaying Dragon 32/64 text adventures on a PC. The original program runs unchanged in a 6809 emulator; DragonTales adds a French translation, mouse play, a map, illustrations, saved games, hints, music and sound.',
   abVersion:'Version',abDate:'Date',abAuthor:'Author',abRepo:'Repository',abStack:'Built with',abStackText:'HTML, CSS, JavaScript (6809 emulator), Python for the build',abGames:'Adventures',
   aboutNote:'Software provided “as is”. The original programs, texts and artwork of the adventures belong to their authors and publishers.',abProfile:'Kraran’s profile',abGithub:'GitHub repository',
@@ -309,7 +313,7 @@ function objects(){
 let armed=null;                    // verbe choisi (entrée de VERBS)
 let visited=new Set();             // lieux visités (décalages)
 let lex=new Map();                 // mots rencontrés : mot-clé -> mot affiché
-let coins=COINS, hintUse={};            // pièces magiques restantes ; nombre d'indices déjà donnés par étape ou lieu
+let coins=COINS, hintUse={}, gid=newGid();            // pièces magiques restantes ; nombre d'indices déjà donnés par étape ou lieu
 let links=new Map();                // passages spéciaux découverts : 'de>vers' -> {from,to,label}
 let undo=[];                       // pile d'annulation
 let walking=false;
@@ -346,10 +350,13 @@ function note(key,extra){ addTurn(Object.assign({note:key},extra||{})); scrollLo
 function scrollLog(){ logEl.scrollTop=logEl.scrollHeight; }
 function addLex(kw,word){ if(!lex.has(kw)) lex.set(kw,word); }
 
+function compact(items){ // regroupe les caractères isolés pour alléger le journal et les sauvegardes
+  const out=[]; for(const it of items){ const l=out[out.length-1]; if(it.r!==undefined&&l&&l.r!==undefined) l.r+=it.r; else out.push(it.r!==undefined?{r:it.r}:it); } return out;
+}
 function flush(echo,prevOff){ // transforme la sortie du jeu en entrée du journal
   const cmd=echo?(lastCmd||{en:echo.toUpperCase(),typed:echo,tl:lang}):null;
   lastCmd=null; pending='';
-  const items=pendItems; pendItems=[];
+  const items=compact(pendItems); pendItems=[];
   if(cmd) classicItems.push({e:cmd});
   classicItems.push(...items);
   const r=cleanText(composeItems(items));
@@ -709,7 +716,7 @@ function useCoin(){
   let d;
   if(sp>=0&&!hintUse['s'+sp]){ hintUse['s'+sp]=1; d={spot:sp}; }
   else { const k='e'+st, lvl=Math.min(hintUse[k]||0,1); hintUse[k]=(hintUse[k]||0)+1; d={step:st,lvl}; }
-  coins--; if(opts.sfx) SFX.play('coin');
+  coins--; spendNote(); if(opts.sfx) SFX.play('coin');
   addTurn(Object.assign({note:'hint',left:coins},d));
   refresh(); scrollLog(); autosave();
 }
@@ -759,7 +766,7 @@ function showHelp(){
   });
 }
 function clearGame(){
-  hideOverlay(); logEl.textContent=''; turns=[]; undo=[]; visited=new Set(); lex=new Map(); links=new Map(); coins=COINS; hintUse={}; won=false; pending=''; armed=null; classicItems=[]; pendItems=[]; cbuf=''; pendSfx=[]; sceneKey=null;
+  hideOverlay(); logEl.textContent=''; turns=[]; undo=[]; visited=new Set(); lex=new Map(); links=new Map(); coins=COINS; hintUse={}; won=false; pending=''; armed=null; classicItems=[]; pendItems=[]; cbuf=''; pendSfx=[]; sceneKey=null; gid=newGid();
 }
 function restart(){ clearGame(); m.reset(); started=true; step(null); }
 // retour à l'étagère DragonTales : la partie est sauvegardée, l'aventure revient à son écran d'introduction
@@ -776,22 +783,63 @@ function show(){ document.title=ADV.title+' — DragonTales'; showTitle(); refre
 // ---------- sauvegardes ----------
 const b64=u8=>{ let s=''; for(let i=0;i<u8.length;i+=8192) s+=String.fromCharCode.apply(null,u8.subarray(i,i+8192)); return btoa(s); };
 const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+// Chaque partie a un identifiant (gid). Les pièces dépensées sont notées à part, par partie : recharger une
+// sauvegarde plus ancienne de la même partie ne rend donc pas les pièces déjà utilisées.
+function newGid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+function ledger(){ try{ return JSON.parse(LS.get(KEY+'coins')||'{}')||{}; }catch(e){ return {}; } }
+function spendNote(){
+  const l=ledger(); l[gid]={c:coins,h:hintUse,t:Date.now()};
+  const ids=Object.keys(l).sort((a,b)=>l[b].t-l[a].t); ids.slice(30).forEach(k=>delete l[k]);
+  LS.set(KEY+'coins',JSON.stringify(l));
+}
 function slotData(id){ const s=LS.get(KEY+'slot.'+id); if(!s) return null; try{ return JSON.parse(s); }catch(e){ return null; } }
+function packGame(withLog){ // l'état complet de la partie, pour un emplacement ou un fichier
+  const sn=m.snapshot();
+  const d={format:'dragontales-save',version:1,adventure:ADV.id,gid,m:b64(sn.m),c:sn.c,visited:[...visited],lex:[...lex],links:[...links],coins,hintUse,room:roomOff(),date:Date.now()};
+  if(withLog){ d.turns=turns.slice(-80); d.classic=classicItems.slice(-600); }
+  return d;
+}
 function saveSlot(id){
   if(m.wait!=='line') return false;
-  const sn=m.snapshot();
-  return LS.set(KEY+'slot.'+id,JSON.stringify({m:b64(sn.m),c:sn.c,visited:[...visited],lex:[...lex],links:[...links],coins,hintUse,room:roomOff(),date:Date.now()}));
+  return LS.set(KEY+'slot.'+id,JSON.stringify(packGame(true)))||LS.set(KEY+'slot.'+id,JSON.stringify(packGame(false)));   // sans le journal si la place manque
 }
 function autosave(){ if(started&&!walking) saveSlot('auto'); }
-function loadSlot(id){
-  const d=slotData(id); if(!d) return;
+function loadSlot(id){ const d=slotData(id); if(d) loadData(d); }
+function loadData(d){
   m.restore({m:unb64(d.m),c:d.c,w:'line'}); sceneKey=null;
-  visited=new Set(d.visited); lex=new Map(d.lex); links=new Map(d.links||[]); coins=d.coins===undefined?COINS:d.coins; hintUse=d.hintUse||{}; undo=[]; won=false; pending=''; armed=null; started=true;
-  logEl.textContent=''; turns=[]; hideOverlay();
+  gid=d.gid||'ancienne';
+  visited=new Set(d.visited); lex=new Map(d.lex); links=new Map(d.links||[]); coins=d.coins===undefined?COINS:d.coins; hintUse=Object.assign({},d.hintUse);
+  const spent=ledger()[gid];
+  if(spent){ coins=Math.min(coins,spent.c); for(const k in spent.h) hintUse[k]=Math.max(hintUse[k]||0,spent.h[k]); }
+  undo=[]; won=false; pending=''; armed=null; started=true;
+  turns=Array.isArray(d.turns)?d.turns.slice():[];
+  while(turns.length&&turns[turns.length-1].note==='loaded') turns.pop();
+  rerenderLog(); hideOverlay();
   const off=roomOff();
   note('loaded',{off});
-  classicItems=[{k:'loaded',off},{a:WORLD.promptAddr}]; pendItems=[]; cbuf='';
+  classicItems=Array.isArray(d.classic)&&d.classic.length?d.classic.concat([{r:'\n'}]):[];
+  classicItems.push({k:'loaded',off},{a:WORLD.promptAddr}); pendItems=[]; cbuf='';
   refreshVerbs(); refresh(); renderClassic();
+}
+// ---------- sauvegarde dans un fichier ----------
+function exportGame(){
+  if(m.wait!=='line') return null;
+  const p=n=>String(n).padStart(2,'0'), d=new Date();
+  const name='DragonTales-'+ADV.id+'-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+'.json';
+  const a=el('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(packGame(true))],{type:'application/json'})); a.download=name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  return name;
+}
+function importText(txt){ // renvoie null si la partie est chargée, sinon le message d'erreur
+  let d; try{ d=JSON.parse(txt); }catch(e){ return t().importBad; }
+  if(!d||d.format!=='dragontales-save'||typeof d.m!=='string'||!d.c||typeof d.c!=='object'||!Array.isArray(d.visited)) return t().importBad;
+  if(d.adventure!==ADV.id) return t().importOther(String(d.adventure).slice(0,40));
+  let bytes; try{ bytes=unb64(d.m); }catch(e){ return t().importBad; }
+  if(bytes.length!==m.snapshot().m.length) return t().importBad;
+  const back=m.snapshot(), state={gid,visited,lex,links,coins,hintUse,turns,classicItems,started};
+  try{ loadData(d); }
+  catch(e){ m.restore(back); ({gid,visited,lex,links,coins,hintUse,turns,classicItems,started}=state); rerenderLog(); refresh(); return t().importBad; }
+  autosave(); return null;
 }
 function showSaves(){
   overlay('',c=>{
@@ -807,7 +855,16 @@ function showSaves(){
       list.appendChild(row);
     });
     c.appendChild(list);
-    const r=el('div','row'); btn(r,t().close,()=>{ if(m.wait==='key'&&m.yesNo) showDeath(''); else hideOverlay(); },true); c.appendChild(r);
+    const msg=el('p','small portNote',t().portNote); c.appendChild(msg);
+    const pick=el('input'); pick.type='file'; pick.accept='.json,application/json'; pick.hidden=true; c.appendChild(pick);
+    pick.onchange=()=>{ const f=pick.files[0]; if(!f) return; const rd=new FileReader();
+      rd.onload=()=>{ const err=importText(String(rd.result)); if(err){ msg.textContent=err; msg.classList.add('bad'); pick.value=''; } };
+      rd.onerror=()=>{ msg.textContent=t().importBad; msg.classList.add('bad'); };
+      rd.readAsText(f); };
+    const r=el('div','row');
+    const ex=btn(r,t().exportGame,()=>{ const n=exportGame(); if(n){ msg.textContent=t().exported(n); msg.classList.remove('bad'); } }); ex.disabled=m.wait!=='line';
+    btn(r,t().importGame,()=>pick.click());
+    btn(r,t().close,()=>{ if(m.wait==='key'&&m.yesNo) showDeath(''); else hideOverlay(); },true); c.appendChild(r);
   });
 }
 function roomTitleAt(d){ const k=WORLD.roomKey(mem,d.room); const r=ROOMS[k]; return r?r[lang==='fr'?0:1]:''; }
@@ -906,7 +963,7 @@ $('cLang').onclick=()=>{ toggleLang(); $('cLang').blur(); }; $('cFull').onclick=
 ['pointerdown','keydown'].forEach(e=>document.addEventListener(e,()=>{   // un geste débloque la musique si le navigateur l'avait retenue
   if(musicBlocked){ musicBlocked=false; const n=ov.querySelector('.blocked'); if(n) n.style.visibility='hidden'; musicUpdate(2500); } },true));
 buildStatic(); refresh(); step(null); ov.hidden=true; ov.textContent='';
-window.__dt=window.__diablero={m,send,state:()=>({off:roomOff(),visited:[...visited],coins,started}),sfxLog:()=>window.__sfxLog||[],music:()=>({gate:+gate.toFixed(2),target:gateTarget,paused:audio.paused,vol:+audio.volume.toFixed(3),t:+audio.currentTime.toFixed(1),opt:opts.music,desert:inDesert()})};
+window.__dt=window.__diablero={m,send,importText,pack:()=>packGame(true),state:()=>({off:roomOff(),visited:[...visited],coins,started}),sfxLog:()=>window.__sfxLog||[],music:()=>({gate:+gate.toFixed(2),target:gateTarget,paused:audio.paused,vol:+audio.volume.toFixed(3),t:+audio.currentTime.toFixed(1),opt:opts.music,desert:inDesert()})};
 return {id:ADV.id,show,relang};
 }
 

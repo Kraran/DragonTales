@@ -29,6 +29,7 @@ outils/
 tests/
   rejouer-solution.js         rejoue une solution sans navigateur (doit finir par VICTOIRE)
   essai.js                    essai complet dans Chrome (étagère, partie entière, retour, reprise)
+  sauvegardes.js              pièces magiques, journal conservé, export et import par fichier
 ```
 
 ## Les étapes
