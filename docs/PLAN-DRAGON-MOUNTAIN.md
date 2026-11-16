@@ -71,7 +71,8 @@ L'aventure se joue de bout en bout dans l'interface (`python build.py --tout`), 
 - [x] Sons liés aux lignes du jeu : dragon, démon, elfe, combat, mort, porte, or donné, sommeil, victoire.
 - [x] Image de la boîte alignée sur celle d'El Diablero (même cadre jaune, même bandeau DRAGON 32), image d'introduction,
       texte d'introduction.
-- [ ] Musique : à faire avec Suno (décision du 16 novembre).
+- [x] Musique « The Guardian's Hoard » (Suno) : en boucle sur l'introduction, fondu au démarrage ; avec l'option
+      « Musique pendant le jeu », elle joue dans le château et s'efface en fondu au royaume des gardiens.
 - [ ] Relecture de la traduction par l'auteur du projet, en jouant.
 
 ### 4. Vérifier et publier

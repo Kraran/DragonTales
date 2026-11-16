@@ -42,7 +42,7 @@ DragonTales.register({
    sub:"Une aventure de Dragon Data, 1982. Version française.",
    bye:"Que la montagne te soit clémente.",
    sfxNote:"Dragon, démon, elfe, combat, portes… Ils ne jouent que dans la version moderne.",
-   musicNote:"Dragon Mountain n’a pas encore de musique.",
+   musicNote:"Elle joue dans le château et s’efface en fondu quand on monte au royaume des gardiens.",
    mapHint:"Clique un lieu pour t’y rendre. De gauche à droite : le château, le royaume des gardiens et le trésor. ▲▼ : un escalier monte ou descend vers l’autre étage.",
    intro:[
     "Au cœur de la Montagne du Dragon dort un trésor que nul n’a jamais rapporté. Des elfes rôdent dans ses salles, un démon garde ses profondeurs et un dragon veille sur l’or.",
@@ -52,7 +52,7 @@ DragonTales.register({
    sub:"An adventure by Dragon Data, 1982.",
    bye:"May the mountain be kind to you.",
    sfxNote:"Dragon, demon, elf, fighting, doors… They only play in the modern version.",
-   musicNote:"Dragon Mountain has no music yet.",
+   musicNote:"It plays in the castle and fades out when you climb to the kingdom of the guardians.",
    mapHint:"Click a place to walk there. From left to right: the castle, the kingdom of the guardians and the treasure. ▲▼: a staircase leads up or down to the other level.",
    intro:[
     "Deep inside Dragon Mountain lies a treasure no one has ever brought back. Elves roam its halls, a demon guards its depths and a dragon watches over the gold.",
@@ -83,6 +83,7 @@ DragonTales.register({
   say:(text,lang,classic)=>dmSay(text,lang,classic),
   objLabel:(o,lang)=>{ const a=DM_OBJ[DM_NORM(o.name)]; return a?(lang==='fr'?a[1]:a[0]).replace(/^(a|an|un|une) /i,''):o.name; },
   clean:s=>dmClean(s),
+  musicZone:key=>+key>=1&&+key<=25,                   // la musique revient dans le château (étage du bas)
   proper:(s,lang)=>s.replace(/\borimiah\b/g,'Orimiah').replace(/\bdragon mountain\b/g,'Dragon Mountain').replace(/\bmontagne du dragon\b/g,'Montagne du Dragon'),
   freeInput:mem=>mem.prompt()!==null&&mem.line()===1270,   // « WHAT IS THE SPELL? » : la formule passe telle quelle
   sfxFor(line){ if(/DRAGON IS IN/.test(line)) return 'growl'; if(/DEMON IS IN/.test(line)) return 'rumble'; if(/ELF IS IN/.test(line)) return 'magic';
