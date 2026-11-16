@@ -1,0 +1,1306 @@
+{
+"0F78": [
+"",
+"?start"
+],
+"0F79": [
+"0T",
+"seq"
+],
+"0F7C": [
+"0U",
+"seq"
+],
+"0F80": [
+"S",
+"?start"
+],
+"0F82": [
+"!T",
+"seq"
+],
+"0F85": [
+":B",
+"seq"
+],
+"0F8D": [
+"",
+"?start"
+],
+"0F8E": [
+"TS",
+"seq"
+],
+"0F8F": [
+"S",
+"op@3903"
+],
+"101A": [
+"THE EAGLE KNOCKS YOU OFF THE MOUNTAIN. GOODBYE!",
+"op@1243,op@1271,op@2720"
+],
+"1027": [
+"CKS YOU OFF THE MOUNTAIN. GOODBYE!",
+"op@4808"
+],
+"104A": [
+"A ROPE",
+"obj72"
+],
+"1051": [
+"A SKULL",
+"obj73"
+],
+"1059": [
+"YOUR LUNGS FILL WITH POISON AIR, AND THAT'S THE END OF YOU!",
+"seq"
+],
+"1095": [
+"YOU WEREN'T READY TO MEET HIS POWER, AND HE DESTROYS YOU!",
+"seq"
+],
+"1125": [
+"1",
+"?start"
+],
+"115B": [
+"9%%%%%         \"EL DIABLERO\"%%       BY KENNETH KALISH%%    (C)1982 DRAGON DATA LTD.%      (C)1982 COMPUTERWARE%%%   (PRESS ANY KEY TO BEGIN)",
+"?start"
+],
+"115C": [
+"%%%%%         \"EL DIABLERO\"%%       BY KENNETH KALISH%%    (C)1982 DRAGON DATA LTD.%      (C)1982 COMPUTERWARE%%%   (PRESS ANY KEY TO BEGIN)",
+"op@114C"
+],
+"1205": [
+"%%%%%YOU'RE DEAD SO:%ANOTHER TRY? ",
+"op@11F1"
+],
+"12F0": [
+"9GO",
+"?start"
+],
+"12F1": [
+"GO",
+"op@12A9"
+],
+"1536": [
+"I'M IN THE TUNNEL.",
+"room110"
+],
+"1549": [
+"I'M ON MY BELLY IN THE TUNNEL. IT'S A DEAD END.",
+"room111"
+],
+"1579": [
+"NEARBY SITS A LARGE FLAT ROCK. THERE IS A GREAT MOUNTAIN FAR OFF IN THE WEST. I AM IN THE DESERT, CACTUS ALL AROUND.",
+"op@13B9,room0,room11,room20,room116,room120,room121,room122,room126"
+],
+"1598": [
+"THERE IS A GREAT MOUNTAIN FAR OFF IN THE WEST. I AM IN THE DESERT, CACTUS ALL AROUND.",
+"room30,room40"
+],
+"15C7": [
+"I AM IN THE DESERT, CACTUS ALL AROUND.",
+"room1,room2,room3,room4,room5,room6,room7,room8,room12,room13,room18,room19,room21,room22,room23,room29,room32,room33,room38,room39,room44,room45,room46,room47,room48,room49,room50,room51,room52,room53,room54,room55,room56,room57,room58,room60,room61,room62,room63,room64,room66,room70,room71,room74,room75,room76,room77,room78,room80,room85,room86,room87,room88,room90,room91,room94,room95,room96,room171,room172,room176,room180,room181,room182,room183,room184,room185,room186,room187"
+],
+"15EE": [
+"I AM IN THE DESERT. THERE IS A LARGE SLAB OF ROCK NEARBY.",
+"room31,room41,room43"
+],
+"1628": [
+"I AM IN A CANYON, WITH SHEER WALLS ON BOTH SIDES.",
+"room24,room25,room26"
+],
+"165A": [
+"I AM IN A CANYON, WITH SHEER CLIFFS ON THREE SIDES. THERE IS A STRANGE INSCRIPTION HERE.",
+"room27"
+],
+"16B3": [
+"I AM NEXT TO A SMALL POOL OF YELLOW WATER; I AM IN THE DESERT, AT THE UPPER EDGE OF A DEEP CANYON.",
+"room37"
+],
+"16DE": [
+"I AM IN THE DESERT, AT THE UPPER EDGE OF A DEEP CANYON.",
+"room14,room15,room16,room17,room28,room34,room35,room36"
+],
+"1716": [
+"I AM ON A HUGE, FLAT ROCK. SOMEHOW, I BEGIN TO FEEL ANXIOUS.",
+"room10"
+],
+"1753": [
+"I AM ON A LARGE, FLAT ROCK. IT SOMEHOW SEEMS PLEASANT HERE. THIS PLACE SEEMS FAMILIAR.",
+"room42"
+],
+"17AA": [
+"I AM NEXT TO A POOL OF BLUISH WATER.",
+"room9,room67"
+],
+"17CF": [
+"I AM IN A SMALL SHACK: DIRT FLOOR; ONE SMALL WINDOW, FACING NORTH. IT LOOKS FAMILIAR.",
+"room83"
+],
+"1825": [
+"I AM IN A SMALL STORAGE ROOM.",
+"room82"
+],
+"1843": [
+"I AM RIGHT NEXT TO THE WINDOW.",
+"room73"
+],
+"1862": [
+"I AM OUTSIDE A SMALL, WOODEN SHACK.",
+"room72,room81,room84,room92,room93"
+],
+"1886": [
+"THERE'S A FRESH GRAVE HERE!!",
+"room65"
+],
+"18A3": [
+"I AM IN A PLACE COMPOSED OF LIGHT AND COLOR.  I FEEL AS IF I COULD STAY HERE FOREVER.",
+"room59"
+],
+"18F9": [
+"I AM IN A VERTICAL SHAFT. IT'S OPEN AT THE TOP, I CAN SEE DAYLIGHT.",
+"room97"
+],
+"1922": [
+"E TOP, I CAN SEE DAYLIGHT.",
+"op@0F58"
+],
+"193D": [
+"I'M PARTWAY UP THE SHAFT. THERE'S AN OPENING OFF TO THE SIDE.",
+"room107"
+],
+"197B": [
+"I'M IN A DAMP PASSAGEWAY WITH YELLOW STONE WALLS.",
+"room68,room79,room89,room98,room99,room109,room119"
+],
+"19AD": [
+"SUDDENLY I'M CONFRONTED BY A HUGE, FIERCE LOOKING MAN. HE RAISES HIS MACHETE.",
+"room69"
+],
+"19FB": [
+"IT'S LIGHT IN HERE NOW. THERE ARE STRANGE LOOKING INSCRIPTIONS ON THE WALLS.",
+"room129"
+],
+"1A48": [
+"I'M IN A LARGE, DARK TUNNEL. I CAN HARDLY SEE. THE FLOOR SLOPES DOWNWARD.",
+"room117,room118,room127,room128"
+],
+"1A92": [
+"I'M AT THE END. THERE'S A SLIVER OF LIGHT UNDER THE NORTH WALL.",
+"room108"
+],
+"1AD2": [
+"THE EARTH IS VERY RICH HERE. I AM ON A MOUNTAN PATH.",
+"room106"
+],
+"1B07": [
+"I'M ON A MOUNTAIN PATH, NEAR THE SUMMIT.",
+"room103,room104,room105,room113,room115,room123,room124,room125"
+],
+"1B30": [
+"I'M AT THE VERY TOP. I'VE BEEN HERE BEFORE.",
+"room114"
+],
+"1B5C": [
+"I'M ON A NARROW LEDGE. IT'S A LONG WAY DOWN. THERE IS AN EAGLE SOARING IN THE DISTANCE.",
+"room102"
+],
+"1BB4": [
+"I AM AT THE NEST.",
+"room100"
+],
+"1BC6": [
+"I HEAR A SCREECH! THE MOTHER EAGLE SWOOPS AT ME.",
+"room112"
+],
+"1BF7": [
+"THE EAGLE'S NEST IS JUST ABOVE; BUT THE MOTHER EAGLE HAS SPOTTED ME.",
+"room101"
+],
+"1C3C": [
+"I'M AT THE ENTRANCE OF THE CAVE, OVERLOOKING THE CANYON.",
+"room170,room173"
+],
+"1C75": [
+"I'M IN A PASSAGEWAY CARVED OUT OF SOLID ROCK.",
+"room160"
+],
+"1CA3": [
+"I'M IN A PASSAGE, NEAR AN OPEN HATCHWAY.",
+"room163"
+],
+"1CCC": [
+"I'M ON A PLATFORM OVERLOOKING THE CHASM.",
+"room152"
+],
+"1CF5": [
+"I'M NEAR THE EDGE OF A GREAT, YAWNING CHASM.",
+"op@14EB,room131,room133,room151,room153"
+],
+"1D22": [
+"I'M ON THE GOLDEN BRIDGE. IT SUPPORTS ME!",
+"room140"
+],
+"1D4C": [
+"I'M AT THE BOTTOM OF THE CHASM, ON A NARROW PATH.",
+"room165,room174,room175"
+],
+"1D7E": [
+"I'M IN A POND. THE SHORE IS ROCKY. THE WATER IS VERY COLD.",
+"room156,room158,room159"
+],
+"1DB9": [
+"I'M UNDERWATER. IT'S SO DARK THAT I CAN'T SEE ANYTHING.",
+"room166,room167,room168,room169,room177,room178,room179,room188,room189"
+],
+"1DF1": [
+"I'M ON AN UNDERGROUND PATH. IT'S LONG AND STEEP.",
+"room134,room135,room144,room149"
+],
+"1E22": [
+"I'M AT THE EDGE OF A DEEP CHASM. DIRECTLY ACROSS I CAN SEE TWO COLUMNS ON A PLATFORM.",
+"room132"
+],
+"1E78": [
+"I'M AT THE EDGE OF ANOTHER CHASM, SMALLER THAN THE FIRST.",
+"room137,room139"
+],
+"1EB2": [
+"I'M BALANCING ON THE PILLAR, HALFWAY ACROSS. I'D BETTER NOT LOOK DOWN.",
+"room138"
+],
+"1EF9": [
+"I'M INSIDE A LARGE ROOM, NEXT TO THE GOLDEN DOOR.",
+"room146"
+],
+"1F2B": [
+"THERE ARE ROWS AND ROWS OF CLAY STATUES HERE.",
+"room145"
+],
+"1F59": [
+"I'M FLOATING IN A POND IN A CAVERN. THE AIRS SMELLS POISONOUS. THERE IS A SKULL ON SHORE.",
+"room157"
+],
+"1FB3": [
+"IT LOOKS LIKE PEOPLE LIVED HERE ONCE.",
+"room147"
+],
+"1FD9": [
+"I'M NEAR A LARGE CHAMBER. I HEAR GROWLING INSIDE, LIKE FROM A DOG, OR MAYBE ....?",
+"room154"
+],
+"202B": [
+"I'M NEAR A SMALL POND.",
+"room148,room155"
+],
+"2042": [
+"I'M ON THE PATH. NEARBY IS A MASSIVE GOLDEN DOOR.",
+"room136"
+],
+"2074": [
+"I'M AT THE EDGE OF A CHASM. A GOLDEN BRIDGE REACHES TO THE OTHER SIDE.",
+"room130,room150"
+],
+"20BB": [
+"I'M IN A CHAMBER WITH GREEN STONE WALLS.%%A COYOTE WITH HUMAN-LOOKING EYES IS ADVANCING ON ME. MY HEART IS REALLY BEATING.",
+"room164"
+],
+"217A": [
+"GO",
+"op@27F4"
+],
+"217F": [
+"LOOK",
+"seq"
+],
+"2184": [
+"GET",
+"seq"
+],
+"2189": [
+"INV",
+"seq"
+],
+"218E": [
+"DROP",
+"seq"
+],
+"2193": [
+"GAZE",
+"seq"
+],
+"2198": [
+"SHOO",
+"seq"
+],
+"219D": [
+"TAKE",
+"seq"
+],
+"21A2": [
+"THRO",
+"seq"
+],
+"21A7": [
+"CUT",
+"seq"
+],
+"21AC": [
+"DREA",
+"seq"
+],
+"21B1": [
+"AWAK",
+"seq"
+],
+"21B6": [
+"SAY",
+"seq"
+],
+"21BB": [
+"REME",
+"seq"
+],
+"21C0": [
+"READ",
+"seq"
+],
+"21C5": [
+"PLAN",
+"seq"
+],
+"21CA": [
+"WEAR",
+"seq"
+],
+"21CF": [
+"BREA",
+"seq"
+],
+"21D4": [
+"OPEN",
+"seq"
+],
+"21D9": [
+"PUSH",
+"seq"
+],
+"21DE": [
+"SMAS",
+"seq"
+],
+"21E3": [
+"DRIN",
+"seq"
+],
+"21E8": [
+"TURN",
+"seq"
+],
+"21ED": [
+"TWIS",
+"seq"
+],
+"21F2": [
+"SWIM",
+"seq"
+],
+"21F7": [
+"RING",
+"seq"
+],
+"21FC": [
+"LIFT",
+"seq"
+],
+"2201": [
+"PULL",
+"seq"
+],
+"2206": [
+"DIP",
+"seq"
+],
+"220B": [
+"CSAV",
+"seq"
+],
+"2210": [
+"CLOA",
+"seq"
+],
+"2252": [
+"UWEST",
+"?start"
+],
+"2253": [
+"WEST",
+"obj1"
+],
+"2258": [
+"NORTH",
+"obj2"
+],
+"225E": [
+"EAST",
+"obj3"
+],
+"2263": [
+"SOUTH",
+"obj4"
+],
+"2269": [
+"UP",
+"obj5"
+],
+"226C": [
+"DOWN",
+"obj6"
+],
+"2271": [
+"A BLIGHTED CACTUS",
+"obj7"
+],
+"2283": [
+"A LIZARD",
+"obj8"
+],
+"228C": [
+"A DIAMONDBACK SNAKE",
+"obj9"
+],
+"22A0": [
+"A BIG BLACK CROW",
+"obj10"
+],
+"22B1": [
+"ROCK",
+"obj11"
+],
+"22B6": [
+"A LOT OF DEBRIS",
+"obj12"
+],
+"22C6": [
+"A LUMINOUS BLUE PEBBLE",
+"obj13"
+],
+"22DD": [
+"POOL",
+"obj14"
+],
+"22E2": [
+"WATER",
+"obj15"
+],
+"22E8": [
+"CAVE",
+"obj16"
+],
+"22ED": [
+"MOUNTAIN",
+"obj17"
+],
+"22F6": [
+"A CLEAR, BLUE SKY",
+"obj18"
+],
+"2308": [
+"EVERY",
+"obj19"
+],
+"230E": [
+"AN EMPTY CLAY BOWL",
+"obj22"
+],
+"2321": [
+"AN OLD SHOTGUN",
+"obj23"
+],
+"2330": [
+"A DOORWAY",
+"obj20,obj21"
+],
+"233A": [
+"A TOMBSTONE",
+"obj24"
+],
+"2346": [
+"WINDOW",
+"obj25"
+],
+"234D": [
+"COYOTE",
+"obj26"
+],
+"2354": [
+"SOME SEEDS",
+"obj27"
+],
+"235F": [
+"COYOTE FOOTPRINTS",
+"obj28"
+],
+"2371": [
+"AN OLD STONE WELL",
+"obj29"
+],
+"2383": [
+"DESERT BEETLES",
+"obj30"
+],
+"2392": [
+"A MACHETE",
+"obj31"
+],
+"239C": [
+"SPIR",
+"obj32"
+],
+"23A1": [
+"CANYON",
+"obj33"
+],
+"23A8": [
+"A DARK HOLE",
+"obj34"
+],
+"23B4": [
+"UXMAL",
+"obj35"
+],
+"23BA": [
+"REVEAL!",
+"obj36"
+],
+"23C2": [
+"AN EAGLE FEATHER",
+"obj37"
+],
+"23D3": [
+"HUMAN FOOTPRINTS!",
+"obj38"
+],
+"23E5": [
+"AN ANCIENT MAYAN MASK",
+"obj39"
+],
+"23FB": [
+"A PAPER",
+"obj40"
+],
+"2403": [
+"A TWIG",
+"obj41"
+],
+"240A": [
+"A BUSH",
+"obj42"
+],
+"2411": [
+"I FEEL SOMEONE WATCHING ME!!",
+"obj43"
+],
+"2432": [
+"",
+"?start"
+],
+"2433": [
+"INSCRIPTIONS",
+"obj44"
+],
+"2440": [
+"A MOUND OF DIRT",
+"obj45"
+],
+"2450": [
+"BROKEN CLAY PIECES",
+"obj46"
+],
+"2463": [
+"A KEY",
+"obj47"
+],
+"2469": [
+"A TUNNEL",
+"obj48"
+],
+"2472": [
+"A PILE OF THICK BRUSH",
+"obj49"
+],
+"2488": [
+"A BOX",
+"obj50"
+],
+"248E": [
+"AN EAGLE'S NEST",
+"obj51"
+],
+"249E": [
+"WALL",
+"obj52"
+],
+"24A3": [
+"A WOVEN MAT",
+"obj53"
+],
+"24AF": [
+"THREADS",
+"obj54"
+],
+"24B7": [
+"OPENING",
+"obj55"
+],
+"24BF": [
+"A COPPER BELL",
+"obj56"
+],
+"24CD": [
+"A GOLDEN BRIDGE",
+"obj57"
+],
+"24DD": [
+"A GOLD STATUE",
+"obj58"
+],
+"24EB": [
+"A SMALL FIGURINE",
+"obj59"
+],
+"24FC": [
+"A GRANITE BLOCK",
+"obj60"
+],
+"250C": [
+"AN IRON RING",
+"obj61"
+],
+"2519": [
+"STONE STEPS",
+"obj62"
+],
+"2525": [
+"A GREAT, WINGED BEAST",
+"obj63"
+],
+"253B": [
+"POND",
+"obj64"
+],
+"2540": [
+"SHORE",
+"obj65"
+],
+"2546": [
+"A TALL PILLAR",
+"obj66"
+],
+"2554": [
+"A PAIR OF COLUMNS",
+"op@1004,obj67"
+],
+"2566": [
+"A HOLLOWED-OUT DEPRESSION",
+"obj68"
+],
+"2580": [
+"RUBBLE",
+"obj69"
+],
+"2587": [
+"CRUMBLING RUINS",
+"obj70"
+],
+"2597": [
+"CHAMBER",
+"obj71"
+],
+"25C5": [
+"9I'M NEAR A SMALLER CHASM. THERE IS A PILLAR LAYING ACROSS IT.",
+"?start"
+],
+"2620": [
+"I'M IN DANGER!!",
+"op@2616"
+],
+"26CC": [
+"!79%OBVIOUS EXITS ARE:%",
+"?start"
+],
+"26CF": [
+"%OBVIOUS EXITS ARE:%",
+"op@266E"
+],
+"26E4": [
+" WEST,",
+"op@267C"
+],
+"26EB": [
+" NORTH,",
+"op@268A"
+],
+"26F3": [
+" EAST,",
+"op@2698"
+],
+"26FA": [
+" SOUTH,",
+"op@26A6"
+],
+"2702": [
+" UP,",
+"op@26B4"
+],
+"2705": [
+",",
+"op@4365"
+],
+"2707": [
+" DOWN,",
+"op@26C2"
+],
+"2767": [
+"9%%I SEE:%",
+"?start"
+],
+"2768": [
+"%%I SEE:%",
+"op@265F"
+],
+"2772": [
+" NOTHING.%",
+"op@275E"
+],
+"2773": [
+"NOTHING.%",
+"op@41BD,op@4227,op@42F5,op@4372,op@461D"
+],
+"2815": [
+"%%WHAT DO I DO NOW? ",
+"op@2781"
+],
+"2833": [
+"%I DON'T KNOW THAT.",
+"op@282A"
+],
+"288F": [
+"HE'S GONE.",
+"op@2889,op@3F53"
+],
+"289A": [
+"THERE'S A COYOTE JUST OUTSIDE-HE'S WATCHING ME.",
+"op@2881"
+],
+"28E8": [
+"I'M NOT IN THE WATER.",
+"op@2924"
+],
+"28FE": [
+"I CAN'T SEEM TO SWIM UPWARDS ANYMORE.",
+"op@295E"
+],
+"29A8": [
+"THE TWIG SEEMS TO ABSORB POWER FROM THE OIL!!",
+"op@299F"
+],
+"29D6": [
+"WHY WOULD I DO THAT?",
+"op@2970"
+],
+"29EB": [
+"NOT HERE.",
+"op@2983"
+],
+"2A1C": [
+"I DON'T KNOW HOW.",
+"op@29F5"
+],
+"2A2E": [
+"IT CLICKS!",
+"op@2A13"
+],
+"2A61": [
+"THE WHOLE SLAB SWINGS UP!",
+"op@2A5B"
+],
+"2AA8": [
+"THE TWO COLUMNS REVERBERATE WITH THE SOUND OF THE BELL, AND A HIDEOUS BEAST COMES SLOWLY FLYING UP FROM THE DEPTHS BELOW.%%HE STOPS AT THE EDGE, WITH HIS BACK TO ME.",
+"op@2AA2"
+],
+"2B4E": [
+"IT HAS A NICE CLEAR TONE.",
+"op@2A92"
+],
+"2B68": [
+"RING WHAT??",
+"op@2A7B"
+],
+"2B96": [
+"9HE TAKES YOU TO THE BOTTOM AND DROPS YOU OFF. THEN HE FLIES AWAY.",
+"?start"
+],
+"2B97": [
+"HE TAKES YOU TO THE BOTTOM AND DROPS YOU OFF. THEN HE FLIES AWAY.",
+"op@2B85"
+],
+"2BF2": [
+"&0THE WEIGHT OF THE BLOCK LETS ME GET DEEPER.",
+"?start"
+],
+"2BF4": [
+"THE WEIGHT OF THE BLOCK LETS ME GET DEEPER.",
+"op@2BEB"
+],
+"2C20": [
+"I CAN'T SEEM TO GET ANY DEEPER.",
+"op@2BD9"
+],
+"2C53": [
+"&0I CAN'T CLIMB IT.",
+"?start"
+],
+"2C55": [
+"I CAN'T CLIMB IT.",
+"op@2C43"
+],
+"2C7F": [
+"I PASS RIGHT THROUGH IT!",
+"op@2C79"
+],
+"2C9E": [
+"IT'S SOLID NOW, JUST LIKE THE SPIRIT-HELPER SAID.",
+"op@2C6B,op@3B3A"
+],
+"2CE7": [
+"I'M FALLING!!!",
+"op@2CDE"
+],
+"2DCA": [
+"I NEED A ROPE OR SOMETHING.",
+"?start"
+],
+"2DE6": [
+"IT'S WAY TOO STEEP.",
+"seq"
+],
+"2DFA": [
+"I CAN'T CLIMB ANY FARTHER.",
+"seq"
+],
+"2E66": [
+"!79CAN'T GO.%",
+"?start"
+],
+"2E69": [
+"CAN'T GO.%",
+"op@2E15,op@2E62"
+],
+"2EAE": [
+"GO WHERE??",
+"op@2E81"
+],
+"2F50": [
+"IT DOESN'T BUDGE.",
+"op@2F23"
+],
+"2F62": [
+"IT TOPPLES OVER AND JUST SPANS THE CHASM, MAKING AN IMPROVISED BRIDGE.",
+"op@2F14"
+],
+"2FA9": [
+"THE STATUE TIPS OVER AND FALLS INTO THE CHASM. BUT WHAT'S THAT SWEET SMELL?",
+"op@2EF7"
+],
+"2FF5": [
+"IT'S CRUMBLING INTO RUBBLE!",
+"op@2F4A"
+],
+"3011": [
+"IT'S NO USE.",
+"op@2F1A"
+],
+"3096": [
+"IT SAYS:% 'THIS PEBBLE HAS POWER. USE IT AGAINST YOUR ENEMY'.",
+"op@3090"
+],
+"30D4": [
+"THE THREADS SPELL OUT A MESSAGE. IT'S A PROCEDURE FOR \"REVENGE MEDICINE\". IT SAYS:%%PLACE UPON THE VICTIM'S GRAVE, DESERT BEETLES AND AN EAGLE FEATHER. THEN SAY THE VICTIM'S NAME. THE MURDERER WILL BE DESTROYED.",
+"op@335E"
+],
+"31B9": [
+"IT'S HAND POLISHED TURQUOISE.",
+"op@31A8"
+],
+"31EB": [
+"IT'S NOT UNDERSTANDABLE.",
+"op@326D,op@32A9"
+],
+"3204": [
+"IT SAYS:%%\"ONE WHO HAS POWER CAN TRAVEL TO A PLACE BY 'DREAMING' IT. BUT NOT ALL PLACES CAN BE REACHED.\"",
+"op@31E5"
+],
+"3281": [
+"WITH THE MASK ON, I CAN UNDERSTAND IT!%",
+"op@31DF,op@3275,op@32B1"
+],
+"32BD": [
+"IT SAYS:%\"DREAMER! AS YOU GO, SO CAN YOU RETURN.\"",
+"op@32B7"
+],
+"330C": [
+"IT'S HARDWOOD.",
+"op@32FA"
+],
+"3329": [
+"IT'S WOVEN FROM BLUE AND WHITE THREADS.",
+"op@3323"
+],
+"3372": [
+"IT LOOKS RECENTLY MADE.",
+"op@336C"
+],
+"33A2": [
+"IT LOOKS JUST LIKE AN ORDINARY TWIG.",
+"op@3392"
+],
+"33C7": [
+"IT IS VIBRATING WITH ENERGY.",
+"op@339C"
+],
+"33F8": [
+"THERE'S WRITING ON IT. IT READS:% WOULD% THE DIABLERO% DESTROY THE  %%%THAT'S ALL IT SAYS.",
+"op@33F2"
+],
+"346A": [
+"IT'S A CLAY BULL.",
+"op@3453"
+],
+"3587": [
+"NOTHING SPECIAL.",
+"op@3050"
+],
+"3598": [
+"IT'S FASTENED TO THE FLOOR.",
+"seq"
+],
+"35B4": [
+"I THINK I CAN FIT THROUGH.",
+"seq"
+],
+"35CF": [
+"IT'S AN OLD GRANITE STRUCTURE. ON IS IS WRITTEN:% HE WHO% FIGHT% MUST FIRST% YELLOW BULL.",
+"seq"
+],
+"3629": [
+"THEY'RE ALL OF THE SAME THING; CLAY COLORED STATUES OF BULLS.",
+"seq"
+],
+"3667": [
+"IT WAS UNDER THE STATUE'S BASE! IT'S FILLED WITH OIL.",
+"seq"
+],
+"369D": [
+"IT'S PURE GOLD.",
+"op@354D"
+],
+"36AD": [
+"THEY BEAR THE MESSAGE: 'FOR HE WHO SERVES'.",
+"seq"
+],
+"36D9": [
+"IT'S TALLER THAN THE OTHER TWO COLUMNS I SAW.",
+"seq"
+],
+"3707": [
+"HE'S FIERCE-LOOKING; BUT HE'S NOT THREATENING ME.",
+"seq"
+],
+"3739": [
+"IT'S ABOUT 10 FEET WIDE.",
+"seq"
+],
+"3752": [
+"IT IS CARVED WITH INSCRIPTIONS.",
+"seq"
+],
+"3772": [
+"IT SAYS:%THE POWER TO GO UP FROM THE SACRED WELL IS FOR THEE TO SAY.",
+"op@327B"
+],
+"37B7": [
+"I'VE NEVER SEEN ONE LIKE IT.",
+"seq"
+],
+"37D4": [
+"IT'S DRY.",
+"seq"
+],
+"37DE": [
+"I CAN'T UNDERSTAND THEM.",
+"op@31D7"
+],
+"37F7": [
+"A CAVE OPENING IN THE NORTH SIDE OF THE CLIFF!",
+"seq"
+],
+"3826": [
+"IT'S GRANITE.",
+"seq"
+],
+"3834": [
+"IT SAYS: 'HERE LIES UXMAL'. THAT'S MY TEACHER'S NAME!!",
+"seq"
+],
+"386B": [
+"YEP! IT'S LOADED; ONE ROUND.",
+"op@306D"
+],
+"3888": [
+"THEY'RE NOT FROM A DESERT PLANT.",
+"op@3080"
+],
+"38A9": [
+"NO ONE'S INSIDE.",
+"seq"
+],
+"3988": [
+"WHAT??",
+"op@38E7,op@3CBF,op@4302,op@472E,op@4820,op@482E"
+],
+"398F": [
+"MY HANDS ARE FULL.",
+"op@3956"
+],
+"39A2": [
+"I ALREADY HAVE IT.",
+"op@3908,op@3B10"
+],
+"39B5": [
+"IT'S AS IF THE BUSH IS TALKING:%'TO BE USEFUL, THIS TWIG MUST FIRST BE DIPPED IN THE OIL THAT THE DIABLERO MAKES FROM CACTUS BLOSSOMS.'",
+"op@392A"
+],
+"3A3D": [
+"AHA! THE ENTRANCE WAS HIDDEN!",
+"op@3976"
+],
+"3A5B": [
+"GOT IT.",
+"op@397C"
+],
+"3A63": [
+"IT'S NOT HERE.",
+"op@29FE,op@2B77,op@2EC5,op@3056,op@31AB,op@32EF,op@33E7,op@3464,op@3937,op@3B0A,op@3B1E,op@3F18,op@3F7A,op@4109,op@4737,op@4770,op@478E"
+],
+"3A72": [
+"HE BIT ME. I WON'T LAST LONG OUT IN THIS DESERT.",
+"op@394A"
+],
+"3AB3": [
+"I CAN'T LIFT IT.",
+"op@3AAD"
+],
+"3AC4": [
+"MY HAND PASSES RIGHT THROUGH IT! AM I IMAGINING THINGS??",
+"op@2EDC,op@3AA3,op@3B30,op@47F2"
+],
+"3BEC": [
+"THAT'S SILLY.",
+"?start"
+],
+"3BFA": [
+"NO WAY! YOU CAN'T FOOL WITH POWER LIKE THAT.",
+"seq"
+],
+"3C27": [
+"OUCHH! CAN'T DO IT.",
+"seq"
+],
+"3C3B": [
+"IMPOSSIBLE!!",
+"seq"
+],
+"3C48": [
+"WHICH ONE? THERE ARE SO MANY.",
+"op@4750"
+],
+"3C66": [
+"IT WON'T BUDGE.",
+"seq"
+],
+"3C76": [
+"THEY'RE TOO HEAVY.",
+"seq"
+],
+"3C89": [
+"HE SCAMPERS AWAY.",
+"op@3AFD"
+],
+"3C9B": [
+"I CAN'T DO THAT.",
+"op@2EA8,op@3982"
+],
+"3CAC": [
+"WHY? I'M NOT SICK.",
+"seq"
+],
+"3D72": [
+"THERE IS A FLASH; AND HE IS NO MORE. HE WAS EL DIABLERO'S SPIRIT SLAVE.",
+"op@3D68"
+],
+"3DE5": [
+"YOU HAVE NOT LEARNED, SO YOUR POWER IS USELESS. YOU ARE DEAD.",
+"op@3DC7"
+],
+"3E23": [
+"THERE IS A TREMENDOUS FLASH OF LIGHT!! BUT THE COYOTE SAYS:%'YOU MUST NOW SAY MY NAME TO MAKE YOUR POWER WORK; OR YOU WILL BE CRUSHED.'%",
+"op@3DDF"
+],
+"3EB8": [
+"OK.",
+"op@3B2A,op@3D1F,op@3D4C,op@42FC,op@46F5,op@474A"
+],
+"3EBC": [
+"I DON'T HAVE IT.",
+"op@2979,op@2A84,op@3073,op@3086,op@3D46,op@3D52,op@3DBA,op@46D8"
+],
+"3EE3": [
+"9%I HAVE:%",
+"?start"
+],
+"3EE4": [
+"%I HAVE:%",
+"op@3ECD"
+],
+"3FD7": [
+"THERE ISN'T ANY.",
+"?start"
+],
+"3FE8": [
+"IT HAS A SUBTLE YELLOW GLOW TO IT!",
+"op@3F4B,op@3F5F"
+],
+"400B": [
+"IT HAS A BLUISH GLOW!",
+"op@3F59"
+],
+"4021": [
+"A SMALL FIGURINE STANDS OUT! IT HAS A YELLOW GLOW.",
+"seq"
+],
+"4054": [
+"I AM SURROUNDED BY A WHIRLING MIST. SOMETHING IS PULLING ME!!",
+"op@3F3F"
+],
+"4092": [
+"WHAT'S THAT?",
+"op@3F25"
+],
+"409F": [
+"NOTHING APPARENT.",
+"op@3F0E"
+],
+"412D": [
+"DON'T WASTE IT.",
+"op@40FB"
+],
+"4143": [
+"IT'S EMPTY.",
+"op@3063,op@3306,op@413D"
+],
+"414F": [
+"*BOOM*%%BOY, WAS HE FAST. I MISSED HIM.",
+"op@4124"
+],
+"4177": [
+"WITH WHAT?",
+"op@40F0,op@419C"
+],
+"4182": [
+"THERE'S NO NEED FOR THAT.",
+"op@41A6"
+],
+"4233": [
+"I CANNOT 'DREAM' MYSELF THERE. HIS POWER PREVENTS ME.",
+"?start"
+],
+"4252": [
+"HIS POWER PREVENTS ME.",
+"op@422D"
+],
+"4289": [
+"I AM EVERYWHERE AND NOWHERE AT THE SAME TIME. A STEADY WIND BLOWS AGAINST MY FACE.",
+"op@41FD,op@4221"
+],
+"4378": [
+"HE SAYS:% 'LISTEN WELL, FOR ONCE YOU BREAK THE YELLOW BULL, THEN THAT WHICH WAS UNREAL BECOMES REAL.'",
+"op@435A"
+],
+"4405": [
+"THE COYOTE TRANSFORMS INTO ... YOUR TEACHER! HE SAYS %\"CONGRATULATIONS, MY APPRENTICE, YOU HAVE DONE WELL. IT WAS NECESSARY TO DECEIVE YOU SO THAT YOU WOULD LEARN.%YOU'RE TASK IS NOW COMPLETE.",
+"op@43FC"
+],
+"44C6": [
+"I'M RISING!!",
+"op@43EE"
+],
+"44D3": [
+"MY TEACHER'S VOICE!!%HE SAYS: \"I AM NOT DEAD; SO THIS WILL DO NOTHING.%% I CANNOT HELP YOU NOW. YOU MUST FIND THE SPIRIT-HELPER AND SAY TO HIM 'REVEAL'. HE WILL TELL YOU WHAT TO DO.\"",
+"op@4341"
+],
+"458A": [
+"A TINY VOICE SEEMS TO SAY:%%\"AN EVIL DIABLERO CAN BE DESTROYED ONLY BY THROWING A MAGICAL TWIG OF YOUR OWN MAKING.\"",
+"op@436A"
+],
+"4623": [
+"I USED TO PRACTICE THE SORCERY TECHNIQUE OF \"GAZING\" AT THIS ROCK!",
+"op@4602"
+],
+"4666": [
+"THIS IS WHERE I FIRST LEARNED ABOUT \"DREAMING\".",
+"op@460B"
+],
+"4696": [
+"HERE I LEARNED THAT A SORCERER CAN TAKE ON THE FORM OF AN ANIMAL.",
+"op@4614"
+],
+"4704": [
+"A MAGICAL BUSH QUICKLY SPROUTS AND GROWS.",
+"op@46FE"
+],
+"47A6": [
+"NOTHING HAPPENS.",
+"op@4763"
+],
+"47B7": [
+"IT IS DESTROYED IN A BURST OF GREEN SPARKS.",
+"op@479D"
+],
+"47E3": [
+"AHA!!!",
+"op@4788"
+],
+"4850": [
+"IT'S LOCKED, NATURALLY.",
+"op@4837"
+],
+"4868": [
+"THERE'S NO WAY TO OPEN IT.",
+"op@47FA"
+],
+"4883": [
+"IT IS OPEN.",
+"op@480D"
+],
+"488F": [
+"SOME THINGS FELL OUT.",
+"op@484A"
+],
+"48BC": [
+"NO. IT MIGHT BE DANGEROUS.",
+"op@48B6"
+]
+}

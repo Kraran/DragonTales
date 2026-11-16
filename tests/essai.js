@@ -1,13 +1,9 @@
 // Essai de bout en bout dans Chrome : étagère, lancement, solution complète, retour à l'étagère, reprise.
-//   node tests/essai.js <solution.txt>
+//   node tests/essai.js          (rejoue aventures/eldiablero/solution.txt ; code de sortie 1 si un contrôle échoue)
 let chromium; try{ ({chromium}=require('playwright')); }catch(e){ ({chromium}=require('/opt/npm-tools/node_modules/playwright')); }const fs=require('fs');const path=require('path');
 const PAGE='file://'+path.resolve(__dirname,'..','DragonTales.html'), OUT=path.resolve(__dirname,'out'); fs.mkdirSync(OUT,{recursive:true});
-const raw=fs.readFileSync(process.argv[2],'utf8');
-let body=raw.slice(raw.indexOf('START')).replace(/\([^)]*\)/g,' ').replace(/\r/g,'');let cmds=[];
-for(const line of body.split('\n')){ if(/^[A-Z ,\-]+$/.test(line.trim())&&!/,/.test(line)) continue; for(let c of line.split(/[,.]/)){c=c.trim();if(c)cmds.push(c);} }
-const D={W:'GO WEST',N:'GO NORTH',E:'GO EAST',S:'GO SOUTH'};
-cmds=cmds.map(c=>{const u=c.toUpperCase();return D[u]||u.replace('CACTUW','CACTUS').replace('BEETLEW','BEETLES');}).filter((c,i,a)=>!(c==='DROP BOWL'&&a[i+1]==='BREAK BOWL'));
-const say=(k,v)=>console.log(k.padEnd(34),v);
+const cmds=require('./charger.js')('eldiablero').solution;
+let bad=0; const say=(k,v)=>{ if(v===false) bad++; console.log((v===false?'ÉCHEC ':'')+k.padEnd(34),v); };   // un contrôle qui vaut false compte comme un échec
 (async()=>{const b=await chromium.launch({executablePath:process.env.CHROME||'/usr/bin/google-chrome',args:['--no-sandbox','--autoplay-policy=no-user-gesture-required']});
  const p=await b.newPage({viewport:{width:1920,height:1080}});const errs=[];p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error')errs.push(m.text());});
  const vis=s=>p.evaluate(s=>{const e=document.querySelector(s);return !!e&&!e.hidden;},s);
@@ -46,6 +42,7 @@ const say=(k,v)=>console.log(k.padEnd(34),v);
    } }
  await p.waitForTimeout(300);
  say('commandes jouées',n+' / '+cmds.length+', mains pleines '+full+', état '+await p.evaluate(()=>window.__dt.m.wait));
+ say('solution jouée jusqu’à la victoire',n===cmds.length&&full===0&&/complete/i.test(await p.innerText('#overlay')));
  say('fenêtre de fin',(await p.innerText('#overlay')).replace(/\n+/g,' | '));
  await p.screenshot({path:OUT+'/6-fin.png'});
  say('lieux visités',await p.evaluate(()=>window.__dt.state().visited.length));
@@ -61,4 +58,5 @@ const say=(k,v)=>console.log(k.padEnd(34),v);
  await p.click('.coin'); await p.click('#overlay button.main'); await p.waitForTimeout(200);
  say('indice',(await p.innerText('#log .turn.hint')).replace(/\n+/g,' | ').slice(0,160));
  await p.screenshot({path:OUT+'/9-jeu-fr.png'});
- say('erreurs JS',JSON.stringify(errs));await b.close();})();
+ say('erreurs JS',JSON.stringify(errs)); say('aucune erreur JavaScript',errs.length===0);
+ await b.close(); console.log(bad?bad+' échec(s)':'tout est bon'); process.exit(bad?1:0);})();

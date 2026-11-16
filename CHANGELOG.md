@@ -7,6 +7,7 @@
 - Le journal de la partie est conservé avec la sauvegarde : on le retrouve à la reprise, dans les deux versions et les deux langues.
 - Corrigé : recharger une sauvegarde ne rend plus les pièces magiques déjà dépensées dans la même partie.
 - El Diablero : le regard que l'on sent sur soi apparaît à la fenêtre de la cabane au lieu de flotter dans le ciel.
+- Dépôt : essais automatiques sur GitHub (solution rejouée, partie entière et sauvegardes dans Chrome), README en anglais.
 
 ## 0.5.0 — 16 novembre 2026
 

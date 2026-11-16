@@ -1,5 +1,9 @@
 # DragonTales
 
+[![Essais](https://github.com/Kraran/DragonTales/actions/workflows/essais.yml/badge.svg)](https://github.com/Kraran/DragonTales/actions/workflows/essais.yml)
+
+*[English version](README.en.md)*
+
 Les légendes renaissent sur PC : un moteur pour rejouer aujourd'hui les aventures textuelles du Dragon 32/64,
 traduites en français et illustrées, dans une simple page web.
 
@@ -62,9 +66,9 @@ Jouer.bat           lanceur Windows
 moteur/             processeur 6809, machine Dragon, étagère et interface de jeu, sons
 aventures/          un dossier par aventure (programme d'origine, traduction, lieux, dessins, indices, images, musique)
 tests/              essais automatiques
-outils/             extraction d'une cassette .cas, désassembleur de travail
+outils/             extraction d'une cassette .cas, désassembleur de travail, textes d'origine relevés
 docs/               documentation, notes des versions
-.github/workflows/  préparation automatique des versions
+.github/workflows/  essais automatiques, préparation des versions
 ```
 
 Pour ajouter une aventure : [docs/AJOUTER-UNE-AVENTURE.md](docs/AJOUTER-UNE-AVENTURE.md).
@@ -72,13 +76,16 @@ Pour ajouter une aventure : [docs/AJOUTER-UNE-AVENTURE.md](docs/AJOUTER-UNE-AVEN
 ## Essais
 
 ```
-node tests/rejouer-solution.js eldiablero solution.txt     # sans navigateur : doit finir par VICTOIRE
-node tests/essai.js solution.txt                           # dans Chrome, avec Playwright (npm install playwright)
-node tests/sauvegardes.js                                  # pièces magiques, journal conservé, export et import
+node tests/rejouer-solution.js      # sans navigateur : rejoue aventures/eldiablero/solution.txt, doit finir par VICTOIRE
+python build.py
+node tests/essai.js                 # dans Chrome, avec Playwright : étagère, partie entière, retour, reprise
+node tests/sauvegardes.js           # dans Chrome : pièces magiques, journal conservé, export et import
 ```
 
-`solution.txt` est une suite de commandes anglaises séparées par des virgules, après une ligne `START`.
-Les solutions ne sont pas fournies dans le dépôt.
+Les deux derniers demandent `npm install playwright` et Chrome (variable `CHROME` pour indiquer son chemin).
+GitHub lance ces trois essais à chaque modification poussée sur `main` et sur chaque demande de fusion.
+
+Attention : `aventures/eldiablero/solution.txt` dévoile toute l'aventure.
 
 ## Crédits
 

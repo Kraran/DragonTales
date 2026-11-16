@@ -1,14 +1,9 @@
-// Rejoue une solution dans le programme d'origine, sans navigateur, et vérifie qu'on arrive à la victoire.
-//   node tests/rejouer-solution.js eldiablero <solution.txt> [--sans-correctifs]
-// La solution est une suite de commandes anglaises séparées par des virgules, après une ligne START.
-const fs=require('fs'), path=require('path');
-const Machine=require('../moteur/machine.js'), adv=require('./charger.js')(process.argv[2]);
-const raw=fs.readFileSync(process.argv[3],'utf8');
-let body=raw.slice(raw.indexOf('START')).replace(/\([^)]*\)/g,' ').replace(/\r/g,''), cmds=[];
-for(const line of body.split('\n')){ if(/^[A-Z ,\-]+$/.test(line.trim())&&!/,/.test(line)) continue;
-  for(let c of line.split(/[,.]/)){ c=c.trim(); if(c) cmds.push(c); } }
-const D={W:'GO WEST',N:'GO NORTH',E:'GO EAST',S:'GO SOUTH'};
-cmds=cmds.map(c=>{ const u=c.toUpperCase(); return D[u]||u.replace('CACTUW','CACTUS').replace('BEETLEW','BEETLES'); });
+// Rejoue la solution d'une aventure (aventures/<nom>/solution.txt) dans le programme d'origine, sans navigateur,
+// et vérifie qu'on arrive à la victoire.
+//   node tests/rejouer-solution.js [aventure] [--sans-correctifs]        (aventure : eldiablero par défaut)
+const Machine=require('../moteur/machine.js');
+const name=process.argv.slice(2).find(a=>!a.startsWith('--'))||'eldiablero', adv=require('./charger.js')(name), cmds=adv.solution;
+if(!cmds.length){ console.log('aventures/'+name+'/solution.txt est absent ou vide'); process.exit(1); }
 let won=false, texts=0, missing=new Set();
 const io={out(){},puts(){},cls(){},save(){},load(){return null;},quit(v){won=!!v;},fixes:!process.argv.includes('--sans-correctifs'),
   text(a){ texts++; const k=a.toString(16).toUpperCase().padStart(4,'0'); if(adv.FR.TEXT[k]===undefined) missing.add(k); return null; }};

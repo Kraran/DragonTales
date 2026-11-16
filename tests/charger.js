@@ -1,4 +1,5 @@
 // Charge une aventure sous Node comme le fait build.py dans la page (sans images ni musique) : renvoie sa fiche.
+// adv.solution : les commandes de aventures/<nom>/solution.txt (une par ligne, # pour les commentaires), ou [] s'il n'y en a pas.
 const fs=require('fs'), path=require('path');
 module.exports=function(name){
   const dir=path.resolve(__dirname,'..','aventures',name);
@@ -7,5 +8,7 @@ module.exports=function(name){
   let adv=null;
   new Function('DragonTales','ASSETS',src)({register(a){ adv=a; }},{});
   adv.bin=fs.readFileSync(path.join(dir,'programme.bin'));
+  const sol=path.join(dir,'solution.txt');
+  adv.solution=fs.existsSync(sol)?fs.readFileSync(sol,'utf8').split(/\r?\n/).map(l=>l.trim()).filter(l=>l&&!l.startsWith('#')).map(l=>l.toUpperCase()):[];
   return adv;
 };

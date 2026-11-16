@@ -1,0 +1,43 @@
+# À chaque modification : rejoue la solution de chaque aventure dans le programme d'origine,
+# assemble la page, puis la fait jouer par Chrome (étagère, partie entière, sauvegardes).
+name: Essais
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  essais:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Rejouer les solutions sans navigateur
+        run: |
+          for d in aventures/*/; do
+            n="$(basename "$d")"
+            if [ -f "$d/solution.txt" ]; then node tests/rejouer-solution.js "$n"; else echo "$n : pas de solution.txt"; fi
+          done
+      - name: Assembler la page
+        run: python build.py
+      - name: Installer Playwright (avec le Chrome de la machine)
+        run: npm install --no-save playwright
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      - name: Partie entière dans Chrome
+        run: node tests/essai.js
+      - name: Sauvegardes dans Chrome
+        run: node tests/sauvegardes.js
+      - name: Garder les captures en cas d'échec
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: captures
+          path: tests/out/

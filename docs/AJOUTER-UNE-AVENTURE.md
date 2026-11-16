@@ -24,6 +24,7 @@ aventures/eldiablero/
   hints.js                    indices des pièces magiques
   programme.bin               code machine d'origine, extrait de la cassette
   boite.jpg  couverture.jpg  musique.ogg
+  solution.txt                suite de commandes menant à la victoire, pour les essais automatiques
 outils/
   cas.py, dis.py              extraction du binaire d'une cassette, désassembleur de travail
 tests/
@@ -46,7 +47,8 @@ tests/
 3. **Écrire les modules** : `fr.js` (traduction), `data.js` (lieux), `scenes.js` (dessins), `hints.js` (indices).
    Ils sont assemblés par ordre alphabétique, `aventure.js` en dernier, dans une portée propre à l'aventure :
    deux aventures peuvent donc utiliser les mêmes noms (`FR`, `ROOMS`…) sans se gêner.
-4. **Vérifier** : `node tests/rejouer-solution.js <nom> solution.txt`, puis `python build.py` et ouvrir `DragonTales.html`.
+4. **Écrire `solution.txt`** : une commande anglaise du jeu par ligne, jusqu'à la victoire. GitHub la rejouera à chaque modification.
+5. **Vérifier** : `node tests/rejouer-solution.js <nom>`, puis `python build.py` et ouvrir `DragonTales.html`.
 
 ## Ce que le moteur attend d'une aventure
 
