@@ -12,6 +12,8 @@ DragonTales.register({
  id:'eldiablero', order:1,
  storage:'eldiablero',                    // préfixe des sauvegardes et réglages dans le navigateur
  title:'El Diablero', author:'Kenneth Kalish', publisher:'Computerware', year:1982, system:'Dragon 32',
+ // notes sur 5 (jugement du jeu d'origine, 17/11/2026) : difficulté (plus c'est haut, plus c'est dur) et note globale
+ rating:{difficulty:4.2,overall:3.8},
  blurb:{
   fr:'Seul dans le désert, la mémoire vide, un apprenti sorcier doit retrouver ses sortilèges avant d’affronter le diablero qui a fait disparaître son maître.',
   en:'Alone in the desert, his memory gone, a sorcerer’s apprentice must recover his spells before facing the diablero who made his teacher vanish.'},

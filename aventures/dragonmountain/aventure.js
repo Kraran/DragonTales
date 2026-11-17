@@ -14,6 +14,8 @@ DragonTales.register({
  id:'dragonmountain', order:2,
  storage:'dragonmountain',
  title:'Dragon Mountain', author:'', publisher:'Dragon Data', year:1982, system:'Dragon 32',
+ // notes sur 5 (jugement du jeu d'origine, 17/11/2026) : difficulté (plus c'est haut, plus c'est dur) et note globale
+ rating:{difficulty:3.6,overall:3.3},
  blurb:{
   fr:'Un trésor dort au cœur de la montagne, gardé par un dragon, un démon et des elfes. Il faudra de quoi manger, boire, se couvrir et combattre pour en ressortir vivant.',
   en:'A treasure lies in the heart of the mountain, guarded by a dragon, a demon and elves. You will need food, water, warmth and weapons to come out alive.'},

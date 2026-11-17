@@ -17,7 +17,9 @@ const WATER={fr:[[.75,'au cou'],[.5,'à la taille'],[.25,'aux genoux'],[0,'aux c
 DragonTales.register({
  id:'poseidon', order:3,
  storage:'poseidon',
- title:'S.S. Poseidon', author:'Bill et Debbie Cook', publisher:'Dragon Data', year:1982, system:'Dragon 32',
+ title:'S.S. Poseidon', author:{fr:'Bill et Debbie Cook',en:'Bill and Debbie Cook'}, publisher:'Dragon Data', year:1982, system:'Dragon 32',
+ // notes sur 5 (jugement du jeu d'origine, 17/11/2026) : difficulté (plus c'est haut, plus c'est dur) et note globale
+ rating:{difficulty:3.1,overall:3.1},
  blurb:{
   fr:'Un raz-de-marée a retourné le paquebot Poseidon, qui flotte la quille en l’air. Remonte jusqu’à la coque avant que l’eau n’envahisse tout.',
   en:'A tidal wave has capsized the liner Poseidon, which floats upside down. Climb up to the hull before the water fills the ship.'},

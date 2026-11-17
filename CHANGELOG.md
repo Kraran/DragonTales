@@ -1,5 +1,10 @@
 # Journal des versions
 
+## À venir
+
+- Étagère : sous la description de chaque aventure, sa difficulté et sa note globale sur 5, en étoiles remplies au
+  dixième près (El Diablero 4,2 et 3,8 ; Dragon Mountain 3,6 et 3,3 ; S.S. Poseidon 3,1 et 3,1).
+
 ## 0.7.1 — 17 novembre 2026
 
 Troisième aventure : **S.S. Poseidon** (Poseidon Adventure, Bill et Debbie Cook, Dragon Data, 1982).

@@ -40,7 +40,8 @@ tests/
 1. **Créer le dossier** `aventures/<nom>/` et y déposer `programme.bin` (le binaire extrait du `.cas`), `boite.jpg`
    (image de l'étagère, format portrait), `couverture.jpg` (fond de l'écran d'introduction, 16/9) et, si on veut, `musique.ogg`.
 2. **Écrire `aventure.js`** en partant de celui d'El Diablero. Il appelle `DragonTales.register({...})` avec :
-   - l'identité : `id`, `storage` (préfixe des sauvegardes), `title`, `author`, `publisher`, `year`, `system`, `blurb.fr/en` ;
+   - l'identité : `id`, `storage` (préfixe des sauvegardes), `title`, `author`, `publisher`, `year`, `system`, `blurb.fr/en`,
+     `rating` (difficulté et note globale sur 5, affichées en étoiles sur l'étagère : `{difficulty:3.6, overall:3.3}`) ;
    - `machine` : adresse de chargement, routine d'affichage des textes, adresse de victoire, attente de l'écran titre, correctifs ;
      pour un jeu en BASIC : `kind: 'basic'`, le texte de victoire et les lignes corrigées (`patches`, écrites en BASIC) ;
    - `sfx` (facultatif) : des sons propres à l'aventure, synthétisés comme ceux de `moteur/sfx.js` (voir Dragon Mountain, `sons.js`) ;

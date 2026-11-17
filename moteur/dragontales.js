@@ -45,7 +45,7 @@ const T={
   abVersion:'Version',abDate:'Date',abAuthor:'Auteur',abRepo:'Dépôt',abStack:'Techno',abStackText:'HTML, CSS, JavaScript (émulateur 6809), Python pour l’assemblage',abGames:'Aventures',
   aboutNote:'Logiciel fourni « tel quel ». Les programmes, textes et illustrations d’origine des aventures appartiennent à leurs auteurs et éditeurs.',abProfile:'Profil Kraran',abGithub:'Dépôt GitHub',
   backShelf:'Retour à DragonTales',play:'Jouer',playing:'Partie en cours',noGame:'Pas encore commencée',by:'de',
-  shelfTag:'Les aventures textuelles du Dragon 32/64, traduites et illustrées',soon:'D’autres aventures prendront place ici.',shPrev:'Aventures précédentes',shNext:'Aventures suivantes',quitShelf:'Quitter DragonTales ?',quitShelfNote:'Les parties en cours sont sauvegardées automatiquement.',
+  shelfTag:'Les aventures textuelles du Dragon 32/64, traduites et illustrées',soon:'D’autres aventures prendront place ici.',difficulty:'Difficulté',overall:'Note globale',shPrev:'Aventures précédentes',shNext:'Aventures suivantes',quitShelf:'Quitter DragonTales ?',quitShelfNote:'Les parties en cours sont sauvegardées automatiquement.',
   dirs:{W:'Ouest',N:'Nord',E:'Est',S:'Sud',U:'Haut',D:'Bas'}},
  en:{here:'Here',inv:'Carrying',lex:'Words met so far',nothing:'nothing',none:'none yet',
   ph:'Click a verb then a word, or type a command…',cancel:'Cancel',
@@ -78,7 +78,7 @@ const T={
   abVersion:'Version',abDate:'Date',abAuthor:'Author',abRepo:'Repository',abStack:'Built with',abStackText:'HTML, CSS, JavaScript (6809 emulator), Python for the build',abGames:'Adventures',
   aboutNote:'Software provided “as is”. The original programs, texts and artwork of the adventures belong to their authors and publishers.',abProfile:'Kraran’s profile',abGithub:'GitHub repository',
   backShelf:'Back to DragonTales',play:'Play',playing:'Game in progress',noGame:'Not started yet',by:'by',
-  shelfTag:'Text adventures from the Dragon 32/64, translated and illustrated',soon:'More adventures will take their place here.',shPrev:'Previous adventures',shNext:'Next adventures',quitShelf:'Quit DragonTales?',quitShelfNote:'Games in progress are saved automatically.',
+  shelfTag:'Text adventures from the Dragon 32/64, translated and illustrated',soon:'More adventures will take their place here.',difficulty:'Difficulty',overall:'Overall rating',shPrev:'Previous adventures',shNext:'Next adventures',quitShelf:'Quit DragonTales?',quitShelfNote:'Games in progress are saved automatically.',
   dirs:{W:'West',N:'North',E:'East',S:'South',U:'Up',D:'Down'}}
 };
 const t0=()=>T[lang];
@@ -148,12 +148,13 @@ function renderShelf(){
   // la molette fait défiler l'étagère de gauche à droite
   row.addEventListener('wheel',ev=>{ if(Math.abs(ev.deltaY)>Math.abs(ev.deltaX)&&row.scrollWidth>row.clientWidth){ ev.preventDefault(); row.scrollBy({left:ev.deltaY*1.5}); } },{passive:false});
   // la boîte choisie reste visible (flèches du clavier)
-  const on=row.querySelector('.shBox.on'); if(on){ const l=on.offsetLeft-row.offsetLeft, r=l+on.offsetWidth; if(l<keep||r>keep+row.clientWidth) row.scrollTo({left:Math.max(0,l<keep?l-8:r-row.clientWidth+8)}); }
+  const on=row.querySelector('.shBox.on'); if(on){ const l=on.offsetLeft-row.offsetLeft, r=l+on.offsetWidth; if(l<keep+12||r>keep+row.clientWidth-12) row.scrollTo({left:Math.max(0,l<keep+12?l-14:r-row.clientWidth+14)}); }
   const a=ADVENTURES[picked], info=el('section','shInfo');
   if(a){
     info.appendChild(el('h2',null,a.title));
-    info.appendChild(el('p','shMeta',[a.author?t0().by+' '+a.author:'',a.publisher,a.year,a.system].filter(Boolean).join(', ')));
+    info.appendChild(el('p','shMeta',[a.author?t0().by+' '+authorOf(a):'',a.publisher,a.year,a.system].filter(Boolean).join(', ')));
     info.appendChild(el('p','shBlurb',a.blurb[lang]));
+    if(a.rating) info.appendChild(ratingEl(a.rating));
     const d=savedGame(a);
     info.appendChild(el('p','shState',d?t0().playing+' ('+new Date(d.date).toLocaleDateString(lang,{day:'numeric',month:'long',year:'numeric'})+')':t0().noGame));
     const r=el('div','row'); btn(r,t0().play,()=>launch(a),true); info.appendChild(r);
@@ -166,6 +167,18 @@ function renderShelf(){
   sh.appendChild(foot);
   const m=info.querySelector('button.main'); if(m&&ov.hidden) m.focus();
 }
+// notes sur 5 en étoiles, chacune remplie au prorata (3,8 : trois pleines et une remplie aux huit dixièmes)
+const STAR='M12 1.6l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.7l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9Z';
+let starId=0;
+function stars(v){ const w=el('span','shStars'); for(let i=0;i<5;i++){ const f=Math.max(0,Math.min(1,v-i)), id='st'+(++starId);
+    w.insertAdjacentHTML('beforeend',`<svg viewBox="0 0 24 24" aria-hidden="true"><defs><clipPath id="${id}"><rect width="${f>=1?24:f<=0?0:(1.7+20.6*f).toFixed(2)}" height="24"/></clipPath></defs><path class="e" d="${STAR}"/><path class="f" d="${STAR}" clip-path="url(#${id})"/></svg>`); }
+  return w; }
+function ratingEl(r){ const box=el('div','shRating'), num=v=>v.toLocaleString(lang,{minimumFractionDigits:1,maximumFractionDigits:1});
+  [['difficulty',t0().difficulty],['overall',t0().overall]].forEach(([k,label])=>{ if(r[k]==null) return;
+    const row=el('div','shRate'+(k==='overall'?' all':'')); row.setAttribute('role','img'); row.setAttribute('aria-label',label+' : '+num(r[k])+' / 5');
+    row.appendChild(el('span','shRateL',label)); row.appendChild(stars(r[k])); row.appendChild(el('span','shRateN',num(r[k]))); box.appendChild(row); });
+  return box; }
+const authorOf=a=>a.author&&typeof a.author==='object'?a.author[lang]||a.author.fr:a.author;   // un nom, ou {fr, en}
 function openShelf(){ shelfOpen=true; picked=Math.max(0,ADVENTURES.findIndex(a=>current&&a.id===current.id)); $('shelf').hidden=false; renderShelf(); }
 function launch(a){
   enterFullscreen();
@@ -200,7 +213,7 @@ function showAbout(){
     row(t0().abAuthor,au);
     row(t0().abRepo,link(ABOUT.repo,ABOUT.repoLabel));
     row(t0().abStack,t0().abStackText);
-    row(t0().abGames,ADVENTURES.map(a=>a.title+' ('+[a.author,a.publisher,a.year].filter(Boolean).join(', ')+')').join(' ; '));
+    row(t0().abGames,ADVENTURES.map(a=>a.title+' ('+[authorOf(a),a.publisher,a.year].filter(Boolean).join(', ')+')').join(' ; '));
     main.appendChild(dl);
     main.appendChild(el('p','abNote',t0().aboutNote));
     lay.appendChild(main); c.appendChild(lay);

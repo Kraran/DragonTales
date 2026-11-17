@@ -206,6 +206,15 @@ svg.links.top{pointer-events:none;z-index:2}
 .shInfo p{margin:0 0 18px}
 .shMeta{font:21px/1.4 var(--sans);color:var(--souci)}
 .shBlurb{font:26px/1.5 var(--serif);color:var(--sable)}
+.shRating{margin:0 0 20px;display:grid;gap:10px}
+.shRate{display:grid;grid-template-columns:170px auto auto;justify-content:start;align-items:center;gap:16px;font:20px/1 var(--sans);color:var(--sourd)}
+.shStars{display:inline-flex;gap:4px}
+.shStars svg{width:28px;height:28px;display:block}
+.shStars .e{fill:#3a352c}
+.shStars .f{fill:#b88a3a}
+.shRate.all{color:var(--sable)}
+.shRate.all .shStars .f{fill:var(--souci)}
+.shRateN{font-variant-numeric:tabular-nums}
 .shState{font:19px/1.4 var(--sans);color:var(--sourd)}
 .shInfo .row{display:flex;margin-top:30px}
 #shelf button:not(.shBox):not(.shTitle):not(.shArrow){background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:13px 26px;font-size:21px;color:var(--os)}
