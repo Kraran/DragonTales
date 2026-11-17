@@ -14,12 +14,14 @@ DragonTales l'habille : textes traduits, jeu à la souris, carte, illustrations,
 
 ![El Diablero en version moderne](docs/jeu.jpg)
 
+![Dragon Mountain en version moderne](docs/dragonmountain.jpg)
+
 ## Aventures
 
 | Aventure | Auteur, éditeur | Année | Machine | Langues |
 |---|---|---|---|---|
 | El Diablero | Kenneth Kalish, Computerware | 1982 | Dragon 32 | français, anglais |
-| Dragon Mountain *(en cours d'intégration)* | Dragon Data | 1982 | Dragon 32 | — |
+| Dragon Mountain | Dragon Data | 1982 | Dragon 32 | français, anglais |
 
 ## Jouer
 
@@ -38,6 +40,8 @@ Sauvegardes permet de les exporter dans un fichier pour les reprendre ailleurs.
 - **Jeu à la souris** : un verbe, puis un mot du texte, un objet ou une direction. On peut toujours écrire ses commandes.
 - **Carte** dessinée au fil de l'exploration, avec les objets visibles et les passages particuliers ; un clic y conduit.
 - **Trois pièces magiques** par partie : chacune donne un indice adapté à l'endroit où l'on en est.
+- **Jeux en code machine ou en BASIC** : le programme d'origine tourne dans un émulateur 6809 ou dans un interpréteur
+  Dragon BASIC, corrigé au besoin quand il contient des bugs.
 - **Sauvegardes** (automatique et trois emplacements, export et import par fichier), annulation du dernier coup,
   musique et effets sonores réglables.
 
@@ -81,17 +85,19 @@ node tests/rejouer-solution.js      # sans navigateur : rejoue aventures/eldiabl
 python build.py
 node tests/essai.js                 # dans Chrome, avec Playwright : étagère, partie entière, retour, reprise
 node tests/sauvegardes.js           # dans Chrome : pièces magiques, journal conservé, export et import
-python build.py --tout && node tests/essai-dragonmountain.js   # Dragon Mountain (en cours d'intégration)
+node tests/essai-dragonmountain.js  # dans Chrome : Dragon Mountain (partie entière, sauvegardes, langues, mort)
 ```
 
 Les deux derniers demandent `npm install playwright` et Chrome (variable `CHROME` pour indiquer son chemin).
 GitHub lance ces trois essais à chaque modification poussée sur `main` et sur chaque demande de fusion.
 
-Attention : `aventures/eldiablero/solution.txt` dévoile toute l'aventure.
+Attention : les fichiers `solution.txt` des aventures dévoilent tout le jeu.
 
 ## Crédits
 
 - **El Diablero** : programme et textes d'origine de Kenneth Kalish, publiés par Computerware en 1982.
   Le binaire, l'illustration de la boîte et celle de l'écran d'introduction appartiennent à leurs ayants droit.
-- Portage, traduction française, interface, illustrations vectorielles, indices et effets sonores : projet DragonTales.
-- Musique d'El Diablero : « Awakening in the Desert », créée pour ce projet.
+- **Dragon Mountain** : programme et textes d'origine publiés par Dragon Data en 1982.
+  Le programme et la boîte d'origine appartiennent à leurs ayants droit.
+- Portage, traductions françaises, interface, illustrations vectorielles, indices et effets sonores : projet DragonTales.
+- Musiques : « Awakening in the Desert » (El Diablero) et « The Guardian's Hoard » (Dragon Mountain), créées pour ce projet.

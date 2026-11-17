@@ -1,5 +1,4 @@
 // Dragon Mountain (Dragon Data, 1982) — fiche de l'aventure pour DragonTales.
-// EN COURS (voir EN-COURS.md) : build.py ne l'inclut pas encore dans DragonTales.html (python build.py --tout pour l'essayer).
 // Ce fichier est assemblé après data.js, hints.js, scenes.js, sons.js et textes.js du même dossier : ROOMS, POS, HINTS, SCENES,
 // DM_SFX et dmSfxFor, FR et dmSay/dmClean.
 // Le jeu est écrit en Dragon BASIC : il tourne dans moteur/basic.js, et la partie se lit dans ses variables

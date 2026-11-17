@@ -1,15 +1,33 @@
 # Journal des versions
 
-## 0.5.1 — 16 novembre 2026
+## 0.6.0 — 17 novembre 2026
 
+Deuxième aventure : **Dragon Mountain** (Dragon Data, 1982). Le moteur sait désormais jouer les jeux écrits en BASIC.
+
+### Dragon Mountain
+- Programme d'origine exécuté par un interpréteur Dragon BASIC, avec le hasard du jeu : chaque partie est différente.
+- Deux bugs d'origine corrigés : le dragon pouvait bloquer la partie s'il apparaissait avant qu'on ait la dague ;
+  le gobelet nourrissait, et le troisième panier de nourriture ne se mangeait pas.
+- Traduction française complète, versions moderne et classique, carte sur deux étages et la salle du trésor.
+- Une illustration par lieu, avec les objets, l'elfe, le démon, le dragon et les portes ouvertes.
+- Pièces magiques : dix étapes d'indices et six indices de situation ; le second indice nomme le lieu réel de l'objet.
+- Musique « The Guardian's Hoard » et effets sonores propres à l'aventure (dragon, démon, elfes, combats, portes, feu…).
+
+### Moteur
+- Interpréteur Dragon BASIC (`moteur/basic.js`), corrections de programme écrites en BASIC, carte à étages,
+  sons et éléments de scène propres à chaque aventure.
 - Fenêtre « À propos » : un clic sur le titre DragonTales de l'étagère l'ouvre (version, date, auteur, dépôt, aventures).
-- Étagère : barre de défilement aux couleurs du thème (rail sombre, curseur doré), défilement à la molette, la boîte choisie
-  reste visible. Corrigé : le bouton Jouer avait perdu sa couleur dorée.
+- Étagère : barre de défilement aux couleurs du thème, défilement à la molette, la boîte choisie reste visible.
 - Sauvegardes : export de la partie en cours dans un fichier et import d'un fichier, pour changer d'ordinateur ou de navigateur.
 - Le journal de la partie est conservé avec la sauvegarde : on le retrouve à la reprise, dans les deux versions et les deux langues.
 - Corrigé : recharger une sauvegarde ne rend plus les pièces magiques déjà dépensées dans la même partie.
-- El Diablero : le regard que l'on sent sur soi apparaît à la fenêtre de la cabane au lieu de flotter dans le ciel.
-- Dépôt : essais automatiques sur GitHub (solution rejouée, partie entière et sauvegardes dans Chrome), README en anglais.
+- Corrigé : le bouton Jouer de l'étagère avait perdu sa couleur dorée.
+
+### El Diablero
+- Le regard que l'on sent sur soi apparaît à la fenêtre de la cabane au lieu de flotter dans le ciel.
+
+### Dépôt
+- Essais automatiques sur GitHub (solutions rejouées, parties entières et sauvegardes dans Chrome), README en anglais.
 
 ## 0.5.0 — 16 novembre 2026
 

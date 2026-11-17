@@ -14,12 +14,14 @@ DragonTales dresses it up: translated texts, mouse play, a map, illustrations, s
 
 ![El Diablero in the modern version](docs/jeu.jpg)
 
+![Dragon Mountain in the modern version](docs/dragonmountain.jpg)
+
 ## Adventures
 
 | Adventure | Author, publisher | Year | Machine | Languages |
 |---|---|---|---|---|
 | El Diablero | Kenneth Kalish, Computerware | 1982 | Dragon 32 | French, English |
-| Dragon Mountain *(being integrated)* | Dragon Data | 1982 | Dragon 32 | — |
+| Dragon Mountain | Dragon Data | 1982 | Dragon 32 | French, English |
 
 ## Play
 
@@ -40,6 +42,8 @@ Games are saved in the browser; the saved-games window can export them to a file
 - **Mouse play**: a verb, then a word from the text, an object or a direction. Typing commands always works.
 - **A map** drawn as you explore, with visible objects and special passages; one click walks you there.
 - **Three magic coins** per game: each gives a hint suited to where you are in the adventure.
+- **Machine-code or BASIC games**: the original program runs in a 6809 emulator or in a Dragon BASIC interpreter,
+  patched when it contains bugs.
 - **Saved games** (autosave and three slots, export and import as files), undo, adjustable music and sound effects.
 
 ## Build the page
@@ -76,17 +80,19 @@ node tests/rejouer-solution.js      # no browser: replays aventures/eldiablero/s
 python build.py
 node tests/essai.js                 # in Chrome, with Playwright: shelf, full game, back to the shelf, resume
 node tests/sauvegardes.js           # in Chrome: magic coins, kept history, export and import
-python build.py --tout && node tests/essai-dragonmountain.js   # Dragon Mountain (being integrated)
+node tests/essai-dragonmountain.js  # in Chrome: Dragon Mountain (full game, saves, languages, death)
 ```
 
 The last two need `npm install playwright` and Chrome (set `CHROME` to its path if needed).
 GitHub runs all three on every push to `main` and on every pull request.
 
-Warning: `aventures/eldiablero/solution.txt` spoils the whole adventure.
+Warning: the adventures' `solution.txt` files spoil the whole game.
 
 ## Credits
 
 - **El Diablero**: original program and texts by Kenneth Kalish, published by Computerware in 1982.
   The binary, the box art and the title-screen art belong to their rights holders.
-- Port, French translation, interface, vector illustrations, hints and sound effects: the DragonTales project.
-- El Diablero music: “Awakening in the Desert”, made for this project.
+- **Dragon Mountain**: original program and texts published by Dragon Data in 1982.
+  The program and the original box belong to their rights holders.
+- Port, French translations, interface, vector illustrations, hints and sound effects: the DragonTales project.
+- Music: “Awakening in the Desert” (El Diablero) and “The Guardian's Hoard” (Dragon Mountain), made for this project.

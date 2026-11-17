@@ -1,6 +1,6 @@
 // Essai de Dragon Mountain (jeu en BASIC) dans Chrome : partie entière avec la graine de solution.txt, sauvegarde et
 // chargement, version classique, français et anglais, formule magique, mort.
-//   python build.py --tout && node tests/essai-dragonmountain.js
+//   python build.py && node tests/essai-dragonmountain.js
 let chromium; try{ ({chromium}=require('playwright')); }catch(e){ ({chromium}=require('/opt/npm-tools/node_modules/playwright')); }
 const fs=require('fs'), path=require('path');
 const PAGE='file://'+path.resolve(__dirname,'..','DragonTales.html'), OUT=path.resolve(__dirname,'out'); fs.mkdirSync(OUT,{recursive:true});

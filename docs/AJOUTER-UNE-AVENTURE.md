@@ -65,9 +65,9 @@ tests/
 - des **lieux sur une grille** (`world.cols` colonnes) pour la carte. Les passages hors grille sont tracés au fur et à mesure.
 
 Les jeux écrits en **Dragon BASIC** tournent dans `moteur/basic.js` (`machine.kind: 'basic'`) : l'interpréteur lit le
-programme tokenisé de la cassette. L'interface ne sait pas encore les afficher : c'est l'étape en cours avec Dragon Mountain
-(voir `docs/PLAN-DRAGON-MOUNTAIN.md`). Ce qui demandera encore du travail : un jeu sans routine d'affichage unique, ou une
-carte qui n'est pas une grille. Dans tous les cas il faut d'abord désassembler le
+programme tokenisé de la cassette, et l'interface les affiche ligne par ligne (`world.say` traduit chaque ligne). Dragon
+Mountain en est l'exemple complet (voir `docs/PLAN-DRAGON-MOUNTAIN.md`). Une carte qui n'est pas une grille se décrit
+lieu par lieu (`world.pos` : colonne, ligne, étage). Dans tous les cas il faut d'abord désassembler le
 programme pour trouver ses tables : c'est la partie longue, propre à chaque jeu.
 
 ## Sauvegardes

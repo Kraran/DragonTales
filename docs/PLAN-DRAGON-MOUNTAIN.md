@@ -78,10 +78,10 @@ L'aventure se joue de bout en bout dans l'interface (`python build.py --tout`), 
       « Musique pendant le jeu », elle joue dans le château et s'efface en fondu au royaume des gardiens.
 - [ ] Relecture de la traduction par l'auteur du projet, en jouant.
 
-### 4. Vérifier et publier
+### 4. Vérifier et publier — fait
 
-- [ ] Essais dans Chrome : partie entière en version moderne et classique, en français et en anglais, sauvegardes.
-- [ ] Retirer `EN-COURS.md`, mettre à jour l'étagère, le README et le journal des versions ; publier la 0.6.0.
+- [x] Essais dans Chrome : partie entière en version moderne et classique, en français et en anglais, sauvegardes.
+- [x] `EN-COURS.md` retiré, README et journal des versions à jour ; version 0.6.0 préparée le 17 novembre 2026.
 
 ## Décisions (16 novembre 2026)
 
