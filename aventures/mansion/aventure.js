@@ -1,5 +1,5 @@
 // Mansion of Doom — Leroy C. Smith et Paul Austin, Pal Creations, 1982 (diffusé par Dragon Data) — fiche de l'aventure.
-// ÉBAUCHE D'INTÉGRATION (17/11/2026) : le jeu tourne, se gagne (solution.txt) et s'affiche ; textes, décors, indices,
+// INTÉGRATION EN COURS (17/11/2026) : le jeu tourne, se gagne (solution.txt) et il est traduit ; décors, indices,
 // sons et musique restent à faire (voir docs/PLAN-MANSION.md). Le dossier contient EN-COURS.md : build.py ne l'assemble
 // qu'avec « --tout ».
 // Ce fichier est assemblé après data.js, scenes.js et textes.js du même dossier : ROOMS, POS, SCENES, FR, mdSay/mdClean.
@@ -36,7 +36,18 @@ DragonTales.register({
   screen:true,                                        // écrans titres en couleur, carte en semi-graphiques (CLS n, SET, PRINT @)
   // Sur le Dragon, l'écran titre (rouge) restait affiché pendant que le programme lisait ses DATA, quelques secondes.
   // Ici la lecture est instantanée : une pause de 4 secondes avant la question des instructions rend l'écran titre.
-  patches:{110:'FOR Z9=1 TO 2700:NEXT:CLS:PRINT@228,"NEED INSTRUCTIONS? (Y/N)"'}
+  // Les parties perdues sans le savoir deviennent des fins expliquées (décidé le 17/11/2026) :
+  //  4150 les sables mouvants (lieu 71) n'ont pas d'issue : on y meurt, avec l'explication, après la description ;
+  //  1430 ouvrir la cassette avant d'avoir tué le vampire réduit la princesse en cendres : partie perdue, expliquée ;
+  //  1920 tirer sur l'interrupteur condamne la cave au noir ; sans la princesse en main, partie perdue, expliquée ;
+  //  1950 tirer sur la princesse : partie perdue, expliquée (le jeu laissait continuer sans victoire possible).
+  // Les textes ajoutés sont traduits dans textes.js (MD_MSG).
+  patches:{
+   110:'FOR Z9=1 TO 2700:NEXT:CLS:PRINT@228,"NEED INSTRUCTIONS? (Y/N)"',
+   4150:'IF F=71 THEN PRINT"THE QUICKSAND SWALLOWS YOU. THERE IS NO WAY OUT OF THE SOUTH PART OF THE MOOR. YOU ARE DEAD!":GOTO 3990 ELSE 270',
+   1430:'IF M=64 AND A(63)=0 THEN A(63)=F:PRINT"YOU FOUND THE PRINCESS!":IF B9=0 THEN C3=1:D$(63)="NOTHING REMAINS OF HER BUT ASHES":PRINT"SHE TURNS TO ASH BEFORE YOUR    EYES":PRINT"WITHOUT HER YOU CAN\'T WIN. THE VAMPIRE HAD TO BE SLAIN BEFORE THE CASKET WAS OPENED. YOU HAVE LOST.":GOTO 3990',
+   1920:'IF M=13 THEN A7=1:A6=0:IF A(63)<>-1 THEN PRINT"THE SWITCH IS DESTROYED. THE CELLAR WILL STAY DARK FOREVER, AND THE PRINCESS IS DOWN THERE. YOU HAVE LOST.":GOTO 3990',
+   1950:'IF M=63 THEN B7=1:D$(63)="SHE IS DEAD":PRINT"OK, YOU SHOT HER":PRINT"YOU SHOT THE PRINCESS. THE TOWN WILL NEVER FORGIVE YOU. YOU HAVE LOST.":GOTO 3990'}
  },
 
  // ---- textes, lieux, dessins ----
@@ -85,9 +96,10 @@ DragonTales.register({
   clean:(s,moved)=>mdClean(s,moved),
   // attentes de touche : « NEED INSTRUCTIONS? (Y/N) » (ligne 120) : non, l'introduction moderne les remplace ; ailleurs, espace
   autoKey:mem=>mem.line()===120?'N':' ',
-  status(mem,lang){ const h=mem.v('H'), r=mem.v('R'); if(!r) return '';
-   const t=7*60+Math.floor(h/7); const hh=Math.floor(t/60), mm=t%60;   // ÉBAUCHE : l'heure affichée reste à caler sur l'almanach et la montre
-   return lang==='fr'?`${hh} h ${String(mm).padStart(2,'0')}`:`${hh}:${String(mm).padStart(2,'0')} pm`; },
+  // l'heure, comme la montre du jeu (EXAMINE WATCH, lignes 1700 à 1740) : midi + H minutes. Seulement quand on porte la montre.
+  status(mem,lang){ if(mem.a('A',27)!==-1||mem.v('B1')===1) return ''; const h=Math.floor(mem.v('H')), hh=12+Math.floor(h/60), mm=String(h%60).padStart(2,'0');
+   return lang==='fr'?`Montre : ${hh} h ${mm}`:`Watch: ${hh-12||12}:${mm} pm`; },
+  musicZone:(key,kind)=>kind==='out',                  // dehors, devant le manoir, et sur la grand-place du village
   roomOff:mem=>Math.max(1,Math.floor(mem.v('F')))-1,
   roomKey:(mem,off)=>String(off+1),
   // destination de chaque sortie, lue dans B(F,1…6) ; la galerie des glaces (31) est réglée par les lignes 370 à 410

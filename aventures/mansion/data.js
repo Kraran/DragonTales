@@ -1,5 +1,5 @@
 // Mansion of Doom — les lieux : titre français, titre anglais, sorte de décor, et place sur la carte.
-// Clé : numéro du lieu dans le programme (1 à 77). Titres PROVISOIRES (à revoir avec la traduction des textes).
+// Clé : numéro du lieu dans le programme (1 à 77). Les titres suivent les descriptions traduites (textes.js).
 // POS : [colonne, ligne, niveau] ; niveau 0 = le rez-de-chaussée (et le village), 1 = le premier étage, 2 = le deuxième
 // étage et le grenier, 3 = la cave, 4 = la sous-cave. Les liens irréguliers (galerie des glaces, puits) sont dans aventure.js.
 const ROOMS={

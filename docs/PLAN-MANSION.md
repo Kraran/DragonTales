@@ -84,24 +84,45 @@ Au 17/11/2026, l'aventure tourne et se gagne. Elle s'affiche avec `python build.
 - Correctif 110 : une pause de 4 s garde l'écran titre rouge visible, comme sur le Dragon pendant la lecture des DATA.
 - Heure affichée sur le décor (provisoire).
 
-### 4. À faire
+### 4. Traduction — faite (17/11/2026)
 
-1. **Traduction** : les messages du programme, les 77 descriptions, les 66 objets et l'aide (`textes.js`, comme pour Poseidon). La version moderne retire ce que ses panneaux montrent déjà (« YOU CAN SEE », « YOU CAN GO », tirets, invite).
-2. **Écrits chiffrés** : traduits en français et rechiffrés avec le même alphabet, si c'est décidé. Il faut alors corriger les lignes du programme qui les affichent.
-3. **Mots de passe** français (TUER VAMPIRE, CHIEN…), si c'est décidé.
-4. **Pièges sans issue** : les signaler ou en faire des morts expliquées, selon la décision (voir plus bas).
-5. **Plan** : affiner la carte des cinq niveaux, avec les liens irréguliers (puits, glaces, échelle).
-6. **Décors** : 77 lieux, à regrouper par familles (chambres, couloirs, cave, sous-cave) avec des variantes ; icônes des objets.
-7. **Indices** (pièces magiques) : étapes tirées de la solution.
-8. **Sons** : bips d'origine (SOUND) dans les deux versions, bruitages dans la moderne (vent, chauves-souris, loup-garou, coup de feu, acide, cercueil…).
-9. **Musique** (Suno), dans une zone à définir.
-10. **Essai** `tests/essai-mansion.js` dans Chrome, note sur 5, publication.
+- `textes.js` : les messages du programme, les 77 descriptions, les 66 objets et leurs descriptions, les écrans titre, scénario et vocabulaire, l'aide.
+  - Le jeu ne dit pas de quel objet il parle (IT, HIM, HER, THEM) : le français reste neutre (« c'est ouvert », « tu l'as déjà »).
+  - La version moderne retire ce que ses panneaux montrent déjà : objets, sorties, tirets, invite, écran titre.
+  - La version classique française traduit l'écran du Dragon en majuscules, aux mêmes places.
+- **Écrits chiffrés** : traduits en français puis rechiffrés avec le même alphabet, sans accents. Le dictionnaire du jeu donne toujours l'alphabet.
+  - POUR TUER VAMPIRE DIS LE
+  - CECI PLUS AIL EGALE PROTECTION
+  - SMITH ET AUSTIN
+  - LUMIERES
+  - BICARBONATE
+  - YOREL/DETENTION/MAGIE
+  - TEMPS A REBOURS, et SPMET sur la potion (TEMPS à l'envers, comme EMIT pour TIME)
+  - C COMME CHUTE ET COMME CHIEN
+  - SOUS SOL (le plan)
+- **Mots de passe** : TUER VAMPIRE (ou TUER LE VAMPIRE) vaut SLAY VAMPIRE, CHIEN vaut DOG. YOREL reste tel quel.
+- **Fins expliquées** (correctifs dans `aventure.js`) :
+  - les sables mouvants tuent, avec l'explication ;
+  - la princesse en cendres, l'interrupteur détruit (sans la princesse en main) et la princesse abattue terminent la partie, en expliquant pourquoi elle est perdue.
+- Le HELP moqueur d'origine est gardé, traduit, en plus des pièces magiques.
+- L'heure du coucher du soleil reste tirée au hasard. Ce n'est pas gênant : il faut au moins 210 commandes pour l'atteindre (la solution en fait 121), la croix et l'ail protègent, et la potion remet l'horloge à midi.
+- L'heure s'affiche sur le décor quand on porte la montre, comme la montre du jeu (midi + 2 minutes par commande).
+- Zone de la musique : dehors, devant le manoir, et sur la grand-place du village (la musique reste à composer).
 
-## Décisions à prendre
+### 5. À faire
 
-1. **Écrits en gothique transylvanien** : les garder chiffrés en anglais (le dictionnaire donnerait l'anglais), ou traduire le texte en français puis le rechiffrer avec le même alphabet ?
-2. **Mots tapés en entier** : accepter aussi TUER VAMPIRE pour SLAY VAMPIRE et CHIEN pour DOG ? Garder YOREL tel quel ?
-3. **Parties perdues sans le savoir** (princesse en cendres, sables mouvants, interrupteur détruit, princesse abattue) : les laisser, les signaler, ou en faire des fins expliquées comme pour Poseidon ?
-4. **Le HELP moqueur** (« HELP!? YOU MUST BE KIDDING… ») : le garder tel quel (les pièces magiques donnent les vrais indices) ou le remplacer ?
-5. **Coucher du soleil au hasard** : le garder ?
-6. **Musique** : où la faire jouer (dehors et au village, ou dans la crypte) ?
+1. **Plan** : affiner la carte des cinq niveaux, avec les liens irréguliers (puits, glaces, échelle).
+2. **Décors** : 77 lieux, à regrouper par familles (chambres, couloirs, cave, sous-cave) avec des variantes ; icônes des objets.
+3. **Indices** (pièces magiques) : étapes tirées de la solution.
+4. **Sons** : bips d'origine (SOUND, PLAY) dans les deux versions, bruitages dans la moderne (vent, chauves-souris, loup-garou, coup de feu, acide, cercueil…).
+5. **Musique** (Suno), dehors et au village.
+6. **Essai** `tests/essai-mansion.js` dans Chrome, note sur 5, publication.
+
+## Décisions prises (17/11/2026)
+
+1. Écrits chiffrés : traduits en français et rechiffrés.
+2. TUER VAMPIRE et CHIEN acceptés ; YOREL gardé.
+3. Parties perdues sans le savoir : fins expliquées.
+4. HELP moqueur : gardé, en plus des pièces magiques.
+5. Coucher du soleil au hasard : gardé.
+6. Musique : dehors et au village, pas dans la sous-cave.
