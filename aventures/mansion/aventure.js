@@ -2,7 +2,8 @@
 // INTÉGRATION EN COURS (17/11/2026) : le jeu tourne, se gagne (solution.txt) et il est traduit ; décors, indices,
 // sons et musique restent à faire (voir docs/PLAN-MANSION.md). Le dossier contient EN-COURS.md : build.py ne l'assemble
 // qu'avec « --tout ».
-// Ce fichier est assemblé après data.js, hints.js, scenes.js et textes.js du même dossier : ROOMS, POS, HINTS, SCENES, FR, mdSay/mdClean.
+// Ce fichier est assemblé après data.js, hints.js, scenes.js, sons.js et textes.js du même dossier : ROOMS, POS, HINTS, SCENES,
+// MD_SFX/mdSfxFor/mdAmbient, FR, mdSay/mdClean.
 // Jeu en Dragon BASIC (moteur/basic.js). La partie se lit dans ses variables :
 //   F lieu courant (1 à 77) ; A$(F) description ; B(F,1…6) sorties N S E W U D (0 = pas de sortie) ;
 //   B$(n) nom de l'objet, D$(n) description, A(n) lieu (-1 porté, 0 caché) ; H$ les mots de 3 lettres des objets ;
@@ -57,6 +58,7 @@ DragonTales.register({
    sub:"Une aventure de Leroy C. Smith et Paul Austin, Pal Creations, 1982. Version française.",
    bye:"Que la croix te garde.",
    won:"La princesse est sauvée !",
+   sfxNote:"Les bips et le coup de feu du jeu d’origine jouent dans les deux versions ; les bruitages du manoir (vent, portes, chauves-souris, acide…) seulement dans la version moderne.",
    mapHint:"Clique un lieu pour t’y rendre. Les niveaux : le rez-de-chaussée, les deux étages, la cave, la sous-cave.",
    intro:[
     "La princesse Marléna a disparu. Les villageois savent où chercher : dans le vieux manoir, de l’autre côté de la lande.",
@@ -66,6 +68,7 @@ DragonTales.register({
    sub:"An adventure by Leroy C. Smith and Paul Austin, Pal Creations, 1982.",
    bye:"May the cross keep you.",
    won:"The princess is saved!",
+   sfxNote:"The beeps and the gunshot of the original game play in both versions; the mansion sounds (wind, doors, bats, acid…) only in the modern version.",
    mapHint:"Click a place to walk there. The levels: the ground floor, the two upper floors, the cellar, the sub-basement.",
    intro:[
     "Princess Marlena has disappeared. The villagers know where to look: in the old mansion, across the moor.",
@@ -76,6 +79,7 @@ DragonTales.register({
  verbs:[['GET','Prendre','Take'],['DROP','Poser','Drop'],['EXAMINE','Examiner','Examine'],['READ','Lire','Read'],['OPEN','Ouvrir','Open'],
   ['CLOSE','Fermer','Close'],['SHOOT','Tirer sur','Shoot'],['INVENTORY','Inventaire','Inventory',1],['LOOK','Regarder','Look',1],['HELP','Secours','Help',1]],
  sfxAt:{},
+ sfx:MD_SFX,                                           // sons propres à l'aventure (sons.js)
  frSkip:[],
  revExtra:{GET:'PRENDRE',DROP:'POSER',OPEN:'OUVRIR',CLOSE:'FERMER',LOOK:'REGARDER',EXAMINE:'EXAMINER',SHOOT:'TIRER',READ:'LIRE',
   INVENTORY:'INVENTAIRE',HELP:'SECOURS',QUIT:'QUITTER',SLAY:'TUER'},
@@ -117,6 +121,8 @@ DragonTales.register({
     out.push({n,name,word:FULL[w]||w,loc:Math.floor(mem.a('A',n))}); } return out; },
   // éléments de scène (101 et plus) : états que les décors montrent (scenes.js)
   objLabel:(o,lang)=>{ const a=MD_OBJ[MD_NORM(o.name)]; return a?(lang==='fr'?a[1]:a[0]).replace(/^(a|an|the|un|une|des|du|de la|la|le) |^de l['’]/i,''):o.name; },
+  sfxFor:(line,cmd,mem)=>mdSfxFor(line,cmd,mem),        // sons.js
+  ambient:(mem,off)=>mdAmbient(mem,off+1),
   sceneExtras(mem,off){ const r=off+1, l=[], v=k=>mem.v(k), h=v('H'), R=v('R');
    if(v('B0')===1) l.push(101);                        // loup-garou abattu
    if(v('B5')===1) l.push(102);                        // cercueil ouvert

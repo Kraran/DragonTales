@@ -123,11 +123,33 @@ Au 17/11/2026, l'aventure tourne et se gagne. Elle s'affiche avec `python build.
   - Indices de situation : la nuit qui tombe sans protection, la chute dans le puits (CHIEN), les fers (YOREL), les chauves-souris, les sables mouvants, la cassette à ne pas ouvrir trop tôt, l'interrupteur.
 - Dans la cave sans lumière, la version moderne ne montre pas les objets du lieu (le jeu dit qu'on n'y voit rien).
 
-### 6. À faire
+### 6. Sons et essai — faits (17/11/2026)
 
-1. **Sons** : bips d'origine (SOUND, PLAY) dans les deux versions, bruitages dans la moderne (vent, chauves-souris, loup-garou, coup de feu, acide, cercueil…).
-2. **Musique** (Suno), dehors et au village.
-3. **Essai** `tests/essai-mansion.js` dans Chrome, note sur 5, publication.
+- **Bips d'origine** : SOUND et le coup de feu en PLAY jouent dans les deux versions, par le moteur.
+- **Bruitages** (`sons.js`, version moderne seulement), synthétisés comme les autres :
+  - **Portes et meubles** : porte d'entrée qui grince, cercueil, cassette, trappe.
+  - **Pièges et chutes** : déclic du coffre puis chute, corps qui s'écrase, objets qui tombent.
+  - **Courant** : interrupteur qui claque, puis bourdonnement ; extinction.
+  - **Acide et bêtes** : acide qui bouillonne puis s'éteint ; serpent chassé ; mangouste ; chauves-souris ; rats ; ménagerie.
+  - **Magie et lumière** : fiole brisée (le temps recule) ; coup de vent sur la bougie.
+  - **Le vampire et la princesse** : coups de maillet et cri du vampire, morsure, cendres, princesse retrouvée.
+  - **Fins** : fers qui tombent, sables mouvants, foule qui acclame au village, et le glas au loin quand le soir puis la nuit tombent.
+- **Ambiances à l'entrée des lieux** :
+  - dehors, le vent avec des corbeaux le jour, une chouette la nuit ; la place du village, sa foule et sa cloche ;
+  - l'orgue de la chapelle, le feu du petit salon, le scintillement de la galerie des glaces et de la salle magique ;
+  - le bourdonnement de la salle du courant, les gouttes et le grondement de la sous-cave ;
+  - un cœur qui bat dans la cave noire.
+- **Essai dans Chrome** (`tests/essai-mansion.js`, dans l'intégration continue avec `build.py --tout`) :
+  - commandes et objets en français, secours, pièce magique, solution entière jusqu'à la victoire ;
+  - version classique en français et en anglais ;
+  - écran titre rouge, question des instructions, plan semi-graphique au titre chiffré en français ;
+  - sables mouvants, et chute dans le puits avec et sans CHIEN.
+
+### 7. À faire
+
+1. **Musique** (Suno), dehors et au village.
+2. **Note** sur 5 (difficulté, note globale).
+3. **Publication** : retirer `EN-COURS.md`, version, journal des modifications.
 
 ## Décisions prises (17/11/2026)
 
