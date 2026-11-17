@@ -37,6 +37,8 @@ jobs:
         run: node tests/sauvegardes.js
       - name: Dragon Mountain dans Chrome
         run: node tests/essai-dragonmountain.js
+      - name: S.S. Poseidon dans Chrome
+        run: node tests/essai-poseidon.js
       - name: Garder les captures en cas d'échec
         if: failure()
         uses: actions/upload-artifact@v4

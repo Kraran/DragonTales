@@ -70,6 +70,13 @@ Mountain en est l'exemple complet (voir `docs/PLAN-DRAGON-MOUNTAIN.md`). Une car
 lieu par lieu (`world.pos` : colonne, ligne, étage). Dans tous les cas il faut d'abord désassembler le
 programme pour trouver ses tables : c'est la partie longue, propre à chaque jeu.
 
+Un jeu BASIC qui place son texte à l'écran (`PRINT @`, comme S.S. Poseidon) se déclare avec `machine.screen: true` :
+la version classique reproduit alors l'écran 32 × 16 du Dragon. `world.scrollTop` donne la première ligne qui défile
+(écran partagé), `world.screenFrame` ce qu'il faut redessiner si l'écran est repris sans effacement (un séparateur…).
+D'autres crochets facultatifs : `world.menu` (une fenêtre de choix demandée par le jeu, comme le niveau de difficulté),
+`world.status` (une ligne d'état sur le décor), `world.clean(texte, arrivée)` (le texte du journal moderne, sachant si
+le joueur vient d'arriver dans le lieu), `machine.endKeyLines` (les lignes où l'attente d'une touche termine la partie).
+
 ## Sauvegardes
 
 Chaque aventure range ses parties et ses réglages dans le navigateur sous son préfixe `storage`

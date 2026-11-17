@@ -16,12 +16,15 @@ DragonTales dresses it up: translated texts, mouse play, a map, illustrations, s
 
 ![Dragon Mountain in the modern version](docs/dragonmountain.jpg)
 
+![S.S. Poseidon in the modern version](docs/poseidon.jpg)
+
 ## Adventures
 
 | Adventure | Author, publisher | Year | Machine | Languages |
 |---|---|---|---|---|
 | El Diablero | Kenneth Kalish, Computerware | 1982 | Dragon 32 | French, English |
 | Dragon Mountain | Dragon Data | 1982 | Dragon 32 | French, English |
+| S.S. Poseidon | Bill and Debbie Cook, Dragon Data | 1982 | Dragon 32 | French, English |
 
 ## Play
 
@@ -81,10 +84,11 @@ python build.py
 node tests/essai.js                 # in Chrome, with Playwright: shelf, full game, back to the shelf, resume
 node tests/sauvegardes.js           # in Chrome: magic coins, kept history, export and import
 node tests/essai-dragonmountain.js  # in Chrome: Dragon Mountain (full game, saves, languages, death)
+node tests/essai-poseidon.js        # in Chrome: S.S. Poseidon (skill level, full game, Dragon screen, death)
 ```
 
-The last two need `npm install playwright` and Chrome (set `CHROME` to its path if needed).
-GitHub runs all three on every push to `main` and on every pull request.
+The Chrome tests need `npm install playwright` and Chrome (set `CHROME` to its path if needed).
+GitHub runs all of them on every push to `main` and on every pull request.
 
 Warning: the adventures' `solution.txt` files spoil the whole game.
 
@@ -93,6 +97,8 @@ Warning: the adventures' `solution.txt` files spoil the whole game.
 - **El Diablero**: original program and texts by Kenneth Kalish, published by Computerware in 1982.
   The binary, the box art and the title-screen art belong to their rights holders.
 - **Dragon Mountain**: original program and texts published by Dragon Data in 1982.
+  The program and the original box belong to their rights holders.
+- **S.S. Poseidon** (Poseidon Adventure): original program and texts by Bill and Debbie Cook, published by Dragon Data in 1982.
   The program and the original box belong to their rights holders.
 - Port, French translations, interface, vector illustrations, hints and sound effects: the DragonTales project.
 - Music: “Awakening in the Desert” (El Diablero) and “The Guardian's Hoard” (Dragon Mountain), made for this project.

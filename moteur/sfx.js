@@ -69,9 +69,48 @@ function play(name,delay){
   try{ E[name](c,master,c.currentTime+.03+(delay||0)); }catch(e){ return false; }
   return true;
 }
+// ---- le haut-parleur du Dragon : SOUND hauteur,durée et PLAY "…" des jeux en BASIC ----
+// SOUND : hauteur 1..255 (89 ≈ do du milieu, 159 ≈ la 440), durée en soixantièmes de seconde × 4.
+const dragonPitch=n=>42680/(256-Math.max(1,Math.min(255,n)));
+const dragonTicks=d=>Math.max(1,d)*4/60;
+// PLAY : notes A..G (# + -), O octave (2 = celle du do du milieu), L longueur (4 = noire), T tempo (2 par défaut), P pause, N numéro de note, V volume (ignoré).
+function parsePlay(str){
+  const s=String(str).toUpperCase(), out=[]; let i=0,o=2,l=4,t=2;
+  const num=()=>{ const m=/^\d+/.exec(s.slice(i)); if(!m) return null; i+=m[0].length; return +m[0]; };
+  const len=n=>{ let d=1.6/n*(2/t); while(s[i]==='.'){ d*=1.5; i++; } return d; };
+  const SEMI={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+  while(i<s.length&&out.length<400){
+    const ch=s[i++];
+    if(SEMI[ch]!==undefined){ let k=SEMI[ch]; if(s[i]==='#'||s[i]==='+'){ k++; i++; } else if(s[i]==='-'){ k--; i++; }
+      const n=num(); out.push([261.63*Math.pow(2,o-2+k/12),len(n||l)]); }
+    else if(ch==='N'){ const n=num(); if(n) out.push([261.63*Math.pow(2,(n-1)/12-1),len(l)]); }
+    else if(ch==='O'){ const n=num(); if(n) o=Math.max(1,Math.min(5,n)); }
+    else if(ch==='L'){ const n=num(); if(n) l=n; }
+    else if(ch==='T'){ const n=num(); if(n) t=n; }
+    else if(ch==='P'){ out.push([0,len(num()||4)]); }
+    else if(ch==='V'){ if(s[i]==='+'||s[i]==='-') i++; else num(); }
+  }
+  return out;
+}
+let beepEnd=0;
+// joue une suite de [fréquence, durée] au son carré du Dragon, à la suite de la précédente si elle n'est pas finie
+function beeper(notes){
+  if(!enabled||!notes.length) return false;
+  const c=ensure(); if(!c) return false;
+  let t=Math.max(c.currentTime+.03,beepEnd);
+  const g=c.createGain(); g.gain.value=.09; g.connect(master);
+  const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3800; lp.connect(g);
+  for(const [f,d] of notes){
+    if(f>0){ const os=c.createOscillator(), e=c.createGain(); os.type='square'; os.frequency.value=f;
+      e.gain.setValueAtTime(0,t); e.gain.linearRampToValueAtTime(1,t+.004); e.gain.setValueAtTime(1,t+Math.max(.005,d-.008)); e.gain.linearRampToValueAtTime(0,t+d);
+      os.connect(e); e.connect(lp); os.start(t); os.stop(t+d+.01); }
+    t+=d;
+  }
+  beepEnd=t; return true;
+}
 // une aventure peut ajouter ses propres sons : fn(contexte, sortie, instant, outils)
 const H={tone,hiss,noiseSrc,env,swell};
 function define(name,fn){ E[name]=(c,o,t)=>fn(c,o,t,H); }
-return {play,define,E,names:()=>Object.keys(E),setVolume(v){ vol=v; if(master) master.gain.value=v; },setEnabled(b){ enabled=b; },get enabled(){ return enabled; }};
+return {play,define,beeper,parsePlay,dragonPitch,dragonTicks,E,names:()=>Object.keys(E),setVolume(v){ vol=v; if(master) master.gain.value=v; },setEnabled(b){ enabled=b; },get enabled(){ return enabled; }};
 })();
 if(typeof module!=='undefined')module.exports=SFX;

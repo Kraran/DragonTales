@@ -16,12 +16,15 @@ DragonTales l'habille : textes traduits, jeu à la souris, carte, illustrations,
 
 ![Dragon Mountain en version moderne](docs/dragonmountain.jpg)
 
+![S.S. Poseidon en version moderne](docs/poseidon.jpg)
+
 ## Aventures
 
 | Aventure | Auteur, éditeur | Année | Machine | Langues |
 |---|---|---|---|---|
 | El Diablero | Kenneth Kalish, Computerware | 1982 | Dragon 32 | français, anglais |
 | Dragon Mountain | Dragon Data | 1982 | Dragon 32 | français, anglais |
+| S.S. Poseidon | Bill et Debbie Cook, Dragon Data | 1982 | Dragon 32 | français, anglais |
 
 ## Jouer
 
@@ -86,10 +89,11 @@ python build.py
 node tests/essai.js                 # dans Chrome, avec Playwright : étagère, partie entière, retour, reprise
 node tests/sauvegardes.js           # dans Chrome : pièces magiques, journal conservé, export et import
 node tests/essai-dragonmountain.js  # dans Chrome : Dragon Mountain (partie entière, sauvegardes, langues, mort)
+node tests/essai-poseidon.js        # dans Chrome : S.S. Poseidon (niveau, partie entière, écran du Dragon, mort)
 ```
 
-Les deux derniers demandent `npm install playwright` et Chrome (variable `CHROME` pour indiquer son chemin).
-GitHub lance ces trois essais à chaque modification poussée sur `main` et sur chaque demande de fusion.
+Les essais dans Chrome demandent `npm install playwright` et Chrome (variable `CHROME` pour indiquer son chemin).
+GitHub lance tous ces essais à chaque modification poussée sur `main` et sur chaque demande de fusion.
 
 Attention : les fichiers `solution.txt` des aventures dévoilent tout le jeu.
 
@@ -98,6 +102,8 @@ Attention : les fichiers `solution.txt` des aventures dévoilent tout le jeu.
 - **El Diablero** : programme et textes d'origine de Kenneth Kalish, publiés par Computerware en 1982.
   Le binaire, l'illustration de la boîte et celle de l'écran d'introduction appartiennent à leurs ayants droit.
 - **Dragon Mountain** : programme et textes d'origine publiés par Dragon Data en 1982.
+  Le programme et la boîte d'origine appartiennent à leurs ayants droit.
+- **S.S. Poseidon** (Poseidon Adventure) : programme et textes d'origine de Bill et Debbie Cook, publiés par Dragon Data en 1982.
   Le programme et la boîte d'origine appartiennent à leurs ayants droit.
 - Portage, traductions françaises, interface, illustrations vectorielles, indices et effets sonores : projet DragonTales.
 - Musiques : « Awakening in the Desert » (El Diablero) et « The Guardian's Hoard » (Dragon Mountain), créées pour ce projet.

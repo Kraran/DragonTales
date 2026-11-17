@@ -1,6 +1,6 @@
 # Plan d'intégration — Poseidon Adventure (Dragon Data, 1982)
 
-Troisième aventure de DragonTales, écrite par Bill et Debbie Cook. Elle est en BASIC, comme Dragon Mountain, et tourne donc sur l'interpréteur `moteur/basic.js`. Le dossier `aventures/poseidon/` contient `EN-COURS.md` tant que l'intégration n'est pas finie : `build.py` l'ignore, sauf avec `--tout`.
+Troisième aventure de DragonTales, écrite par Bill et Debbie Cook. Elle est en BASIC, comme Dragon Mountain, et tourne donc sur l'interpréteur `moteur/basic.js`. L'aventure est jouable dans `DragonTales.html` depuis le 17/11/2026 ; il reste la musique avant la version 0.7.0.
 
 ## Le jeu en bref
 
@@ -40,44 +40,51 @@ El Diablero et Dragon Mountain gagnent toujours avec leur solution.
 - `solution.txt` : 47 commandes, niveau expert, victoire en 47 coups sur 75. La solution du PDF d'origine est fausse et incomplète ; celle-ci est tirée de la logique du programme.
 - `boite.jpg` : aligné sur la boîte d'El Diablero (cadre jaune, bande DRAGON 32). `couverture.jpg` : illustration plein cadre.
 
-### 3. Adaptateur de monde et interface — en cours
+### 3. Adaptateur de monde et interface — fait
 
 - `aventure.js` : salles (`L`), sorties tirées de `R$(L,2)`, objets `O$(n,…)` (99 = porté, 0 = caché), drapeaux.
-- Choix du niveau au lancement : menu cliquable dans l'interface moderne, saisie `1/2/3` en vue classique.
-- Invite `--->` du `LINE INPUT` reconnue par le moteur.
-- Écran partagé : la description du lieu en haut (lignes `PRINT @0`), les commandes en bas (`PRINT @480`). L'interface moderne affiche la description dans le panneau du lieu, la vue classique garde une transcription défilante.
-- Fin de partie (`INKEY$` en 2220) et « TRY AGAIN » (ligne 180) branchés sur l'écran de fin.
-- Compteur de coups restants visible dans l'interface moderne.
+- Choix du niveau : fenêtre dans la version moderne (`world.menu`), la question d'origine dans la version classique.
+- Écran du Dragon dans la version classique (`machine.screen`) : `PRINT @` place le texte, seules les lignes 8 à 15
+  défilent, comme avec la routine `$600` du chargeur. En français, les lignes sont coupées aux espaces.
+- Fin de partie : « WANT TO TRY AGAIN? » (O ou Y pour rejouer) dans la version classique, fenêtre de fin dans la moderne.
+- Coups restants et niveau de l'eau affichés sur le décor (`world.status`).
 
-### 4. Traduction
+### 4. Traduction — fait
 
-- `textes.js` : descriptions des 20 lieux, objets, messages, réponses aux verbes, en français.
-- Vocabulaire français vers les codes d'origine (« prends » → `GET`, « lampe » → `FLA`…), comme pour Dragon Mountain.
+- `textes.js` : les 22 descriptions, les 23 objets, tous les messages ; vocabulaire français vers les mots du jeu.
 
-### 5. Illustrations et carte
+### 5. Illustrations et carte — fait
 
-- `scenes.js` : une scène par lieu dans le style des deux autres jeux, vue d'un navire retourné (tout est à l'envers : plafonds au sol, escaliers inversés).
-- `data.js` : positions sur la carte. Le navire se lit en coupe verticale : la carte montre les ponts de bas en haut.
+- `scenes.js` : une scène par lieu, le navire à l'envers (plafonniers au sol, mobilier qui pend du plancher) ;
+  l'eau monte au bas de l'image au fil des coups ; salle de bal inondée, porte d'acier ouverte, incendie, corde attachée.
+- `data.js` : carte sur trois niveaux (salons, coursives, machines et coque).
 
-### 6. Indices (pièces magiques)
+### 6. Indices (pièces magiques) — fait
 
-- `hints.js` : un indice par blocage — la lampe dans les débris, la chaise pour lire le panneau, la corde à attacher, le pied-de-biche pour l'armoire, la clé à molette à la fin.
+- `hints.js` : huit étapes à deux indices, huit indices de situation (noir complet, incendie, écoutille, tableau, corniche,
+  couperet, nourriture, puits).
 
-### 7. Sons et musique
+### 7. Sons et musique — sons faits, musique à venir
 
-- Les airs `PLAY` et bips `SOUND` d'origine rejoués par le synthé du moteur.
-- Effets propres à l'aventure (eau qui monte, métal qui grince, chute).
-- Musique Suno pour le jeu, comme les deux autres aventures.
+- Bips `SOUND` et airs `PLAY` d'origine, dans les deux versions.
+- `sons.js` : vapeur, incendie, machines, câble, porte d'acier, mur d'eau, mazout, extincteur, corde, liberté…
+- Musique Suno : dans un deuxième temps.
 
 ### 8. Essais et publication
 
-- `tests/essai-poseidon.js` dans la CI.
-- Retrait de `EN-COURS.md`, captures, `CHANGELOG.md`, release 0.7.0.
+- `tests/essai-poseidon.js` dans la CI — fait.
+- Musique, captures, release 0.7.0 — à faire.
 
-## Décisions à prendre
+## Décisions (17/11/2026)
 
-1. **Niveau** : menu au lancement (expert / moyen / débutant) ou niveau fixe ?
-2. **Vue classique** : transcription défilante, ou reproduction exacte de l'écran partagé 32×16 ?
-3. **Sons d'origine** : rejouer les airs `PLAY` et bips `SOUND` du jeu ?
-4. **Bug `EAT`** (ligne 1290) : pour tout objet autre que la nourriture, le programme teste le mot de l'objet au lieu de son emplacement (`O$(N,2)` au lieu de `O$(N,3)`), et répond toujours « YOU DON'T HAVE IT » même si on l'a en main. Le bug ne change que le message (on ne peut de toute façon manger que la nourriture). Corriger ?
-5. **Musique** : instructions Suno à préparer quand tu voudras.
+1. **Niveau** : menu au lancement.
+2. **Vue classique** : reproduction de l'écran du Dragon.
+3. **Sons d'origine** : rejoués.
+4. **Bug `EAT`** (ligne 1290) : corrigé — le programme testait `O$(N,2)` au lieu de `O$(N,3)`.
+5. **Musique** : dans un deuxième temps.
+
+## Pièges d'origine gardés
+
+- Sans lampe, au-delà de la salle de bal, le noir est définitif (« I THINK YOU BLEW IT ») : il faut annuler.
+- Entrer au poste radio sans extincteur enferme le joueur derrière l'incendie ; le « mot magique » de l'aide n'existe pas.
+- Le tableau de l'infirmerie ouvre un passage qui noie le joueur ; l'écoutille noie qui ne porte pas le gilet.

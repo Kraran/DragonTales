@@ -1,5 +1,23 @@
 # Journal des versions
 
+## À venir (0.7.0)
+
+Troisième aventure : **S.S. Poseidon** (Poseidon Adventure, Bill et Debbie Cook, Dragon Data, 1982).
+
+### S.S. Poseidon
+- Choix du niveau au départ (expert 75 coups, moyen 125, débutant 250) ; coups restants et niveau de l'eau affichés.
+- Version classique fidèle à l'écran du Dragon : 32 × 16, le lieu en haut, un séparateur, les messages qui défilent dessous.
+- Bips et petits airs d'origine (SOUND, PLAY) rejoués, dans les deux versions ; bruitages du navire dans la version moderne.
+- Bug d'origine corrigé : MANGER un objet que l'on porte répondait « YOU DON'T HAVE IT ».
+- Traduction française complète, une illustration par lieu (le paquebot est à l'envers), carte sur trois niveaux.
+- Pièces magiques : huit étapes d'indices et huit indices de situation.
+
+### Moteur
+- BASIC : LINE INPUT, INKEY$, POS, RUN, PRINT @ à l'écran, SOUND et PLAY ; une touche n'est prise que si le programme l'attend.
+- Jeux à écran (PRINT @) : la version classique reproduit l'écran du Dragon, avec défilement partiel.
+- Fenêtre de choix proposée par le jeu au départ (niveau…), état propre à l'aventure affiché sur le décor.
+- Lecteur de cassettes : lecture bit à bit, plusieurs programmes par cassette.
+
 ## 0.6.0 — 17 novembre 2026
 
 Deuxième aventure : **Dragon Mountain** (Dragon Data, 1982). Le moteur sait désormais jouer les jeux écrits en BASIC.

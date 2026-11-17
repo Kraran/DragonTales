@@ -228,6 +228,7 @@ const KEY=ADV.storage+'.';                       // préfixe des sauvegardes et 
 const VERBS=ADV.verbs, SFX_AT=ADV.sfxAt||{}, DIRS=WORLD.dirs, ALLW=WORLD.allWord||'';
 const COLS=WORLD.cols||0, NROOMS=WORLD.rooms, DELTA={W:-1,N:-COLS,E:1,S:COLS};
 const BASIC=ADV.machine.kind==='basic';             // jeu écrit en BASIC (moteur/basic.js) plutôt qu'en code machine
+const SCREEN=BASIC&&!!ADV.machine.screen;           // jeu qui place son texte à l'écran (PRINT @) : la version classique reproduit l'écran 32×16
 // Géométrie de la carte. Par défaut, la grille du programme (COLS colonnes) ; sinon la fiche donne pour chaque lieu
 // sa colonne, sa ligne et son étage (WORLD.pos) et la destination de chaque sortie (WORLD.links).
 const posOf=a=>WORLD.pos?WORLD.pos(a):[a%COLS,Math.floor(a/COLS),0];
@@ -293,7 +294,7 @@ function richText(parent,s,lexSink){ // texte -> paragraphes avec mots cliquable
 }
 
 // ---------- machine ----------
-let pendSfx=[];
+let pendSfx=[], pendNotes=[];
 let pending='', won=false, started=false, quickMsg=null, sceneKey=null;
 const io={
   out(c){ if(c===8){ pending=pending.slice(0,-1); pendItems.push({r:'\b'}); } else if(c===13){ pending+='\n'; pendItems.push({r:'\n'}); } else if(c>=32){ pending+=String.fromCharCode(c); pendItems.push({r:String.fromCharCode(c)}); } },
@@ -307,7 +308,10 @@ const io={
 // Jeu en BASIC : chaque PRINT arrive comme une ligne anglaise ({b:…}), traduite à l'affichage par WORLD.say.
 const ioBasic={
   out(s){ pending+=s; pendItems.push({b:s}); if(WORLD.sfxFor){ const f=WORLD.sfxFor(s,curEn,mem); if(f) pendSfx.push(f); } },
-  cls(c){ if(c){ const f=WORLD.flashSfx||'flash'; if(!pendSfx.includes(f)) pendSfx.push(f); return; } pending=''; pendItems=[]; },   // CLS n : éclair de couleur
+  cls(c){ if(c&&!SCREEN){ const f=WORLD.flashSfx||'flash'; if(!pendSfx.includes(f)) pendSfx.push(f); return; } pending=''; pendItems=SCREEN?[{f:1}]:[]; },   // CLS n : éclair de couleur
+  at(p){ if(pending&&!pending.endsWith('\n')) pending+='\n'; pendItems.push({p}); },       // PRINT @ (jeux à écran, ADV.machine.screen)
+  sound(tone,dur){ if(pendNotes.length<400) pendNotes.push([SFX.dragonPitch(tone),SFX.dragonTicks(dur)]); },   // bips et airs d'origine
+  play(str){ if(pendNotes.length<400) pendNotes.push(...SFX.parsePlay(str)); },
   end(){ won=!!(ADV.machine.victory&&ADV.machine.victory.test(pending)); }
 };
 const SEED=/[#&]graine=(\d+)/.exec(location.hash);   // essais : DragonTales.html#graine=2 fixe le hasard des jeux BASIC
@@ -352,7 +356,7 @@ const logEl=$('log'), inEl=$('in');
 
 // Le journal moderne est conservé sous forme de données (turns) pour pouvoir être réaffiché dans l'autre langue.
 let turns=[];
-function cleanText(s){ return WORLD.clean(s); }
+function cleanText(s,moved){ return WORLD.clean(s,!!moved); }   // moved : le joueur vient d'arriver dans ce lieu
 function cmdText(c){ return c.tl===lang?c.typed:(lang==='en'?c.en:REV(c.en)).toLocaleLowerCase(lang); }
 function turnEl(d){
   const turn=el('div','turn');
@@ -362,7 +366,7 @@ function turnEl(d){
   if(d.note){ turn.appendChild(el('p','note',d.note==='raw'?d.text:d.note==='loaded'?t().loaded(roomInfo(d.off).title):t()[d.note])); return turn; }
   if(d.cmd) turn.appendChild(el('div','cmd',cmdText(d.cmd)));
   if(d.off!=null) turn.appendChild(el('h3',null,roomInfo(d.off).title));
-  const s=cleanText(composeItems(d.items)).text;
+  const s=cleanText(composeItems(d.items),d.off!=null).text;
   if(s) richText(turn,pretty(s),addLex);
   if(d.quick) turn.appendChild(el('p','note',t()[d.quick]));
   return turn;
@@ -391,10 +395,10 @@ function flush(echo,prevOff){ // transforme la sortie du jeu en entrée du journ
   const items=compact(pendItems); pendItems=[];
   if(cmd) classicItems.push({e:cmd});
   classicItems.push(...items);
-  const r=cleanText(composeItems(items));
-  const off=roomOff(), inMap=off>=0&&off<NROOMS;
+  const off=roomOff(), inMap=off>=0&&off<NROOMS, moved=inMap&&off!==prevOff;
+  const r=cleanText(composeItems(items),moved);
   if(inMap) visited.add(off);
-  addTurn({cmd,off:inMap&&off!==prevOff?off:null,items,quick:quickMsg});
+  addTurn({cmd,off:moved?off:null,items,quick:quickMsg});
   quickMsg=null;
   return r;
 }
@@ -411,7 +415,8 @@ function step(echo){ // fait tourner le jeu jusqu'à la prochaine attente
   }
   const r=flush(echo,prev);
   playSfx(prev,w);
-  if(classicOn){ if(w==='end') classicItems.push({k:won?'cWon':'cEnd'}); }
+  if(classicOn){ if(w==='end'&&!SCREEN) classicItems.push({k:won?'cWon':'cEnd'}); }   // jeu à écran : il pose lui-même sa question
+  else if(menuNow()) showMenu();
   else if(w==='key'&&m.yesNo) showDeath(r.text);
   else if(w==='end'&&BASIC&&!won) showDeath(r.text);
   else if(w==='end') showEnd();
@@ -440,7 +445,7 @@ function send(en,echo){ // envoie une commande anglaise au jeu
   curEn=en; m.line(en); step(echo); curEn='';
   const after=roomOff();
   if(m.wait==='line'&&after!==before&&after>=0&&after<NROOMS&&before>=0&&before<NROOMS){
-    const d=Object.keys(DIRS).find(k=>en===WORLD.go(DIRS[k]));
+    const d=Object.keys(DIRS).find(k=>en===WORLD.go(DIRS[k])||en===k);   // « GO NORTH » ou « N »
     const kind=WORLD.link?WORLD.link(en):null;
     if(!(d&&after===dest(before,d))&&kind!=='skip'){ const dream=kind==='dream'; links.set(dream?'r>'+after:before+'>'+after,{from:before,to:after,label:echo||en.toLowerCase(),cmd:cmdObj,dream}); drawMap(after,true); }
   }
@@ -507,6 +512,8 @@ function refresh(){
   const off=roomOff(), ok=off>=0&&off<NROOMS;
   const info=ok?roomInfo(off):{title:'',kind:'under'};
   $('sceneTitle').textContent=started?info.title:'';
+  const stv=started&&ok&&WORLD.status?WORLD.status(mem,lang):'';   // état propre à l'aventure (coups restants…)
+  $('sceneStatus').textContent=stv; $('sceneStatus').hidden=!stv;
   const ex=ok?exitsOf(off):{};
   [...$('compass').querySelectorAll('button')].forEach(b=>b.classList.toggle('off',!ex[b.dataset.dir]));
   const o=ok?objects():{here:[],inv:[]};
@@ -691,10 +698,12 @@ function showOptions(){
     const r=el('div','row'); btn(r,t().full,fullscreen); btn(r,t().close,closeOverlay,true); c.appendChild(r);
   });
 }
-function closeOverlay(){ if(!started) showTitle(); else if(!classicOn&&m.wait==='key'&&m.yesNo) showDeath(''); else if(!classicOn&&m.wait==='end') showEnd(); else hideOverlay(); }
+function closeOverlay(){ if(!started) showTitle(); else if(!classicOn&&menuNow()) showMenu(); else if(!classicOn&&m.wait==='key'&&m.yesNo) showDeath(''); else if(!classicOn&&m.wait==='end') showEnd(); else hideOverlay(); }
 SFX.setEnabled(opts.sfx); SFX.setVolume(opts.sfxVol);
 function playSfx(prevOff,w){ // joue les sons du tour (version moderne seulement)
   const list=pendSfx; pendSfx=[];
+  const notes=pendNotes; pendNotes=[];
+  if(notes.length&&opts.sfx&&started) SFX.beeper(notes);   // SOUND et PLAY du jeu d'origine : dans les deux versions
   if(classicOn||!opts.sfx||!started) return;
   const off=roomOff();
   if(off!==prevOff&&off>=0&&off<NROOMS&&WORLD.ambient) list.unshift(...WORLD.ambient(mem,off));
@@ -792,6 +801,19 @@ function showDeath(text){
     c.appendChild(r);
   });
 }
+// Choix proposé par le jeu avant la partie (niveau de difficulté…) : WORLD.menu(mem, langue) -> {title, text, choices:[{label, en}]}
+function menuNow(){ return started&&m.wait==='line'&&WORLD.menu?WORLD.menu(mem,lang):null; }
+function showMenu(){
+  const mn=menuNow(); if(!mn) return;
+  overlay('menu',c=>{
+    c.appendChild(el('h2',null,mn.title));
+    if(mn.text) c.appendChild(el('p',null,mn.text));
+    const r=el('div','row menuRow');
+    mn.choices.forEach((ch,i)=>{ const b=btn(r,'',()=>{ hideOverlay(); send(ch.en,ch.label); inEl.focus(); },i===mn.def);
+      b.appendChild(el('b',null,ch.label)); if(ch.note) b.appendChild(el('span',null,ch.note)); });
+    c.appendChild(r);
+  });
+}
 function showEnd(){
   overlay('',c=>{
     c.appendChild(el('h2',null,won?t().won:t().over));
@@ -806,7 +828,7 @@ function showHelp(){
   });
 }
 function clearGame(){
-  hideOverlay(); logEl.textContent=''; turns=[]; undo=[]; visited=new Set(); lex=new Map(); links=new Map(); coins=COINS; hintUse={}; won=false; pending=''; armed=null; classicItems=[]; pendItems=[]; cbuf=''; pendSfx=[]; sceneKey=null; gid=newGid();
+  hideOverlay(); logEl.textContent=''; turns=[]; undo=[]; visited=new Set(); lex=new Map(); links=new Map(); coins=COINS; hintUse={}; won=false; pending=''; armed=null; classicItems=[]; pendItems=[]; cbuf=''; pendSfx=[]; pendNotes=[]; sceneKey=null; gid=newGid();
 }
 function restart(){ clearGame(); m.reset(); started=true; step(null); }
 // retour à l'étagère DragonTales : la partie est sauvegardée, l'aventure revient à son écran d'introduction
@@ -858,7 +880,8 @@ function loadData(d){
   const off=roomOff();
   note('loaded',{off});
   classicItems=Array.isArray(d.classic)&&d.classic.length?d.classic.concat([{r:'\n'}]):[];
-  classicItems.push({k:'loaded',off},PROMPT_ITEM); pendItems=[]; cbuf='';
+  classicItems.push({k:'loaded',off},PROMPT_ITEM); pendItems=[]; pendNotes=[]; pendSfx=[]; cbuf='';
+  if(menuNow()) showMenu();
   refreshVerbs(); refresh(); renderClassic();
 }
 // ---------- sauvegarde dans un fichier ----------
@@ -927,6 +950,8 @@ function composeItems(items,classic){ // recompose une suite d'éléments du jou
     if(it.a!==undefined) x=textFor(it.a,lang).replace(/%/g,'\n');
     else if(it.r!==undefined) x=it.r;
     else if(it.b!==undefined) x=WORLD.say?WORLD.say(it.b,lang,!!classic):it.b;
+    else if(it.p!==undefined) x=classic&&SCREEN?String.fromCharCode(0xE000+it.p):(s&&!s.endsWith('\n')?'\n':'');   // PRINT @
+    else if(it.f) x=classic&&SCREEN?'\f':'';                                                                       // CLS
     else if(it.e) x=(it.e.tl===lang?it.e.typed.toLocaleUpperCase(lang):lang==='en'?it.e.en:REV(it.e.en))+'\n';
     else if(it.k==='loaded') x=t().loaded(roomInfo(it.off).title).toLocaleUpperCase(lang);
     else if(it.k==='help') x='\n'+(lang==='fr'?FR.HELP:HELP_EN).replace(/%/g,'\n')+'\n';
@@ -936,8 +961,41 @@ function composeItems(items,classic){ // recompose une suite d'éléments du jou
   return s;
 }
 function classicString(){ return composeItems(classicItems,true); }
+// Écran du Dragon, 32 colonnes × 16 lignes, pour les jeux qui placent leur texte (PRINT @). Le texte qui sort en bas fait
+// défiler les lignes à partir de WORLD.scrollTop seulement (écran partagé). '\uE000'+position place le curseur, '\f' efface,
+// '\n' complète la ligne par des espaces (comme le Dragon). words : coupure aux espaces (traduction), sinon au caractère près.
+function dragonScreen(s,words){
+  const W=32,H=16,top=(WORLD.scrollTop||0)*W, g=new Array(W*H).fill(' ');
+  let c=0, soft=false;
+  const scroll=()=>{ g.copyWithin(top,top+W); g.fill(' ',W*H-W); c-=W; };
+  const put=ch=>{ g[c++]=ch; if(c>=W*H) scroll(); if(words&&c%W===0) soft=true; };
+  const nl=()=>{ do g[c++]=' '; while(c%W); if(c>=W*H) scroll(); };
+  const sep=ch=>ch===' '||ch==='\n'||ch==='\f'||ch>='\uE000';
+  for(let i=0;i<s.length;i++){
+    const ch=s[i];
+    if(ch>='\uE000'&&ch<'\uE200'){ c=ch.charCodeAt(0)-0xE000; soft=false; continue; }
+    if(ch==='\f'){ g.fill(' '); c=0; soft=false; continue; }
+    if(ch==='\n'){ if(!soft) nl(); soft=false; continue; }
+    if(ch===' '){ if(!(soft&&c%W===0)) { soft=false; put(' '); } continue; }
+    if(words&&(i===0||sep(s[i-1]))){ let j=i; while(j<s.length&&!sep(s[j])) j++;
+      const L=j-i; if(c%W>0&&c%W+L>W&&L<=W){ nl(); soft=true; } }
+    soft=false; put(ch);
+  }
+  return {g,c};
+}
+function renderScreen(){
+  let from=-1; for(let i=classicItems.length-1;i>=0;i--) if(classicItems[i].f){ from=i; break; }
+  const items=from<0?[{f:1}].concat(WORLD.screenFrame||[],classicItems.slice(-500)):classicItems.slice(from);   // sans effacement connu : on redessine le cadre
+  const r=dragonScreen(composeItems(items,true)+(m.wait==='line'?cbuf:''),lang==='fr');
+  const rows=[]; for(let y=0;y<16;y++) rows.push(r.g.slice(y*32,y*32+32).join(''));
+  const txt=rows.join('\n'), at=r.c+Math.floor(r.c/32);
+  const scr=$('cScreen'); scr.textContent=txt.slice(0,at);
+  scr.appendChild(el('span','cursor',txt[at]===' '?'\u00a0':txt[at])); scr.appendChild(document.createTextNode(txt.slice(at+1)));
+  scr.scrollTop=0;
+}
 function renderClassic(){
   if(!classicOn) return;
+  if(SCREEN){ renderScreen(); return; }
   const scr=$('cScreen');
   scr.textContent=classicString().slice(-6000)+(m.wait==='line'?cbuf:'');
   scr.appendChild(el('span','cursor','\u00a0'));
@@ -948,13 +1006,18 @@ function setClassic(on){
   classicOn=on; LS.set(KEY+'view',on?'classic':'modern');
   $('classic').hidden=!on; cbuf='';
   if(on){ hideOverlay(); $('bigmap').hidden=true; disarm(); inEl.blur(); renderClassic(); }
-  else { if(m.wait==='key'&&m.yesNo) showDeath(''); else if(m.wait==='end') showEnd(); else inEl.focus(); refresh(); scrollLog(); }
+  else { if(m.wait==='key'&&m.yesNo) showDeath(''); else if(m.wait==='end') showEnd(); else if(menuNow()) showMenu(); else inEl.focus(); refresh(); scrollLog(); }
 }
 function classicKey(ev){
   if(ev.ctrlKey||ev.metaKey||(ev.altKey&&!ev.getModifierState('AltGraph'))) return;
   if(ev.target&&ev.target.tagName==='BUTTON'&&(ev.key==='Enter'||ev.key===' ')) return;
   const k=ev.key, w=m.wait, one=k.length===1;
   const last=classicItems[classicItems.length-1];
+  if(SCREEN&&w==='end'&&!(last&&last.k==='cEnd')){   // « WANT TO TRY AGAIN? » du jeu : O ou Y pour rejouer
+    if(!one) return; ev.preventDefault(); const c=k.toUpperCase();
+    if(c==='Y'||c==='O') restart(); else { classicItems.push({k:'cEnd'}); renderClassic(); }
+    return;
+  }
   if(w==='end'||(w==='key'&&m.yesNo&&last&&last.k==='cEnd')){ if(one||k==='Enter'){ ev.preventDefault(); restart(); } return; }
   if(w==='key'&&m.yesNo){
     if(!one) return; ev.preventDefault();
@@ -975,7 +1038,7 @@ function classicKey(ev){
 
 // ---------- divers ----------
 function toggleLang(){ flipLang(); relang(); }
-function relang(){ buildStatic(); if(started){ rerenderLog(); refresh(); } renderClassic(); if(!started&&!shelfOpen&&!ov.hidden&&ov.classList.contains('title')) showTitle(); }
+function relang(){ buildStatic(); if(started){ rerenderLog(); refresh(); } renderClassic(); if(!classicOn&&!ov.hidden&&ov.classList.contains('menu')) showMenu(); if(!started&&!shelfOpen&&!ov.hidden&&ov.classList.contains('title')) showTitle(); }
 
 $('cmd').addEventListener('submit',ev=>{ ev.preventDefault(); const v=inEl.value; inEl.value=''; if(armed&&!v.trim()){ arm(armed); return; } if(armed&&v.trim()){ const a=armed; const line=verbLabel(a)+' '+v.trim(); send(a[0]+' '+(lang==='fr'?(ADV.nounEn(v)||v.trim().toUpperCase()):v.trim().toUpperCase()),line); return; } typed(v); });
 $('cancel').onclick=()=>{ disarm(); inEl.focus(); };
@@ -990,7 +1053,7 @@ document.addEventListener('keydown',ev=>{
   if(shelfOpen) return;
   if(classicOn){ classicKey(ev); return; }
   if(!$('bigmap').hidden){ if(ev.key==='Escape'||ev.key.toLowerCase()==='m') hideBig(); return; }
-  if(!ov.hidden){ if(ev.key==='Escape'&&!ov.classList.contains('title')&&m.wait==='line') hideOverlay(); return; }
+  if(!ov.hidden){ if(ev.key==='Escape'&&!ov.classList.contains('title')&&!ov.classList.contains('menu')&&m.wait==='line') hideOverlay(); return; }
   if(ev.key==='Escape'){ disarm(); return; }
   if((ev.ctrlKey||ev.metaKey)&&ev.key.toLowerCase()==='z'){ ev.preventDefault(); doUndo(); return; }
   if(ev.key==='Enter'&&ev.target.classList&&ev.target.classList.contains('w')){ ev.target.click(); return; }

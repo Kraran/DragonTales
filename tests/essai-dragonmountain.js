@@ -9,7 +9,7 @@ let bad=0; const ok=(k,v,d)=>{ if(!v) bad++; console.log((v?'ok   ':'ÉCHEC ')+k
 (async()=>{const b=await chromium.launch({executablePath:process.env.CHROME||'/usr/bin/google-chrome',args:['--no-sandbox']});
  const p=await b.newPage({viewport:{width:1920,height:1080}}); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
  await p.goto(PAGE+'#graine='+sol.seed); await p.waitForTimeout(300);
- const boxes=await p.$$eval('.shBox:not(.shEmpty)',l=>l.length); ok('deux aventures sur l’étagère',boxes===2,boxes);
+ const boxes=await p.$$eval('.shBox:not(.shEmpty)',l=>l.length); ok('trois aventures sur l’étagère',boxes===3,boxes);
  await p.keyboard.press('ArrowRight'); ok('flèche : Dragon Mountain choisi',/Dragon Mountain/.test(await p.innerText('.shInfo h2')));
  await p.click('#shelf button.main'); await p.waitForTimeout(300);
  ok('écran d’introduction',/Montagne du Dragon/.test(await p.innerText('#overlay')));

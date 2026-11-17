@@ -7,9 +7,12 @@
 //   io.out(texte)      texte affiché, ligne par ligne (avec '\n') ; une ligne commencée est envoyée avant chaque attente
 //   io.sound(hauteur, durée), io.play(chaîne)   SOUND et PLAY du Dragon
 //   io.cls(couleur)    effacement de l'écran (CLS, CLS n)
+//   io.at(position)    PRINT @ (seulement avec cfg.screen) : le curseur va en position 0..511 de l'écran 32×16
 //   io.input(prompt)   appelé au début d'une saisie (prompt = texte de INPUT "…" ou '')
 //   io.end()           fin du programme
 // cfg (fiche de l'aventure, facultatif) : seed (graine du hasard, pour les essais), maxSteps (garde-fou),
+//   screen : true pour les jeux qui placent leur texte à l'écran (PRINT @) : la position est transmise à io.at
+//            au lieu d'un simple retour à la ligne, et POS(0) rend la colonne sur l'écran de 32 colonnes
 //   endKeyLines : lignes où une attente de touche marque la fin de la partie (« WANT TO TRY AGAIN? ») : run() rend 'end'
 //   patches : {numéro de ligne: 'texte BASIC'} — corrections du programme d'origine ('' supprime la ligne) ;
 //             appliquées sauf si io.fixes === false (pour comparer avec le programme d'origine).
@@ -171,7 +174,7 @@ function Basic(bin, io, cfg){
   const KEYWAIT = {keywait:true};
   function fn(f){
     if(f === 'INKEY$'){ if(S.keys.length) return S.keys.shift(); throw KEYWAIT; }   // pas de touche : on attend (et l'instruction sera reprise)
-    if(f === 'POS'){ args(); return S.col; }
+    if(f === 'POS'){ args(); return cfg.screen ? S.col % 32 : S.col; }
     if(f === 'TIMER') return 0;
     const a = args();
     switch(f){
@@ -327,7 +330,9 @@ function Basic(bin, io, cfg){
   }
   function print(){
     let s = '', nl = true;
-    if(eat('p','@')){ expr(); eat('p',','); if(S.col > 0) out('\n'); }   // PRINT @ : le texte défile ; on repart en début de ligne
+    if(eat('p','@')){ const at = expr(); eat('p',',');
+      if(cfg.screen){ flushOut(); const p = Math.max(0, Math.min(511, Math.floor(at))); S.col = p % 32; io.at && io.at(p); }   // texte placé à l'écran
+      else if(S.col > 0) out('\n'); }   // PRINT @ : le texte défile ; on repart en début de ligne
     while(!endStmt()){
       if(eat('p',';')){ nl = false; continue; }
       if(eat('p',',')){ const c = S.col + s.length; s += ' '.repeat(16 - c % 16); nl = false; continue; }
@@ -396,7 +401,8 @@ function Basic(bin, io, cfg){
     yesNo: false,
     run,
     line(s){ giveLine(s); },
-    key(c){ S.keys.push(typeof c === 'number' ? String.fromCharCode(c) : String(c || ' ').toUpperCase()); if(wait === 'key' || wait === 'end') wait = null; },
+    key(c){ if(wait !== 'key' && wait !== 'end') return;   // une touche ne compte que si le programme l'attend
+      S.keys.push(typeof c === 'number' ? String.fromCharCode(c) : String(c || ' ').toUpperCase()); if(wait === 'key' || wait === 'end') wait = null; },
     reset(){ const seed = cfg.seed; S = fresh(); if(seed === undefined) S.seed = (Date.now() & 0x7fffffff) || 1; wait = null; },
     // lecture des variables du programme par la fiche de l'aventure
     mem: {

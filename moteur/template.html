@@ -25,6 +25,8 @@ button:focus-visible,input:focus-visible,.w:focus-visible{outline:2px solid var(
 #scene svg{position:absolute;inset:0;width:100%;height:100%}
 #sceneTitle{position:absolute;left:36px;bottom:26px;right:36px;font:italic 400 58px/1.05 var(--serif);color:var(--os);text-shadow:0 2px 18px rgba(20,10,30,.75)}
 #toClassic{position:absolute;right:14px;top:12px;background:rgba(29,22,38,.72);border:1px solid rgba(248,240,223,.35);border-radius:4px;padding:5px 14px;font-size:15px;color:var(--os)}
+#sceneStatus{position:absolute;left:14px;top:12px;background:rgba(29,22,38,.72);border:1px solid rgba(248,240,223,.35);border-radius:4px;padding:5px 14px;font-size:17px;color:var(--os)}
+#sceneStatus[hidden]{display:none}
 #toClassic:hover{background:rgba(29,22,38,.95);border-color:var(--os)}
 #classic{position:absolute;inset:0;background:#000;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
 #classic[hidden]{display:none}
@@ -142,6 +144,10 @@ svg.links.top{pointer-events:none;z-index:2}
 .card button.main{background:var(--souci);border-color:var(--souci);color:var(--nuit);font-weight:600}
 .card button:hover{border-color:var(--os)}
 .card button:disabled{opacity:.35;cursor:default}
+.card .menuRow{flex-wrap:nowrap}
+.card .menuRow button{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:210px;padding:18px 26px}
+.card .menuRow button b{font-weight:600}
+.card .menuRow button span{font-size:17px;opacity:.85}
 .card.opts{min-width:780px;text-align:left;padding:30px 52px}
 .card.opts p.small{margin:0 0 4px;font-size:17px}
 .card.opts h2{text-align:center}
@@ -226,7 +232,7 @@ svg.links.top{pointer-events:none;z-index:2}
 </head>
 <body>
 <div id="stage">
-  <section id="scene"><div id="sceneArt"></div><button type="button" id="toClassic"></button><div id="sceneTitle"></div></section>
+  <section id="scene"><div id="sceneArt"></div><button type="button" id="toClassic"></button><div id="sceneStatus" hidden></div><div id="sceneTitle"></div></section>
   <section id="log" aria-live="polite"></section>
   <form id="cmd" autocomplete="off"><span id="armed"></span><input id="in" spellcheck="false" autocomplete="off"><button type="button" id="cancel" hidden></button></form>
   <aside id="side">
