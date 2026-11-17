@@ -7,6 +7,10 @@
 Les légendes renaissent sur PC : un moteur pour rejouer aujourd'hui les aventures textuelles du Dragon 32/64,
 traduites en français et illustrées, dans une simple page web.
 
+[![Voir la bande-annonce de DragonTales](docs/bande-annonce.jpg)](docs/bande-annonce.mp4)
+
+*Bande-annonce (1 min 17) : clique l'image.*
+
 ![L'étagère de DragonTales](docs/etagere.jpg)
 
 Le programme d'origine de chaque aventure tourne tel quel dans un émulateur 6809 écrit en JavaScript.
