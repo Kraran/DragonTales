@@ -1,9 +1,11 @@
 # Journal des versions
 
-## À venir
+## 0.7.2 — 17 novembre 2026
 
 - Étagère : sous la description de chaque aventure, sa difficulté et sa note globale sur 5, en étoiles remplies au
   dixième près (El Diablero 4,2 et 3,8 ; Dragon Mountain 3,6 et 3,3 ; S.S. Poseidon 3,1 et 3,1).
+- Étagère : en anglais, « Bill and Debbie Cook » ; la boîte choisie au clavier n'est plus rognée au bord.
+- README : bande-annonce sur YouTube.
 
 ## 0.7.1 — 17 novembre 2026
 
