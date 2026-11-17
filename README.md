@@ -7,9 +7,9 @@
 Les légendes renaissent sur PC : un moteur pour rejouer aujourd'hui les aventures textuelles du Dragon 32/64,
 traduites en français et illustrées, dans une simple page web.
 
-[![Voir la bande-annonce de DragonTales](docs/bande-annonce.jpg)](docs/bande-annonce.mp4)
+[![Voir la bande-annonce de DragonTales sur YouTube](docs/bande-annonce.jpg)](https://www.youtube.com/watch?v=p05VqCET59Y)
 
-*Bande-annonce (1 min 17) : clique l'image.*
+*[Bande-annonce sur YouTube](https://www.youtube.com/watch?v=p05VqCET59Y) (1 min 17) : clique l'image.*
 
 ![L'étagère de DragonTales](docs/etagere.jpg)
 

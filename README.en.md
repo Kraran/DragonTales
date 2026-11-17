@@ -7,9 +7,9 @@
 Old legends, reborn on PC: an engine for replaying Dragon 32/64 text adventures today, translated into French
 and illustrated, in a single web page.
 
-[![Watch the DragonTales trailer](docs/bande-annonce.jpg)](docs/bande-annonce.mp4)
+[![Watch the DragonTales trailer on YouTube](docs/bande-annonce.jpg)](https://www.youtube.com/watch?v=p05VqCET59Y)
 
-*Trailer (1 min 17, in French): click the picture.*
+*[Trailer on YouTube](https://www.youtube.com/watch?v=p05VqCET59Y) (1 min 17, in French): click the picture.*
 
 ![The DragonTales shelf](docs/etagere.jpg)
 
