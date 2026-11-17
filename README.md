@@ -32,6 +32,10 @@ DragonTales l'habille : textes traduits, jeu à la souris, carte, illustrations,
 
 ## Jouer
 
+**Dans le navigateur, sans rien télécharger** : sur [itch.io](https://kraran.itch.io/dragontales).
+
+**Sur ton ordinateur, hors ligne** :
+
 1. Télécharge `DragonTales-<version>.zip` dans les [versions](../../releases) et décompresse-le.
 2. Sous Windows, lance `Jouer.bat` : la page s'ouvre en plein écran dans Edge ou Chrome, sans barre d'adresse.
    Ailleurs, ouvre `DragonTales.html` dans un navigateur récent.

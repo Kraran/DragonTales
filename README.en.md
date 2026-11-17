@@ -32,6 +32,10 @@ DragonTales dresses it up: translated texts, mouse play, a map, illustrations, s
 
 ## Play
 
+**In your browser, nothing to download**: on [itch.io](https://kraran.itch.io/dragontales).
+
+**On your computer, offline**:
+
 1. Download `DragonTales-<version>.zip` from the [releases](../../releases) and unzip it.
 2. On Windows, run `Jouer.bat`: the page opens full screen in Edge or Chrome, without an address bar.
    Elsewhere, open `DragonTales.html` in a recent browser.
