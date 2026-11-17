@@ -336,7 +336,11 @@ const io={
 // Jeu en BASIC : chaque PRINT arrive comme une ligne anglaise ({b:…}), traduite à l'affichage par WORLD.say.
 const ioBasic={
   out(s){ pending+=s; pendItems.push({b:s}); if(WORLD.sfxFor){ const f=WORLD.sfxFor(s,curEn,mem); if(f) pendSfx.push(f); } },
-  cls(c){ if(c&&!SCREEN){ const f=WORLD.flashSfx||'flash'; if(!pendSfx.includes(f)) pendSfx.push(f); return; } pending=''; pendItems=SCREEN?[{f:1}]:[]; },   // CLS n : éclair de couleur
+  cls(c){ if(c&&!SCREEN){ const f=WORLD.flashSfx||'flash'; if(!pendSfx.includes(f)) pendSfx.push(f); return; }   // CLS n : éclair de couleur
+    if(SCREEN){ if(pending&&!pending.endsWith('\n')) pending+='\n'; pendItems.push(c==null?{f:1}:{f:1,c}); return; }      // jeu à écran : rien ne se perd
+    pending=''; pendItems=[]; },
+  set(x,y,c){ pendItems.push({g:[x,y,c]}); }, reset(x,y){ pendItems.push({g:[x,y,-1]}); },
+  pause(ms){ pendItems.push({w:ms}); },
   at(p){ if(pending&&!pending.endsWith('\n')) pending+='\n'; pendItems.push({p}); },       // PRINT @ (jeux à écran, ADV.machine.screen)
   sound(tone,dur){ if(pendNotes.length<400) pendNotes.push([SFX.dragonPitch(tone),SFX.dragonTicks(dur)]); },   // bips et airs d'origine
   play(str){ if(pendNotes.length<400) pendNotes.push(...SFX.parsePlay(str)); },
@@ -422,7 +426,8 @@ function flush(echo,prevOff){ // transforme la sortie du jeu en entrée du journ
   lastCmd=null; pending='';
   const items=compact(pendItems); pendItems=[];
   if(cmd) classicItems.push({e:cmd});
-  classicItems.push(...items);
+  const before=classicItems.length; classicItems.push(...items);
+  if(classicOn&&SCREEN) animateScreen(before);   // pauses du jeu d'origine
   const off=roomOff(), inMap=off>=0&&off<NROOMS, moved=inMap&&off!==prevOff;
   const r=cleanText(composeItems(items),moved);
   if(inMap) visited.add(off);
@@ -436,10 +441,10 @@ function step(echo){ // fait tourner le jeu jusqu'à la prochaine attente
   const prev=turns.length?roomOff():-1;
   let w;
   try{ w=m.run(); }catch(e){ note('raw',{text:'Erreur : '+e.message}); return; }
-  if(w==='key'&&!m.yesNo){            // écran titre du jeu d'origine
-    pending='';
-    if(!started){ showTitle(); return; }
-    m.key(32); pendSfx=[]; return step(echo);
+  if(w==='key'&&!m.yesNo){            // le jeu attend une touche (écran titre, « appuie sur une touche »…)
+    if(!started){ pending=''; showTitle(); return; }
+    if(!(classicOn&&SCREEN)){          // version moderne : on répond pour le joueur (WORLD.autoKey, sinon espace)
+      pending=''; const k=WORLD.autoKey&&WORLD.autoKey(mem); m.key(k?k.charCodeAt(0):32); pendSfx=[]; return step(echo); }
   }
   const r=flush(echo,prev);
   playSfx(prev,w);
@@ -979,7 +984,9 @@ function composeItems(items,classic){ // recompose une suite d'éléments du jou
     else if(it.r!==undefined) x=it.r;
     else if(it.b!==undefined) x=WORLD.say?WORLD.say(it.b,lang,!!classic):it.b;
     else if(it.p!==undefined) x=classic&&SCREEN?String.fromCharCode(0xE000+it.p):(s&&!s.endsWith('\n')?'\n':'');   // PRINT @
-    else if(it.f) x=classic&&SCREEN?'\f':'';                                                                       // CLS
+    else if(it.f) x=classic&&SCREEN?(it.c==null?'\f':'\u0003'+String.fromCharCode(48+it.c)):'';                    // CLS, CLS n
+    else if(it.g) x=classic&&SCREEN?(it.g[2]<0?'\u0002':'\u0001')+String.fromCharCode(256+it.g[0],256+it.g[1])+(it.g[2]<0?'':String.fromCharCode(256+(it.g[2]==null?0:it.g[2]))):'';   // SET, RESET
+    else if(it.w) x='';                                                                                              // pause
     else if(it.e) x=(it.e.tl===lang?it.e.typed.toLocaleUpperCase(lang):lang==='en'?it.e.en:REV(it.e.en))+'\n';
     else if(it.k==='loaded') x=t().loaded(roomInfo(it.off).title).toLocaleUpperCase(lang);
     else if(it.k==='help') x='\n'+(lang==='fr'?FR.HELP:HELP_EN).replace(/%/g,'\n')+'\n';
@@ -992,35 +999,81 @@ function classicString(){ return composeItems(classicItems,true); }
 // Écran du Dragon, 32 colonnes × 16 lignes, pour les jeux qui placent leur texte (PRINT @). Le texte qui sort en bas fait
 // défiler les lignes à partir de WORLD.scrollTop seulement (écran partagé). '\uE000'+position place le curseur, '\f' efface,
 // '\n' complète la ligne par des espaces (comme le Dragon). words : coupure aux espaces (traduction), sinon au caractère près.
+const SG_COL=['#050805','#44c532','#f4ea3c','#2c35e6','#d8262a','#eef0e4','#2fd0b8','#d33ad8','#ff8a1c'];   // couleurs du Dragon (CLS n, SET)
+// Écran du Dragon, 32 colonnes × 16 lignes, pour les jeux qui placent leur texte (PRINT @). Le texte qui sort en bas fait
+// défiler les lignes à partir de WORLD.scrollTop seulement (écran partagé). ''+position place le curseur, '\f' efface,
+// '\u0003'+chiffre efface en couleur (CLS n), '\u0001' x y c allume un point du semi-graphisme 64 × 32 (SET), '\u0002' x y
+// l'éteint (RESET) ; '\n' complète la ligne par des espaces (comme le Dragon). words : coupure aux espaces (traduction).
 function dragonScreen(s,words){
-  const W=32,H=16,top=(WORLD.scrollTop||0)*W, g=new Array(W*H).fill(' ');
+  const W=32,H=16,N=W*H,top=(WORLD.scrollTop||0)*W, g=new Array(N).fill(' '), sc=new Array(N).fill(-1), sb=new Array(N).fill(0);
   let c=0, soft=false;
-  const scroll=()=>{ g.copyWithin(top,top+W); g.fill(' ',W*H-W); c-=W; };
-  const put=ch=>{ g[c++]=ch; if(c>=W*H) scroll(); if(words&&c%W===0) soft=true; };
-  const nl=()=>{ do g[c++]=' '; while(c%W); if(c>=W*H) scroll(); };
-  const sep=ch=>ch===' '||ch==='\n'||ch==='\f'||ch>='\uE000';
+  const scroll=()=>{ for(const a of [g,sc,sb]) a.copyWithin(top,top+W); g.fill(' ',N-W); sc.fill(-1,N-W); sb.fill(0,N-W); c-=W; };
+  const put=ch=>{ g[c]=ch; sc[c]=-1; c++; if(c>=N) scroll(); if(words&&c%W===0) soft=true; };
+  const nl=()=>{ do { g[c]=' '; sc[c]=-1; c++; } while(c%W); if(c>=N) scroll(); };
+  const sep=ch=>ch<=' '||ch>='';
   for(let i=0;i<s.length;i++){
     const ch=s[i];
-    if(ch>='\uE000'&&ch<'\uE200'){ c=ch.charCodeAt(0)-0xE000; soft=false; continue; }
-    if(ch==='\f'){ g.fill(' '); c=0; soft=false; continue; }
+    if(ch>=''&&ch<''){ c=ch.charCodeAt(0)-0xE000; soft=false; continue; }
+    if(ch==='\f'){ g.fill(' '); sc.fill(-1); c=0; soft=false; continue; }
+    if(ch==='\u0003'){ const k=s.charCodeAt(++i)-48; g.fill(' '); sc.fill(k>0?k:0); sb.fill(k>0?15:0); c=0; soft=false; continue; }
+    if(ch==='\u0001'||ch==='\u0002'){ const x=s.charCodeAt(i+1)-256, y=s.charCodeAt(i+2)-256; let k=null;
+      if(ch==='\u0001'){ k=s.charCodeAt(i+3)-256; i+=3; } else i+=2;
+      if(x>=0&&x<64&&y>=0&&y<32){ const q=(y>>1)*W+(x>>1), bit=(y&1)?((x&1)?1:2):((x&1)?4:8);
+        if(sc[q]<0){ sc[q]=1; sb[q]=0; g[q]=' '; }
+        if(ch==='\u0001'){ sb[q]|=bit; if(k>0&&k<9) sc[q]=k; } else sb[q]&=~bit; }
+      continue; }
+    if(ch<' '&&ch!=='\n') continue;
     if(ch==='\n'){ if(!soft) nl(); soft=false; continue; }
     if(ch===' '){ if(!(soft&&c%W===0)) { soft=false; put(' '); } continue; }
     if(words&&(i===0||sep(s[i-1]))){ let j=i; while(j<s.length&&!sep(s[j])) j++;
       const L=j-i; if(c%W>0&&c%W+L>W&&L<=W){ nl(); soft=true; } }
     soft=false; put(ch);
   }
-  return {g,c};
+  return {g,sc,sb,c};
 }
+// cases semi-graphiques : quatre quarts allumés dans la couleur de la case, éteints en noir
+function sgStyle(col,bits){ const k=SG_COL[col]||SG_COL[1];
+  if(bits===15) return 'background:'+k; if(!bits) return 'background:'+SG_COL[0];
+  const q=[[8,'0 0'],[4,'100% 0'],[2,'0 100%'],[1,'100% 100%']].filter(([b])=>bits&b).map(([,p])=>`linear-gradient(${k},${k}) ${p}/50% 50% no-repeat`);
+  return 'background:'+q.join(',')+','+SG_COL[0]; }
+let scrLimit=null;                                     // animation des pauses : n'afficher que les premiers éléments
 function renderScreen(){
-  let from=-1; for(let i=classicItems.length-1;i>=0;i--) if(classicItems[i].f){ from=i; break; }
-  const items=from<0?[{f:1}].concat(WORLD.screenFrame||[],classicItems.slice(-500)):classicItems.slice(from);   // sans effacement connu : on redessine le cadre
-  const r=dragonScreen(composeItems(items,true)+(m.wait==='line'?cbuf:''),lang==='fr');
-  const rows=[]; for(let y=0;y<16;y++) rows.push(r.g.slice(y*32,y*32+32).join(''));
-  const txt=rows.join('\n'), at=r.c+Math.floor(r.c/32);
-  const scr=$('cScreen'); scr.textContent=txt.slice(0,at);
-  scr.appendChild(el('span','cursor',txt[at]===' '?'\u00a0':txt[at])); scr.appendChild(document.createTextNode(txt.slice(at+1)));
+  const all=scrLimit===null?classicItems:classicItems.slice(0,scrLimit);
+  let from=-1; for(let i=all.length-1;i>=0;i--) if(all[i].f){ from=i; break; }
+  const items=from<0?[{f:1}].concat(WORLD.screenFrame||[],all.slice(-500)):all.slice(from);   // sans effacement connu : on redessine le cadre
+  const r=dragonScreen(composeItems(items,true)+(m.wait==='line'&&scrLimit===null?cbuf:''),lang==='fr');
+  const scr=$('cScreen'); scr.textContent='';
+  const showCur=scrLimit===null&&m.wait==='line';
+  // fond de l'écran : la couleur des cases pleines la plus fréquente (vert s'il n'y en a pas, comme après CLS). Les cases de cette
+  // couleur sont de simples espaces ; le texte sur un autre fond est groupé en morceaux verts (pas de quadrillage entre cases).
+  const solid=i=>r.sc[i]<0?'t':r.sb[i]===15?(SG_COL[r.sc[i]]||SG_COL[1]):r.sb[i]===0?SG_COL[0]:null, cnt={};
+  for(let i=0;i<512;i++){ const k=solid(i); if(k&&k!=='t') cnt[k]=(cnt[k]||0)+1; }   // le texte ne compte pas : sans case pleine, fond vert
+  const bg=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]||SG_COL[1], txtBg=bg===SG_COL[1];
+  scr.style.background=bg;
+  for(let y=0;y<16;y++){
+    let txt='', rs='';
+    const flush=()=>{ if(txt){ scr.appendChild(document.createTextNode(txt)); txt=''; } if(rs){ scr.appendChild(el('span','tx',rs)); rs=''; } };
+    for(let x=0;x<32;x++){ const i=y*32+x;
+      if(showCur&&i===r.c){ flush(); scr.appendChild(el('span','cursor',r.g[i]===' '?' ':r.g[i])); continue; }
+      const k=solid(i);
+      if(k==='t'&&!txtBg){ if(txt){ scr.appendChild(document.createTextNode(txt)); txt=''; } rs+=r.g[i]; continue; }
+      if(k==='t'||k===bg){ if(rs){ scr.appendChild(el('span','tx',rs)); rs=''; } txt+=k==='t'?r.g[i]:' '; continue; }
+      flush(); const b=el('span','sg'); b.setAttribute('style',sgStyle(r.sc[i],r.sb[i])); b.textContent=' '; scr.appendChild(b); }
+    flush(); if(y<15) scr.appendChild(document.createTextNode('\n'));
+  }
   scr.scrollTop=0;
 }
+// pauses du jeu d'origine (FOR … NEXT vides) : la version classique montre les écrans intermédiaires le temps voulu
+let scrAnim=null;
+function animateScreen(from){
+  const cuts=[]; for(let i=from;i<classicItems.length;i++) if(classicItems[i].w) cuts.push([i,classicItems[i].w]);
+  if(!cuts.length||!classicOn) return false;
+  if(scrAnim) clearTimeout(scrAnim);
+  let k=0; const next=()=>{ if(k>=cuts.length){ scrLimit=null; scrAnim=null; renderScreen(); return; }
+    const [i,ms]=cuts[k++]; scrLimit=i; renderScreen(); scrAnim=setTimeout(next,ms); };
+  next(); return true;
+}
+function skipAnim(){ if(!scrAnim) return false; clearTimeout(scrAnim); scrAnim=null; scrLimit=null; renderScreen(); return true; }
 function renderClassic(){
   if(!classicOn) return;
   if(SCREEN){ renderScreen(); return; }
@@ -1034,13 +1087,16 @@ function setClassic(on){
   classicOn=on; LS.set(KEY+'view',on?'classic':'modern');
   $('classic').hidden=!on; cbuf='';
   if(on){ hideOverlay(); $('bigmap').hidden=true; disarm(); inEl.blur(); renderClassic(); }
-  else { if(m.wait==='key'&&m.yesNo) showDeath(''); else if(m.wait==='end') showEnd(); else if(menuNow()) showMenu(); else inEl.focus(); refresh(); scrollLog(); }
+  else { skipAnim(); if(m.wait==='key'&&!m.yesNo&&started){ step(null); return; }   // la version moderne ne s'arrête pas aux « appuie sur une touche »
+    if(m.wait==='key'&&m.yesNo) showDeath(''); else if(m.wait==='end') showEnd(); else if(menuNow()) showMenu(); else inEl.focus(); refresh(); scrollLog(); }
 }
 function classicKey(ev){
   if(ev.ctrlKey||ev.metaKey||(ev.altKey&&!ev.getModifierState('AltGraph'))) return;
   if(ev.target&&ev.target.tagName==='BUTTON'&&(ev.key==='Enter'||ev.key===' ')) return;
   const k=ev.key, w=m.wait, one=k.length===1;
   const last=classicItems[classicItems.length-1];
+  if(SCREEN&&scrAnim&&(one||k==='Enter')){ ev.preventDefault(); skipAnim(); return; }   // une touche passe la pause
+  if(SCREEN&&w==='key'&&!m.yesNo){ if(!one&&k!=='Enter') return; ev.preventDefault(); m.key(one?k.toUpperCase().charCodeAt(0):13); step(null); renderClassic(); return; }
   if(SCREEN&&w==='end'&&!(last&&last.k==='cEnd')){   // « WANT TO TRY AGAIN? » du jeu : O ou Y pour rejouer
     if(!one) return; ev.preventDefault(); const c=k.toUpperCase();
     if(c==='Y'||c==='O') restart(); else { classicItems.push({k:'cEnd'}); renderClassic(); }

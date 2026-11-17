@@ -10,8 +10,11 @@ const io={out(s){ shown+=s; },puts(){},cls(){},save(){},load(){return null;},qui
   text:basic?undefined:(a=>{ texts++; const k=a.toString(16).toUpperCase().padStart(4,'0'); if(adv.FR.TEXT[k]===undefined) missing.add(k); return null; })};
 const m=basic?require('../moteur/basic.js')(adv.bin,io,Object.assign({},adv.machine,{seed:adv.seed})):Machine(adv.bin,io,adv.machine), W=adv.world, vis=new Set();
 let w=m.run(); if(!basic){ m.key(32); w=m.run(); } let n=0, step=-1, back=0;
+// attentes de touche (INKEY$) : la réponse de la fiche (WORLD.autoKey), sinon espace
+const keys=()=>{ let g=0; while(w==='key'&&g++<50){ const k=W.autoKey&&W.autoKey(m.mem); m.key(k||' '); w=m.run(); } };
+keys();
 for(const c of cmds){ if(w!=='line'){ console.log('arrêt avant',c,'état',w); break; }
-  m.line(c); w=m.run(); n++; vis.add(W.roomOff(m.mem));
+  m.line(c); w=m.run(); keys(); n++; vis.add(W.roomOff(m.mem));
   if(adv.HINTS){ const s=adv.HINTS.step(m.mem,vis); if(s<step) back++; step=s; } }
 if(basic){ won=w==='end'&&adv.machine.victory.test(shown.slice(-400)); texts=shown.split('\n').length; }
 console.log(adv.title+' : '+n+'/'+cmds.length+' commandes, état final « '+w+' », '+(won?'VICTOIRE':'pas de victoire')+', '+vis.size+' lieux visités, '+texts+(basic?' lignes affichées':' textes affichés')+(adv.seed!==undefined?', graine '+adv.seed:''));

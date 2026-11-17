@@ -1,0 +1,128 @@
+# Mansion of Doom : une suite de commandes qui mène à la victoire, pour les essais automatiques.
+# Le coucher du soleil est tiré au hasard (420 + RND(59)) : la graine fixe le tirage. On ramasse la croix et l'ail
+# avant le soir, ce qui protège du vampire quoi qu'il arrive ; la partie ne dépend donc pas vraiment de la graine.
+# Une commande anglaise du jeu par ligne ; les lignes vides et celles qui commencent par # sont ignorées.
+# La question « NEED INSTRUCTIONS? » est une touche : la fiche y répond N (WORLD.autoKey).
+# Attention : ce fichier dévoile toute l'aventure.
+@graine 1
+OPEN DOOR
+S
+W
+W
+GET CAGE
+E
+E
+S
+U
+E
+N
+E
+S
+DROP CAGE
+OPEN CAGE
+GET MONGOOSE
+N
+W
+S
+W
+S
+E
+GET GARLIC
+W
+N
+D
+E
+E
+DROP MONGOOSE
+W
+W
+U
+U
+W
+W
+GET CROSS
+E
+E
+U
+GET CHEST
+E
+GET GUN
+W
+S
+S
+U
+U
+W
+S
+W
+OPEN BOX
+GET BULLET
+E
+N
+E
+D
+D
+D
+N
+W
+CLOSE SWITCH
+E
+S
+E
+S
+SHOOT WEREWOLF
+GET KEY
+N
+W
+U
+U
+U
+U
+OPEN CHEST
+DROP GUN
+GET SACK
+OPEN SACK
+D
+D
+W
+W
+DROP KEY
+EXAMINE BOOKCASE
+N
+GET MALLET
+S
+E
+E
+U
+E
+N
+E
+GET STAKE
+W
+S
+W
+D
+D
+E
+E
+S
+OPEN TRAPDOOR
+D
+D
+DROP SACK
+W
+OPEN COFFIN
+SLAY VAMPIRE
+OPEN CASKET
+GET PRINCESS
+E
+U
+U
+N
+W
+W
+U
+U
+U
+GET CHEST
+N

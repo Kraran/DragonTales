@@ -172,8 +172,13 @@ function Basic(bin, io, cfg){
     err('?SN ERROR');
   }
   const KEYWAIT = {keywait:true};
+  let curStart = 0;                        // début de l'instruction en cours (repère des boucles d'attente d'INKEY$)
   function fn(f){
-    if(f === 'INKEY$'){ if(S.keys.length) return S.keys.shift(); throw KEYWAIT; }   // pas de touche : on attend (et l'instruction sera reprise)
+    if(f === 'INKEY$'){                    // lecture du clavier sans attente : "" s'il n'y a pas de touche
+      if(S.keys.length){ S.ink = null; return S.keys.shift(); }
+      const here = S.li + ':' + curStart;  // relue au même endroit sans touche entre-temps : c'est une boucle d'attente,
+      if(S.ink === here) throw KEYWAIT;    // on s'arrête jusqu'à la prochaine touche (l'instruction sera reprise)
+      S.ink = here; return ''; }
     if(f === 'POS'){ args(); return cfg.screen ? S.col % 32 : S.col; }
     if(f === 'TIMER') return 0;
     const a = args();
@@ -253,7 +258,10 @@ function Basic(bin, io, cfg){
       case 'REM': P = T.length; return;
       case 'LET': { const r = ref(); need('op','='); set(r, expr()); return; }
       case 'CLEAR': skipToEnd(); return;
-      case 'CLS': { let c = 0; if(!endStmt()) c = expr(); S.col = 0; io.cls && io.cls(c); return; }
+      case 'CLS': { let c = null; if(!endStmt()) c = expr(); flushOut(); S.col = 0; io.cls && io.cls(c); return; }   // c : couleur (null = CLS seul)
+      case 'SET': case 'RESET': {          // SET(x,y,couleur) / RESET(x,y) : semi-graphisme 64 × 32 de l'écran texte
+        need('p','('); const x = expr(); need('p',','); const y = expr(); let c = null; if(eat('p',',')) c = expr(); need('p',')');
+        flushOut(); if(t.v === 'SET') io.set && io.set(Math.floor(x), Math.floor(y), c); else io.reset && io.reset(Math.floor(x), Math.floor(y)); return; }
       case 'DIM':
         do { const nm = peek(); need('id'); const n = vname(nm.v); const d = args().map(Math.floor);
              S.arrs[n] = {d, v: Array(d.reduce((x, y) => x * (y + 1), 1)).fill(isStr(n) ? '' : 0)}; } while(eat('p', ','));
@@ -298,6 +306,12 @@ function Basic(bin, io, cfg){
         const r = ref(); if(r.a) err('?SN ERROR'); need('op','='); set(r, expr());
         need('kw','TO'); const to = expr(); let st = 1; if(eat('kw','STEP')) st = expr();
         for(let i = S.stack.length - 1; i >= 0; i--) if(S.stack[i].k === 'f' && S.stack[i].n === r.n){ S.stack.splice(i); break; }
+        // FOR C=1 TO 2000:NEXT — une boucle vide qui ne sert qu'à attendre : une pause (io.pause, en millisecondes)
+        if(io.pause && at('p',':')){ const q = P; P++;
+          if(eat('kw','NEXT')){ if(at('id') && vname(peek().v) === r.n) P++;
+            if(endStmt()){ const v = S.vars[r.n] || 0, n = st ? Math.max(0, Math.floor((to - v) / st) + 1) : 0; set(r, v + n * st);
+              flushOut(); if(n > 50) io.pause(Math.min(6000, Math.round(n * 1.5))); return; } }
+          P = q; }
         S.stack.push({k:'f', n:r.n, to, st, li:S.li, ti:P});
         return;
       }
@@ -322,6 +336,7 @@ function Basic(bin, io, cfg){
       case 'END': case 'STOP': S.ended = true; return 'end';
       case 'SOUND': case 'PLAY': case 'POKE': case 'AUDIO': case 'SCREEN': case 'PMODE': case 'PCLS': case 'COLOR':
         { const args = []; while(!endStmt()){ if(eat('p',',')) continue; args.push(expr()); }
+          if((t.v === 'SOUND' || t.v === 'PLAY') && (io.sound || io.play)) flushOut();
           if(t.v === 'SOUND' && io.sound) io.sound(args[0], args[1]);
           if(t.v === 'PLAY' && io.play) io.play(String(args[0]));
           return; }
@@ -374,6 +389,7 @@ function Basic(bin, io, cfg){
       while(P < T.length){
         if(eat('p', ':')) continue;
         const start = P;
+        curStart = start;
         try { r = statement(); }
         catch(e){
           if(e !== KEYWAIT) throw e;
