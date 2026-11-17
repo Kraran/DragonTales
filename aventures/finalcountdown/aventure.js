@@ -1,6 +1,5 @@
 // The Final Countdown — Bill et Debbie Cook, Dragon Data, 1983 — fiche de l'aventure pour DragonTales.
-// INTÉGRATION EN COURS (17/11/2026) : voir docs/PLAN-FINALCOUNTDOWN.md. Le dossier contient EN-COURS.md : build.py ne
-// l'assemble qu'avec « --tout ».
+// Intégrée le 18/11/2026 (version 0.9.0) : voir docs/PLAN-FINALCOUNTDOWN.md.
 // Ce fichier est assemblé après data.js, hints.js, scenes.js, sons.js et textes.js du même dossier : ROOMS, POS, HINTS,
 // SCENES, FC_SFX/fcSfxFor/fcAmbient, FR et fcSay/fcClean.
 // Jeu en Dragon BASIC (moteur/basic.js), du même moule que S.S. Poseidon. La partie se lit dans ses variables :
@@ -19,6 +18,8 @@ const WORD={7:'SNAKE',9:'RADIO',10:'UNIFORM',11:'TASER',13:'PAPERS',15:'CAMERA',
 DragonTales.register({
  id:'finalcountdown', order:5,
  storage:'finalcountdown',
+ // notes sur 5 (jugement du jeu d'origine, 18/11/2026) : difficulté (plus c'est haut, plus c'est dur) et note globale
+ rating:{difficulty:3.3,overall:3.2},
  title:'The Final Countdown', author:{fr:'Bill et Debbie Cook',en:'Bill and Debbie Cook'}, publisher:'Dragon Data', year:1983, system:'Dragon 32',
  blurb:{
   fr:'Un général devenu fou a lancé le compte à rebours d’un missile nucléaire, puis fait évacuer la base. Entre dans le silo et arrête le tir avant la troisième guerre mondiale.',

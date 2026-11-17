@@ -24,6 +24,8 @@ DragonTales dresses it up: translated texts, mouse play, a map, illustrations, s
 
 ![Mansion of Doom in the modern version](docs/mansion.jpg)
 
+![The Final Countdown in the modern version](docs/finalcountdown.jpg)
+
 ## Adventures
 
 | Adventure | Author, publisher | Year | Machine | Languages |
@@ -32,6 +34,7 @@ DragonTales dresses it up: translated texts, mouse play, a map, illustrations, s
 | Dragon Mountain | Dragon Data | 1982 | Dragon 32 | French, English |
 | S.S. Poseidon | Bill and Debbie Cook, Dragon Data | 1982 | Dragon 32 | French, English |
 | Mansion of Doom | Leroy C. Smith and Paul Austin, Pal Creations / Dragon Data | 1982 | Dragon 32 | French, English |
+| The Final Countdown | Bill and Debbie Cook, Dragon Data | 1983 | Dragon 32 | French, English |
 
 ## Play
 
@@ -97,6 +100,7 @@ node tests/sauvegardes.js           # in Chrome: magic coins, kept history, expo
 node tests/essai-dragonmountain.js  # in Chrome: Dragon Mountain (full game, saves, languages, death)
 node tests/essai-poseidon.js        # in Chrome: S.S. Poseidon (skill level, full game, Dragon screen, death)
 node tests/essai-mansion.js         # in Chrome: Mansion of Doom (full game, colour screens, passwords, endings)
+node tests/essai-finalcountdown.js  # in Chrome: The Final Countdown (skill level, full game despite randomness, endings)
 ```
 
 The Chrome tests need `npm install playwright` and Chrome (set `CHROME` to its path if needed).
@@ -113,6 +117,8 @@ Warning: the adventures' `solution.txt` files spoil the whole game.
 - **S.S. Poseidon** (Poseidon Adventure): original program and texts by Bill and Debbie Cook, published by Dragon Data in 1982.
   The program and the original box belong to their rights holders.
 - **Mansion of Doom**: original program and texts by Leroy C. Smith and Paul Austin, Pal Creations, distributed by Dragon Data in 1982.
+  The original program and box belong to their rights holders.
+- **The Final Countdown**: original program and texts by Bill and Debbie Cook, published by Dragon Data in 1983.
   The original program and box belong to their rights holders.
 - Port, French translations, interface, vector illustrations, hints and sound effects: the DragonTales project.
 - Music: “Awakening in the Desert” (El Diablero) and “The Guardian's Hoard” (Dragon Mountain), made for this project.

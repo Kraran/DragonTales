@@ -41,8 +41,8 @@ jobs:
         run: node tests/essai-poseidon.js
       - name: Mansion of Doom dans Chrome
         run: node tests/essai-mansion.js
-      - name: The Final Countdown dans Chrome (aventure en cours, assemblée avec --tout)
-        run: python build.py --tout && node tests/essai-finalcountdown.js
+      - name: The Final Countdown dans Chrome
+        run: node tests/essai-finalcountdown.js
       - name: Garder les captures en cas d'échec
         if: failure()
         uses: actions/upload-artifact@v4

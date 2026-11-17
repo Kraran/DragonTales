@@ -1,7 +1,7 @@
 // Essai de The Final Countdown (jeu en BASIC à écran partagé, comme S.S. Poseidon) dans Chrome : choix du niveau,
 // commandes françaises, pièce magique, partie entière (le général et le labyrinthe sont au hasard : l'essai réagit),
 // version classique (français et anglais), fins expliquées (incendie, lancement par erreur, général).
-//   python build.py && node tests/essai-finalcountdown.js      (tant que l'aventure est en cours : build.py --tout)
+//   python build.py && node tests/essai-finalcountdown.js
 let chromium; try{ ({chromium}=require('playwright')); }catch(e){ ({chromium}=require('/opt/npm-tools/node_modules/playwright')); }
 const fs=require('fs'), path=require('path');
 const PAGE='file://'+path.resolve(__dirname,'..','DragonTales.html'), OUT=path.resolve(__dirname,'out'); fs.mkdirSync(OUT,{recursive:true});

@@ -1,5 +1,26 @@
 # Journal des versions
 
+## 0.9.0 — 18 novembre 2026
+
+Cinquième aventure : **The Final Countdown** (Bill et Debbie Cook, Dragon Data, 1983).
+
+### The Final Countdown
+- Un général devenu fou a lancé le compte à rebours d'un missile nucléaire : 20 lieux, de la camionnette au silo, à
+  parcourir avant la fin du compte. Choix du niveau au départ (75, 125 ou 250 coups), compte à rebours affiché.
+- Le général surgit au hasard sous terre : la version moderne l'annonce et le dessine ; il faut tirer sur lui sur-le-champ.
+- Traduction française complète, commandes françaises (APPUYER SUR TROIS, MONTRER LES PAPIERS…).
+- Version classique fidèle à l'écran du Dragon (écran partagé, comme Poseidon).
+- Une illustration par lieu, le compte à rebours en chiffres rouges dans les salles de contrôle ; carte sur deux niveaux.
+- L'incendie du bureau du commandant, sans extincteur, est une mort expliquée ; le piège prévu par les auteurs au poste
+  de contrôle de tir (le bouton UN lance le missile), que le programme ne déclenchait jamais, est rétabli.
+- Pièces magiques : douze étapes d'indices et cinq indices de situation.
+- Bruitages de la base dans la version moderne (le jeu d'origine est muet), sirène à dix coups de la fin.
+- Musique « T Minus Zero » (Suno) : écran d'introduction, et dehors si l'option est activée.
+- Notes sur l'étagère : difficulté 3,3, note globale 3,2.
+
+### Moteur
+- BASIC : une boucle FOR de même variable ne traverse plus un GOSUB (comme le BASIC Microsoft).
+
 ## 0.8.0 — 17 novembre 2026
 
 Quatrième aventure : **Mansion of Doom** (Leroy C. Smith et Paul Austin, Pal Creations, diffusé par Dragon Data, 1982).

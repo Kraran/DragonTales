@@ -2,7 +2,7 @@
 
 Cinquième aventure de DragonTales, écrite par Bill et Debbie Cook, les auteurs de S.S. Poseidon. Le programme est du même moule : écran partagé, choix du niveau, compte des coups. Il tourne sur `moteur/basic.js`.
 
-Au 17/11/2026, l'aventure tourne, se gagne, elle est traduite, illustrée et sonorisée. Elle s'affiche avec `python build.py --tout`. Le dossier contient `EN-COURS.md`, donc elle ne sort pas encore dans les versions publiées.
+Publiée dans la version 0.9.0 (18/11/2026).
 
 ## Le jeu en bref
 
@@ -89,7 +89,7 @@ La solution d'essai fait 51 commandes, avec la graine 1 et le niveau expert.
   - **Au poste de tir** : le panneau, le fil coupé, le décollage du missile.
   - **Le compte à rebours** : une sirène à dix coups de la fin, puis un bip à chaque coup.
   - **Ambiances** : salle informatique, radar, transmissions, néons du silo, pas dans le labyrinthe.
-- **Essai Chrome** (`tests/essai-finalcountdown.js`, dans l'intégration continue avec `build.py --tout`) :
+- **Essai Chrome** (`tests/essai-finalcountdown.js`, dans l'intégration continue) :
   - niveau, commandes françaises, pièce magique ;
   - partie entière en réagissant au général et au labyrinthe ;
   - version classique en français et en anglais ;
@@ -99,9 +99,10 @@ La solution d'essai fait 51 commandes, avec la graine 1 et le niveau expert.
 
 « The Final Countdown – T Minus Zero » (Suno), 3 min 35 : synthés de thriller de guerre froide des années 80. `musique.ogg` : Opus 72 kbit/s, fondu final de 0,8 s, niveau moyen −16,1 dB comme les autres. Elle joue sur l'écran d'introduction et, avec l'option, dehors.
 
-### 7. À faire
+### 7. Publication — 0.9.0 (18/11/2026)
 
-1. Note sur 5, publication.
+- Notes : difficulté 3,3 (l'escalier caché derrière l'armoire, les gants, le général qui tue au moindre faux pas, 75 coups au niveau expert) ; note globale 3,2 (courte et tendue, bonne ambiance de guerre froide, mais linéaire et dépendante du hasard).
+- `EN-COURS.md` retiré.
 
 ## Décisions prises (17/11/2026)
 
