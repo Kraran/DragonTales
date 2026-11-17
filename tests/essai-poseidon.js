@@ -19,6 +19,7 @@ let bad=0; const ok=(k,v,d)=>{ if(!v) bad++; console.log((v?'ok   ':'ÉCHEC ')+k
  ok('choix du niveau proposé',/Choisis ton niveau/.test(menu)&&/75 coups/.test(menu)&&/250 coups/.test(menu),menu.replace(/\n+/g,' | '));
  await p.keyboard.press('Escape'); ok('Échap ne ferme pas le choix du niveau',!(await p.$eval('#overlay',e=>e.hidden)));
  await p.click('#overlay .menuRow button:has-text("Expert")'); await p.waitForTimeout(200);
+ ok('musique : zone de la salle de bal',(await p.evaluate(()=>window.__dt.music())).desert===true);
  ok('premier lieu affiché',/salle de bal/.test(await p.innerText('#log')));
  ok('coups restants affichés',/Encore 74 coups/.test(await p.innerText('#sceneStatus')),await p.innerText('#sceneStatus'));
  ok('pas de texte de l’écran titre dans le journal',!/DRAGON DATA|CHOICE|NIVEAU :|Bienvenue/i.test(await p.innerText('#log')));
@@ -36,7 +37,8 @@ let bad=0; const ok=(k,v,d)=>{ if(!v) bad++; console.log((v?'ok   ':'ÉCHEC ')+k
  const send=c=>p.evaluate(c=>{const d=window.__dt; if(d.m.wait!=='line') return false; d.send(c,c.toLowerCase()); return true;},c);
  let n=0;
  for(const c of sol.solution.slice(1)){ if(!await send(c)){ console.log('arrêt avant',c); break; } n++;
-   if(c==='CLIMB CABLE') ok('montée au câble : deuxième niveau',/croisement/.test(await p.innerText('#log .turn:last-child')));
+   if(c==='CLIMB CABLE'){ ok('montée au câble : deuxième niveau',/croisement/.test(await p.innerText('#log .turn:last-child')));
+     ok('musique : hors zone dans les coursives',(await p.evaluate(()=>window.__dt.music())).desert===false); }
    if(n===24){
      await p.click('#tool-saves'); await p.click('.slot:nth-child(2) button:has-text("Sauvegarder")'); await p.click('#overlay button.main');
      const st=await p.evaluate(()=>window.__dt.state()); await send('W');

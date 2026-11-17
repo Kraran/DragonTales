@@ -56,7 +56,7 @@ DragonTales.register({
    bye:"Bon vent, matelot.",
    won:"Sauvé !",
    sfxNote:"Les bips et les airs du jeu d’origine jouent dans les deux versions ; les bruitages du navire (eau, métal, flammes, machines) seulement dans la version moderne.",
-   musicNote:"Pas encore de musique pour cette aventure.",
+   musicNote:"Elle joue dans la salle de bal et les deux lieux voisins, et s’efface en fondu quand on monte vers les coursives.",
    mapHint:"Clique un lieu pour t’y rendre. De gauche à droite : les salons, les coursives, les ponts des machines. ▲▼ : un passage monte ou descend vers l’autre niveau.",
    intro:[
     "La veille du Nouvel An, un séisme sous-marin soulève une vague gigantesque. Le Poseidon, paquebot de luxe, chavire et flotte la quille en l’air.",
@@ -67,7 +67,7 @@ DragonTales.register({
    bye:"Fair winds, sailor.",
    won:"Saved!",
    sfxNote:"The beeps and tunes of the original game play in both versions; the ship sounds (water, metal, flames, engines) only in the modern version.",
-   musicNote:"No music for this adventure yet.",
+   musicNote:"It plays in the ballroom and the two places next to it, and fades out when you climb to the passageways.",
    mapHint:"Click a place to walk there. From left to right: the lounge deck, the passageways, the engine decks. ▲▼: a passage leads up or down to the other level.",
    intro:[
     "On New Year’s Eve an undersea earthquake raises a gigantic wave. The luxury liner Poseidon capsizes and floats upside down.",
@@ -110,6 +110,7 @@ DragonTales.register({
   freeInput:mem=>mem.prompt()!==null&&mem.line()===2160,
   status(mem,lang){ const mt=mem.v('MT'), t=mem.v('T'); if(!mt) return ''; const left=Math.max(0,mt-t), w=WATER[lang==='fr'?'fr':'en'].find(x=>t>mt*x[0])||WATER.en[3];
    return lang==='fr'?`Encore ${left} coup${left>1?'s':''} — l’eau t’arrive ${w[1]}`:`${left} move${left===1?'':'s'} left — the water is up to your ${w[1]}`; },
+  musicZone:key=>['1','2','3','3b'].includes(key),      // « The Last Waltz » : la salle de bal et ses deux voisins
   sfxFor:(line,cmd,mem)=>psSfxFor(line,cmd,mem),        // sons.js
   ambient(mem,off){ const r=off+1; return r===4?['ps_steam']:r===10&&mem.v('F2')===0?['ps_fire']:r===15?['ps_fire']:r===18?['ps_engine']:r===3&&mem.v('F7')===1?['ps_flood']:[]; },
   roomOff:mem=>mem.v('L')-1,

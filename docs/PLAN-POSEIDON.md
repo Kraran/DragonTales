@@ -1,6 +1,6 @@
 # Plan d'intégration — Poseidon Adventure (Dragon Data, 1982)
 
-Troisième aventure de DragonTales, écrite par Bill et Debbie Cook. Elle est en BASIC, comme Dragon Mountain, et tourne donc sur l'interpréteur `moteur/basic.js`. L'aventure est jouable dans `DragonTales.html` depuis le 17/11/2026 ; il reste la musique avant la version 0.7.0.
+Troisième aventure de DragonTales, écrite par Bill et Debbie Cook. Elle est en BASIC, comme Dragon Mountain, et tourne donc sur l'interpréteur `moteur/basic.js`. L'aventure est jouable dans `DragonTales.html` depuis le 17/11/2026 ; il reste à publier la version 0.7.0.
 
 ## Le jeu en bref
 
@@ -64,16 +64,17 @@ El Diablero et Dragon Mountain gagnent toujours avec leur solution.
 - `hints.js` : huit étapes à deux indices, huit indices de situation (noir complet, incendie, écoutille, tableau, corniche,
   couperet, nourriture, puits).
 
-### 7. Sons et musique — sons faits, musique à venir
+### 7. Sons et musique — fait
 
 - Bips `SOUND` et airs `PLAY` d'origine, dans les deux versions.
 - `sons.js` : vapeur, incendie, machines, câble, porte d'acier, mur d'eau, mazout, extincteur, corde, liberté…
-- Musique Suno : dans un deuxième temps.
+- Musique Suno « Poseidon – The Last Waltz » (2 min 42, Opus 72 kbit/s, −16,1 dB) : écran d'introduction ; pendant le jeu,
+  si l'option est activée, dans la salle de bal, sous la coursive et sous les colonnes (`world.musicZone`).
 
 ### 8. Essais et publication
 
 - `tests/essai-poseidon.js` dans la CI — fait.
-- Musique, captures, release 0.7.0 — à faire.
+- Release 0.7.0 — à faire.
 
 ## Décisions (17/11/2026)
 

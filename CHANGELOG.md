@@ -7,6 +7,8 @@ Troisième aventure : **S.S. Poseidon** (Poseidon Adventure, Bill et Debbie Cook
 ### S.S. Poseidon
 - Choix du niveau au départ (expert 75 coups, moyen 125, débutant 250) ; coups restants et niveau de l'eau affichés.
 - Version classique fidèle à l'écran du Dragon : 32 × 16, le lieu en haut, un séparateur, les messages qui défilent dessous.
+- Musique « The Last Waltz » (Suno) : écran d'introduction, et pendant le jeu dans la salle de bal et ses deux voisins
+  si l'option est activée.
 - Bips et petits airs d'origine (SOUND, PLAY) rejoués, dans les deux versions ; bruitages du navire dans la version moderne.
 - Bug d'origine corrigé : MANGER un objet que l'on porte répondait « YOU DON'T HAVE IT ».
 - Pièges d'origine gardés mais expliqués : noir sans lampe, incendie du poste radio, passage secret inondé.
