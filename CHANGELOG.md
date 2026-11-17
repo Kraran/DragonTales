@@ -1,5 +1,32 @@
 # Journal des versions
 
+## 0.8.0 — 17 novembre 2026
+
+Quatrième aventure : **Mansion of Doom** (Leroy C. Smith et Paul Austin, Pal Creations, diffusé par Dragon Data, 1982).
+
+### Mansion of Doom
+- Le manoir du comte von Steinoff : 77 lieux sur cinq niveaux, du village à la sous-cave. Ramène la princesse Marléna avant
+  que le soleil se couche.
+- Traduction française complète. Les écrits en « gothique transylvanien » sont traduits puis rechiffrés avec le même
+  alphabet : le dictionnaire du jeu sert toujours à les lire. Mots de passe français : TUER VAMPIRE, CHIEN (YOREL reste).
+- Version classique fidèle à l'écran du Dragon : écran titre rouge, scénario sur fond noir, plan du manoir en
+  semi-graphiques, pauses d'origine ; question des instructions (O/N).
+- Une illustration par lieu ; fenêtres et dehors suivent l'heure du jeu (après-midi, soir, nuit) ; la cave rougit quand le
+  courant revient et reste noire avant. L'heure s'affiche quand on porte la montre.
+- Parties perdues sans le savoir devenues des fins expliquées : sables mouvants, princesse en cendres, interrupteur détruit,
+  princesse abattue. Le « HELP » moqueur d'origine est gardé.
+- Pièces magiques : douze étapes d'indices et sept indices de situation.
+- Bips et coup de feu d'origine dans les deux versions ; une quarantaine de bruitages et d'ambiances du manoir dans la
+  version moderne (portes, cercueil, acide, chauves-souris, vampire, glas du soir…).
+- Musique « The Count's Last Night » (Suno) : écran d'introduction, et dehors et au village si l'option est activée.
+- Notes sur l'étagère : difficulté 3,7, note globale 3,6.
+
+### Moteur
+- BASIC : INKEY$ ne bloque plus (une boucle d'attente devient une attente de touche), CLS n en couleur, SET et RESET,
+  boucles FOR vides rejouées comme des pauses.
+- Écran du Dragon : couleurs du fond, texte en cases vertes, semi-graphiques ; les attentes de touche du jeu sont
+  laissées au joueur dans la version classique.
+
 ## 0.7.2 — 17 novembre 2026
 
 - Étagère : sous la description de chaque aventure, sa difficulté et sa note globale sur 5, en étoiles remplies au

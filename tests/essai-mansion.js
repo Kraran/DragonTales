@@ -1,7 +1,7 @@
 // Essai de Mansion of Doom (jeu en BASIC, écrans en couleur) dans Chrome : commandes françaises, noms français des objets,
 // pièce magique, partie entière avec solution.txt, version classique (écran titre rouge, plan semi-graphique, français et
 // anglais), mots de passe français, fins expliquées.
-//   python build.py --tout && node tests/essai-mansion.js      (l'aventure est encore « en cours » : --tout l'inclut)
+//   python build.py && node tests/essai-mansion.js
 let chromium; try{ ({chromium}=require('playwright')); }catch(e){ ({chromium}=require('/opt/npm-tools/node_modules/playwright')); }
 const fs=require('fs'), path=require('path');
 const PAGE='file://'+path.resolve(__dirname,'..','DragonTales.html'), OUT=path.resolve(__dirname,'out'); fs.mkdirSync(OUT,{recursive:true});

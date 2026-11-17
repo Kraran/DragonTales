@@ -22,6 +22,8 @@ DragonTales l'habille : textes traduits, jeu à la souris, carte, illustrations,
 
 ![S.S. Poseidon en version moderne](docs/poseidon.jpg)
 
+![Mansion of Doom en version moderne](docs/mansion.jpg)
+
 ## Aventures
 
 | Aventure | Auteur, éditeur | Année | Machine | Langues |
@@ -29,6 +31,7 @@ DragonTales l'habille : textes traduits, jeu à la souris, carte, illustrations,
 | El Diablero | Kenneth Kalish, Computerware | 1982 | Dragon 32 | français, anglais |
 | Dragon Mountain | Dragon Data | 1982 | Dragon 32 | français, anglais |
 | S.S. Poseidon | Bill et Debbie Cook, Dragon Data | 1982 | Dragon 32 | français, anglais |
+| Mansion of Doom | Leroy C. Smith et Paul Austin, Pal Creations / Dragon Data | 1982 | Dragon 32 | français, anglais |
 
 ## Jouer
 
@@ -98,6 +101,7 @@ node tests/essai.js                 # dans Chrome, avec Playwright : étagère, 
 node tests/sauvegardes.js           # dans Chrome : pièces magiques, journal conservé, export et import
 node tests/essai-dragonmountain.js  # dans Chrome : Dragon Mountain (partie entière, sauvegardes, langues, mort)
 node tests/essai-poseidon.js        # dans Chrome : S.S. Poseidon (niveau, partie entière, écran du Dragon, mort)
+node tests/essai-mansion.js         # dans Chrome : Mansion of Doom (partie entière, écrans en couleur, mots de passe, fins)
 ```
 
 Les essais dans Chrome demandent `npm install playwright` et Chrome (variable `CHROME` pour indiquer son chemin).
@@ -112,6 +116,8 @@ Attention : les fichiers `solution.txt` des aventures dévoilent tout le jeu.
 - **Dragon Mountain** : programme et textes d'origine publiés par Dragon Data en 1982.
   Le programme et la boîte d'origine appartiennent à leurs ayants droit.
 - **S.S. Poseidon** (Poseidon Adventure) : programme et textes d'origine de Bill et Debbie Cook, publiés par Dragon Data en 1982.
+  Le programme et la boîte d'origine appartiennent à leurs ayants droit.
+- **Mansion of Doom** : programme et textes d'origine de Leroy C. Smith et Paul Austin, Pal Creations, diffusés par Dragon Data en 1982.
   Le programme et la boîte d'origine appartiennent à leurs ayants droit.
 - Portage, traductions françaises, interface, illustrations vectorielles, indices et effets sonores : projet DragonTales.
 - Musiques : « Awakening in the Desert » (El Diablero) et « The Guardian's Hoard » (Dragon Mountain), créées pour ce projet.

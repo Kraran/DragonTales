@@ -39,8 +39,8 @@ jobs:
         run: node tests/essai-dragonmountain.js
       - name: S.S. Poseidon dans Chrome
         run: node tests/essai-poseidon.js
-      - name: Mansion of Doom dans Chrome (aventure en cours, assemblée avec --tout)
-        run: python build.py --tout && node tests/essai-mansion.js
+      - name: Mansion of Doom dans Chrome
+        run: node tests/essai-mansion.js
       - name: Garder les captures en cas d'échec
         if: failure()
         uses: actions/upload-artifact@v4

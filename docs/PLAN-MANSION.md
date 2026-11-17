@@ -2,7 +2,7 @@
 
 Quatrième aventure de DragonTales, écrite par Leroy C. Smith et Paul Austin. Elle est en BASIC, comme Dragon Mountain et Poseidon, et tourne sur `moteur/basic.js`.
 
-Au 17/11/2026, l'aventure tourne et se gagne. Elle s'affiche avec `python build.py --tout`. Le dossier contient `EN-COURS.md`, donc elle ne sort pas encore dans les versions publiées.
+Au 17/11/2026, l'aventure tourne, se gagne, et elle est publiée dans la version 0.8.0.
 
 ## Le jeu en bref
 
@@ -139,7 +139,7 @@ Au 17/11/2026, l'aventure tourne et se gagne. Elle s'affiche avec `python build.
   - l'orgue de la chapelle, le feu du petit salon, le scintillement de la galerie des glaces et de la salle magique ;
   - le bourdonnement de la salle du courant, les gouttes et le grondement de la sous-cave ;
   - un cœur qui bat dans la cave noire.
-- **Essai dans Chrome** (`tests/essai-mansion.js`, dans l'intégration continue avec `build.py --tout`) :
+- **Essai dans Chrome** (`tests/essai-mansion.js`, dans l'intégration continue) :
   - commandes et objets en français, secours, pièce magique, solution entière jusqu'à la victoire ;
   - version classique en français et en anglais ;
   - écran titre rouge, question des instructions, plan semi-graphique au titre chiffré en français ;
@@ -149,10 +149,10 @@ Au 17/11/2026, l'aventure tourne et se gagne. Elle s'affiche avec `python build.
 
 « Mansion of Doom – The Count's Last Night » (Suno), 3 min 03 : valse gothique, orgue et clavecin, thérémine. `musique.ogg` : Opus 72 kbit/s, 0,6 s de silence final rogné, niveau moyen −16,1 dB comme les autres, 1,8 Mo. Elle joue sur l'écran d'introduction et, avec l'option, dehors et au village.
 
-### 8. À faire
+### 8. Publication — 0.8.0 (17/11/2026)
 
-1. **Note** sur 5 (difficulté, note globale).
-2. **Publication** : retirer `EN-COURS.md`, version, journal des modifications.
+- Notes : difficulté 3,7 (écrits chiffrés, coucher du soleil, loup-garou qui ne laisse qu'une commande, chute du coffre à deviner) ; note globale 3,6 (manoir riche et drôle, écrans en couleur, mais beaucoup de lieux vides et des descriptions brèves).
+- `EN-COURS.md` retiré : l'aventure est assemblée par `python build.py`.
 
 ## Décisions prises (17/11/2026)
 

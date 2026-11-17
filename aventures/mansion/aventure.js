@@ -1,7 +1,5 @@
 // Mansion of Doom — Leroy C. Smith et Paul Austin, Pal Creations, 1982 (diffusé par Dragon Data) — fiche de l'aventure.
-// INTÉGRATION EN COURS (17/11/2026) : le jeu tourne, se gagne (solution.txt) et il est traduit ; décors, indices,
-// sons et musique restent à faire (voir docs/PLAN-MANSION.md). Le dossier contient EN-COURS.md : build.py ne l'assemble
-// qu'avec « --tout ».
+// Intégrée le 17/11/2026 (version 0.8.0) : voir docs/PLAN-MANSION.md.
 // Ce fichier est assemblé après data.js, hints.js, scenes.js, sons.js et textes.js du même dossier : ROOMS, POS, HINTS, SCENES,
 // MD_SFX/mdSfxFor/mdAmbient, FR, mdSay/mdClean.
 // Jeu en Dragon BASIC (moteur/basic.js). La partie se lit dans ses variables :
@@ -22,6 +20,7 @@ const FULL={WRI:'WRITING',CRO:'CROSS',BOX:'BOX',BUL:'BULLET',MIR:'MIRRORS',GUN:'
 DragonTales.register({
  id:'mansion', order:4,
  storage:'mansion',
+ rating:{difficulty:3.7,overall:3.6},
  title:'Mansion of Doom', author:{fr:'Leroy C. Smith et Paul Austin',en:'Leroy C. Smith and Paul Austin'}, publisher:'Pal Creations / Dragon Data', year:1982, system:'Dragon 32',
  blurb:{
   fr:'La princesse Marléna a disparu dans le manoir du comte. Le soleil se couche à sept heures et quelque : ramène-la au village avant que le vampire ne s’éveille.',
