@@ -1,0 +1,58 @@
+# The Final Countdown : une suite de commandes qui mène à la victoire, pour les essais automatiques.
+# La première ligne répond au choix du niveau (1 : expert, 75 coups au plus).
+# Le hasard compte : le général surgit au hasard sous terre (il faut alors tirer sur lui tout de suite, d'où les
+# SHOOT GENERAL), et le passage du labyrinthe se trouve au hasard (une chance sur quatre à chaque pas) : graine fixe.
+# Une commande anglaise du jeu par ligne ; les lignes vides et celles qui commencent par # sont ignorées.
+# Attention : ce fichier dévoile toute l'aventure.
+@graine 1
+1
+GET UNIFORM
+WEAR UNIFORM
+EXAMINE UNIFORM
+GET TASER
+GET PAPERS
+N
+SHOW PAPERS
+DROP PAPERS
+N
+N
+W
+GET BOTTLE
+SHOOT GENERAL
+S
+PRESS THREE
+USE BOTTLE
+DROP BOTTLE
+N
+E
+E
+N
+MOVE CABINET
+D
+S
+GET CUTTERS
+E
+S
+N
+GO PASSAGE
+W
+EXAMINE DESK
+SHOOT GENERAL
+GET KEY
+U
+S
+E
+E
+N
+UNLOCK CABINET
+DROP KEY
+GET GLOVES
+WEAR GLOVES
+D
+S
+E
+S
+W
+S
+PRESS THREE
+USE CUTTERS

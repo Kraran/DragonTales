@@ -305,7 +305,9 @@ function Basic(bin, io, cfg){
       case 'FOR': {
         const r = ref(); if(r.a) err('?SN ERROR'); need('op','='); set(r, expr());
         need('kw','TO'); const to = expr(); let st = 1; if(eat('kw','STEP')) st = expr();
-        for(let i = S.stack.length - 1; i >= 0; i--) if(S.stack[i].k === 'f' && S.stack[i].n === r.n){ S.stack.splice(i); break; }
+        // comme le Microsoft BASIC : une boucle FOR de même variable est remplacée, mais la recherche s'arrête au GOSUB
+        // en cours (sinon un FOR A dans un sous-programme effacerait le retour, quand le programme a quitté une boucle A par GOTO)
+        for(let i = S.stack.length - 1; i >= 0 && S.stack[i].k !== 'g'; i--) if(S.stack[i].k === 'f' && S.stack[i].n === r.n){ S.stack.splice(i); break; }
         // FOR C=1 TO 2000:NEXT — une boucle vide qui ne sert qu'à attendre : une pause (io.pause, en millisecondes)
         if(io.pause && at('p',':')){ const q = P; P++;
           if(eat('kw','NEXT')){ if(at('id') && vname(peek().v) === r.n) P++;
@@ -319,8 +321,8 @@ function Basic(bin, io, cfg){
         do {
           let n = null; if(at('id')){ n = vname(peek().v); P++; }
           let i = S.stack.length - 1;
-          while(i >= 0 && !(S.stack[i].k === 'f' && (n === null || S.stack[i].n === n))) i--;
-          if(i < 0) err('?NF ERROR');
+          while(i >= 0 && S.stack[i].k !== 'g' && !(S.stack[i].k === 'f' && (n === null || S.stack[i].n === n))) i--;
+          if(i < 0 || S.stack[i].k === 'g') err('?NF ERROR');
           S.stack.splice(i + 1);
           const f = S.stack[i], v = S.vars[f.n] + f.st; S.vars[f.n] = v;
           if(f.st >= 0 ? v <= f.to : v >= f.to){ S.li = f.li; S.ti = f.ti; return 'jump'; }
