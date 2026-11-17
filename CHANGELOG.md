@@ -9,7 +9,8 @@ Troisième aventure : **S.S. Poseidon** (Poseidon Adventure, Bill et Debbie Cook
 - Version classique fidèle à l'écran du Dragon : 32 × 16, le lieu en haut, un séparateur, les messages qui défilent dessous.
 - Musique « The Last Waltz » (Suno) : écran d'introduction, et pendant le jeu dans la salle de bal et ses deux voisins
   si l'option est activée.
-- Bips et petits airs d'origine (SOUND, PLAY) rejoués, dans les deux versions ; bruitages du navire dans la version moderne.
+- Bips et petits airs d'origine (SOUND, PLAY) rejoués, dans les deux versions ; une trentaine de bruitages du navire dans la version
+  moderne, dont la coque qui gémit quand l'eau franchit un palier et le klaxon d'alarme à dix coups de la fin.
 - Bug d'origine corrigé : MANGER un objet que l'on porte répondait « YOU DON'T HAVE IT ».
 - Pièges d'origine gardés mais expliqués : noir sans lampe, incendie du poste radio, passage secret inondé.
   L'aide du poste radio indique l'extincteur au lieu d'un « mot magique » qui n'existait pas.

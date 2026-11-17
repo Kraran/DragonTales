@@ -112,7 +112,9 @@ DragonTales.register({
    return lang==='fr'?`Encore ${left} coup${left>1?'s':''} — l’eau t’arrive ${w[1]}`:`${left} move${left===1?'':'s'} left — the water is up to your ${w[1]}`; },
   musicZone:key=>['1','2','3','3b'].includes(key),      // « The Last Waltz » : la salle de bal et ses deux voisins
   sfxFor:(line,cmd,mem)=>psSfxFor(line,cmd,mem),        // sons.js
-  ambient(mem,off){ const r=off+1; return r===4?['ps_steam']:r===10&&mem.v('F2')===0?['ps_fire']:r===15?['ps_fire']:r===18?['ps_engine']:r===3&&mem.v('F7')===1?['ps_flood']:[]; },
+  ambient(mem,off){ const r=off+1;
+   return r===4?['ps_steam']:r===10?[mem.v('F2')===0?'ps_fire':'ps_static']:r===15?['ps_fire']:r===18?['ps_engine']:r===3&&mem.v('F7')===1?['ps_flood']
+    :r===5||r===9?['ps_drip']:r===17?['ps_shaft']:r===19?['ps_walkway']:r===20?['ps_hull']:[]; },
   roomOff:mem=>mem.v('L')-1,
   roomKey:(mem,off)=>{ const r=off+1; if(r===3&&mem.v('F7')===1) return '3b'; if(r===14&&/UP/.test(mem.a('R$',14,2))) return '14b'; return String(r); },
   // destination de chaque sortie ; depuis les passages bas (17), nord, sud et ouest sont des puits qui ramènent au niveau 2

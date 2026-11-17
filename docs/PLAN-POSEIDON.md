@@ -68,6 +68,9 @@ El Diablero et Dragon Mountain gagnent toujours avec leur solution.
 
 - Bips `SOUND` et airs `PLAY` d'origine, dans les deux versions.
 - `sons.js` : vapeur, incendie, machines, câble, porte d'acier, mur d'eau, mazout, extincteur, corde, liberté…
+- Ajoutés ensuite : le navire gîte quand l'eau franchit un palier (genoux, taille, cou), klaxon d'alarme à dix coups
+  de la fin, ambiances d'arrivée (gouttes, vent dans les puits, passerelle de métal, mer contre la coque, radio qui
+  grésille), prendre et poser, lampe torche, chaise, gilet, armoire coincée, papier, métal incassable, corde tendue.
 - Musique Suno « Poseidon – The Last Waltz » (2 min 42, Opus 72 kbit/s, −16,1 dB) : écran d'introduction ; pendant le jeu,
   si l'option est activée, dans la salle de bal, sous la coursive et sous les colonnes (`world.musicZone`).
 
