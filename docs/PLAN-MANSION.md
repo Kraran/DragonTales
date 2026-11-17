@@ -145,11 +145,14 @@ Au 17/11/2026, l'aventure tourne et se gagne. Elle s'affiche avec `python build.
   - écran titre rouge, question des instructions, plan semi-graphique au titre chiffré en français ;
   - sables mouvants, et chute dans le puits avec et sans CHIEN.
 
-### 7. À faire
+### 7. Musique — faite (17/11/2026)
 
-1. **Musique** (Suno), dehors et au village.
-2. **Note** sur 5 (difficulté, note globale).
-3. **Publication** : retirer `EN-COURS.md`, version, journal des modifications.
+« Mansion of Doom – The Count's Last Night » (Suno), 3 min 03 : valse gothique, orgue et clavecin, thérémine. `musique.ogg` : Opus 72 kbit/s, 0,6 s de silence final rogné, niveau moyen −16,1 dB comme les autres, 1,8 Mo. Elle joue sur l'écran d'introduction et, avec l'option, dehors et au village.
+
+### 8. À faire
+
+1. **Note** sur 5 (difficulté, note globale).
+2. **Publication** : retirer `EN-COURS.md`, version, journal des modifications.
 
 ## Décisions prises (17/11/2026)
 

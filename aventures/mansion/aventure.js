@@ -58,6 +58,7 @@ DragonTales.register({
    sub:"Une aventure de Leroy C. Smith et Paul Austin, Pal Creations, 1982. Version française.",
    bye:"Que la croix te garde.",
    won:"La princesse est sauvée !",
+   musicNote:"Elle joue dehors, devant le manoir, et sur la grand-place du village ; elle s’efface en fondu dès qu’on entre.",
    sfxNote:"Les bips et le coup de feu du jeu d’origine jouent dans les deux versions ; les bruitages du manoir (vent, portes, chauves-souris, acide…) seulement dans la version moderne.",
    mapHint:"Clique un lieu pour t’y rendre. Les niveaux : le rez-de-chaussée, les deux étages, la cave, la sous-cave.",
    intro:[
@@ -68,6 +69,7 @@ DragonTales.register({
    sub:"An adventure by Leroy C. Smith and Paul Austin, Pal Creations, 1982.",
    bye:"May the cross keep you.",
    won:"The princess is saved!",
+   musicNote:"It plays outside, in front of the mansion, and in the town square; it fades out as soon as you go inside.",
    sfxNote:"The beeps and the gunshot of the original game play in both versions; the mansion sounds (wind, doors, bats, acid…) only in the modern version.",
    mapHint:"Click a place to walk there. The levels: the ground floor, the two upper floors, the cellar, the sub-basement.",
    intro:[
