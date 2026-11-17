@@ -1096,7 +1096,7 @@ $('cLang').onclick=()=>{ toggleLang(); $('cLang').blur(); }; $('cFull').onclick=
 ['pointerdown','keydown'].forEach(e=>document.addEventListener(e,()=>{   // un geste débloque la musique si le navigateur l'avait retenue
   if(musicBlocked){ musicBlocked=false; const n=ov.querySelector('.blocked'); if(n) n.style.visibility='hidden'; musicUpdate(2500); } },true));
 buildStatic(); refresh(); step(null); ov.hidden=true; ov.textContent='';
-window.__dt=window.__diablero={m,send,importText,pack:()=>packGame(true),state:()=>({off:roomOff(),visited:[...visited],coins,started}),sfxLog:()=>window.__sfxLog||[],music:()=>({gate:+gate.toFixed(2),target:gateTarget,paused:audio.paused,vol:+audio.volume.toFixed(3),t:+audio.currentTime.toFixed(1),opt:opts.music,desert:inDesert()})};
+window.__dt=window.__diablero={m,send,rev:en=>REV(en).toLocaleLowerCase(lang),importText,pack:()=>packGame(true),state:()=>({off:roomOff(),visited:[...visited],coins,started}),sfxLog:()=>window.__sfxLog||[],music:()=>({gate:+gate.toFixed(2),target:gateTarget,paused:audio.paused,vol:+audio.volume.toFixed(3),t:+audio.currentTime.toFixed(1),opt:opts.music,desert:inDesert()})};
 return {id:ADV.id,show,relang};
 }
 
