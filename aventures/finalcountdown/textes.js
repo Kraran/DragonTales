@@ -175,7 +175,7 @@ function fcSay(text,lang,classic){
 function fcClean(s,moved){
   s=moved?s.replace(/\u0002/g,''):s.replace(/(^|\n)\u0002[^\n]*/g,'$1');
   s=s.replace(/\n{3,}/g,'\n\n');
-  return {text:s.replace(/^\s+|\s+$/g,''),death:/(too late|trop tard|general got you|général t'a eu|too extensive|trop graves|smoke fills|fumée envahit)/i.test(s)};
+  return {text:s.replace(/^\s+|\s+$/g,''),death:/(too late|trop tard|general got you|général t'a eu|too extensive|trop graves|smoke fills|fumée envahit|launched a missile|lancer un missile)/i.test(s)};
 }
 
 // ---- français -> commandes du jeu ----

@@ -1,7 +1,8 @@
 // The Final Countdown — Bill et Debbie Cook, Dragon Data, 1983 — fiche de l'aventure pour DragonTales.
 // INTÉGRATION EN COURS (17/11/2026) : voir docs/PLAN-FINALCOUNTDOWN.md. Le dossier contient EN-COURS.md : build.py ne
 // l'assemble qu'avec « --tout ».
-// Ce fichier est assemblé après data.js, scenes.js et textes.js du même dossier : ROOMS, POS, SCENES, FR et fcSay/fcClean.
+// Ce fichier est assemblé après data.js, hints.js, scenes.js, sons.js et textes.js du même dossier : ROOMS, POS, HINTS,
+// SCENES, FC_SFX/fcSfxFor/fcAmbient, FR et fcSay/fcClean.
 // Jeu en Dragon BASIC (moteur/basic.js), du même moule que S.S. Poseidon. La partie se lit dans ses variables :
 //   L lieu courant (1 à 20) ; R$(L,1) description, R$(L,2) sorties (« NOSO0301 » : nord vers 3, sud vers 1 ; ST l'escalier,
 //   PA le passage secret) ; O$(n,1) nom de l'objet, O$(n,2) lieu (« 99 » porté, « 0 » caché), O$(n,3) description ;
@@ -39,16 +40,24 @@ DragonTales.register({
   patches:{
    40:'FOR I=1 TO 59:READ A$:NEXT',
    470:'IF L=13 AND N=32 THEN 550 ELSE IF L=13 AND N=4 AND PA=1 THEN A=9:GOTO 550',
-   810:'IF N=24 THEN O$(25,2)="8":R$(8,2)="WESOSTDO18090707":PRINT"WOW! LOOK!":GOSUB 1560:T=T+1:IF T<MT THEN 290 ELSE 180'}
+   810:'IF N=24 THEN O$(25,2)="8":R$(8,2)="WESOSTDO18090707":PRINT"WOW! LOOK!":GOSUB 1560:T=T+1:IF T<MT THEN 290 ELSE 180',
+   // Décidé le 17/11/2026 :
+   //  540 l'incendie du bureau du commandant (déclenché par le bouton TROIS) enfermait le joueur sans extincteur jusqu'à la
+   //      fin du compte à rebours : c'est désormais une mort expliquée (avec l'extincteur, porté ou posé là, rien ne change) ;
+   //  1480 cette ligne interceptait le bouton UN du poste de contrôle de tir, si bien que le piège prévu par les auteurs
+   //      (ligne 1510 : appuyer sur UN lance le missile) ne se déclenchait jamais : il est rétabli.
+   540:'IF L=10 AND F2=1 AND (O$(35,2)="99" OR VAL(O$(35,2))=10) THEN PRINT"A RAGING FIRE BARS YOUR WAY OUT":GOTO 250 ELSE IF L=10 AND F2=1 THEN PRINT"A RAGING FIRE BARS YOUR WAY OUT":PRINT"THE FIRE HAS YOU TRAPPED. WITHOUT AN EXTINGUISHER YOU CAN\'T PUT IT OUT, AND THE SMOKE FILLS THE OFFICE.":GOTO 200',
+   1480:'REM'}
  },
 
  // ---- textes, lieux, dessins ----
- FR, ROOMS, SCENES,
+ FR, ROOMS, SCENES, HINTS,
  labels:{
   fr:{
    sub:"Une aventure de Bill et Debbie Cook, Dragon Data, 1983. Version française.",
    bye:"Mission terminée.",
    won:"Compte à rebours arrêté !",
+   sfxNote:"Le jeu d’origine est muet : les bruitages de la base (vent, radio, grille, feu, ascenseur, pistolet paralysant, sirène…) ne jouent que dans la version moderne.",
    mapHint:"Clique un lieu pour t’y rendre. À gauche la surface, à droite le silo, sous terre. ▲▼ : un passage monte ou descend vers l’autre niveau.",
    intro:[
     "Un général pris de folie a lancé le compte à rebours d’un missile nucléaire, puis fait évacuer sa base en plein désert.",
@@ -58,6 +67,7 @@ DragonTales.register({
    sub:"An adventure by Bill and Debbie Cook, Dragon Data, 1983.",
    bye:"Mission over.",
    won:"Countdown stopped!",
+   sfxNote:"The original game is silent: the base sounds (wind, radio, gate, fire, elevator, taser, siren…) only play in the modern version.",
    mapHint:"Click a place to walk there. On the left the surface, on the right the silo, underground. ▲▼: a passage leads up or down to the other level.",
    intro:[
     "A berserk general has started the countdown on a nuclear missile, then had his desert base evacuated.",
@@ -70,6 +80,7 @@ DragonTales.register({
   ['SHOW','Montrer','Show'],['SHOOT','Tirer sur','Shoot'],['UNLOCK','Déverrouiller','Unlock'],['MOVE','Déplacer','Move'],['BREAK','Casser','Break'],
   ['PRESS','Appuyer sur','Press'],['SCORE','Compte à rebours','Score',1],['HELP','Secours','Help',1]],
  sfxAt:{},
+ sfx:FC_SFX,                                           // sons propres à l'aventure (sons.js)
  frSkip:['EST','PORTE','A'],
  revExtra:{GET:'PRENDRE',DROP:'POSER',INVENTORY:'INVENTAIRE',GO:'ALLER',EXAMINE:'EXAMINER',USE:'UTILISER',WEAR:'METTRE',HELP:'SECOURS',SCORE:'SCORE',
   READ:'LIRE',OPEN:'OUVRIR',MOVE:'DÉPLACER',SHOW:'MONTRER',SHOOT:'TIRER',UNLOCK:'DÉVERROUILLER',BREAK:'CASSER',PRESS:'APPUYER',QUIT:'QUITTER',
@@ -99,6 +110,9 @@ DragonTales.register({
     def:1, choices:[{en:'1',label:fr?'Expert':'Expert',note:fr?'75 coups':'75 moves'},{en:'2',label:fr?'Moyen':'Average',note:fr?'125 coups':'125 moves'},{en:'3',label:fr?'Débutant':'Novice',note:fr?'250 coups':'250 moves'}]}; },
   freeInput:mem=>mem.prompt()!==null&&mem.line()===2140,
   // « ARE YOU SURE YOU WANT TO QUIT? » (ligne 1180) : la version moderne répond non (elle a son propre bouton Quitter)
+  musicZone:key=>['1','2','3'].includes(key),          // dehors : le désert, la camionnette, l'entrée principale
+  sfxFor:(line,cmd,mem)=>fcSfxFor(line,cmd,mem),        // sons.js
+  ambient:(mem,off)=>fcAmbient(mem,off+1),
   autoKey:mem=>mem.line()===1180?'N':' ',
   status(mem,lang){ const mt=mem.v('MT'), t=mem.v('T'); if(!mt) return ''; const left=Math.max(0,mt-t), fr=lang==='fr';
    const taser=mem.a('O$',11,2)==='99'?(fr?` — pistolet : ${mem.v('SH')} tir${mem.v('SH')>1?'s':''}`:` — taser: ${mem.v('SH')} shot${mem.v('SH')===1?'':'s'}`):'';
@@ -114,7 +128,16 @@ DragonTales.register({
   locOf:off=>off+1, carried:99,
   objects(mem){ const out=[]; for(let n=7;n<=41;n++){ if(n===33) continue; const name=mem.a('O$',n,1); if(!name) continue;
     out.push({n,name,word:WORD[n],loc:+mem.a('O$',n,2)||0}); } return out; },
-  sceneExtras:()=>[],
+  // éléments de scène : 101 grille ouverte (autorisation acceptée) ; 102 incendie du bureau du commandant ; 103 ascenseur
+  // en service ; 104 vitre de la salle d'observation brisée ; 106 armoire métallique déverrouillée ; 1000 + n : il reste n coups
+  sceneExtras(mem,off){ const l=[], v=k=>mem.v(k);
+   if(v('ID')===1) l.push(101);
+   if(v('F2')===1) l.push(102);
+   if(/UP/.test(mem.a('R$',11,2)||'')) l.push(103);
+   if(v('WI')===1) l.push(104);
+   if(/OPEN/.test(mem.a('O$',24,3)||'')) l.push(106);
+   const mt=v('MT'); if(mt) l.push(1000+Math.max(0,mt-v('T')));
+   return l; },
   flags(mem){ return {coups:mem.v('T'),max:mem.v('MT'),uniforme:mem.v('F1')===1,feu:mem.v('F2')===1,gants:mem.v('F6')===1,autorise:mem.v('ID')===1,
    passage:mem.v('PA')===1,vitre:mem.v('WI')===1,general:mem.v('XX')===1,tirs:mem.v('SH')}; }
  }
