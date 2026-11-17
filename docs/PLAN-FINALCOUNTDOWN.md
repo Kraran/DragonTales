@@ -2,7 +2,7 @@
 
 Cinquième aventure de DragonTales, écrite par Bill et Debbie Cook, les auteurs de S.S. Poseidon. Le programme est du même moule : écran partagé, choix du niveau, compte des coups. Il tourne sur `moteur/basic.js`.
 
-Au 17/11/2026, l'aventure tourne, se gagne et elle est traduite. Elle s'affiche avec `python build.py --tout`. Le dossier contient `EN-COURS.md`, donc elle ne sort pas encore dans les versions publiées.
+Au 17/11/2026, l'aventure tourne, se gagne, elle est traduite, illustrée et sonorisée. Elle s'affiche avec `python build.py --tout`. Le dossier contient `EN-COURS.md`, donc elle ne sort pas encore dans les versions publiées.
 
 ## Le jeu en bref
 
@@ -36,7 +36,7 @@ La solution d'essai fait 51 commandes, avec la graine 1 et le niveau expert.
 | `couverture.jpg` | L'illustration paysage, fond de l'écran d'introduction |
 | `solution.txt` | 51 commandes jusqu'à la victoire, graine 1 |
 | `aventure.js`, `data.js`, `textes.js` | La fiche, les lieux, la traduction |
-| `scenes.js` | Ébauche : un fond par sorte de lieu |
+| `scenes.js`, `hints.js`, `sons.js` | Décors, pièces magiques, bruitages |
 
 ## Étapes
 
@@ -63,19 +63,47 @@ La solution d'essai fait 51 commandes, avec la graine 1 et le niveau expert.
 - **Le général** : quand il surgit, la version moderne l'annonce en toutes lettres (« Le général est là ! Il se jette sur toi. »). Le jeu d'origine ne le montrait que dans la liste des objets.
 - **Coquilles d'origine corrigées dans la traduction** : COUNTDOWM, GARGLED pour garbled, CURRENT CURSES pour courses.
 
-### 4. À faire
+### 4. Décisions appliquées (17/11/2026)
 
-1. Décors des 20 lieux et dessins des objets.
-2. Pièces magiques (indices).
-3. Sons : bips d'origine, bruitages et ambiances.
-4. Musique (Suno).
-5. Essai `tests/essai-finalcountdown.js` dans Chrome. Comme le général surgit au hasard, l'essai doit réagir à ses apparitions.
-6. Note sur 5, publication.
+- **L'incendie du bureau du commandant**, sans extincteur (ni porté ni posé là), est une mort expliquée dès qu'on veut sortir (correctif 540).
+- **Le général** reste tel quel : il surgit au hasard, et seule la commande TIRER sauve.
+- **Le piège du bouton UN au poste de contrôle de tir** est rétabli (correctif 1480) : il lance le missile.
+- **Le labyrinthe** garde son hasard.
+- **Musique** : dehors, c'est-à-dire le désert, la camionnette et l'entrée principale.
 
-## Décisions à prendre
+### 5. Décors, objets, pièces magiques, sons, essai — faits (17/11/2026)
 
-1. **L'incendie du bureau du commandant** : appuyer sur TROIS sans extincteur enferme le joueur jusqu'à la fin du compte à rebours. En faire une fin expliquée, comme pour Poseidon ?
-2. **Le général** : le garder tel quel (une chance sur dix par coup dans le silo ; une seule réponse possible, TIRER) ou l'adoucir dans la version moderne ?
-3. **Le piège oublié** : les auteurs avaient écrit qu'appuyer sur UN au poste de contrôle de tir lance le missile, mais une autre ligne passe avant et ce piège ne se déclenche jamais. Le rétablir ?
-4. **Le labyrinthe** : garder le hasard pur (une chance sur quatre à chaque pas) ?
-5. **Musique** : dans quels lieux la faire jouer ?
+- **Décors** (`scenes.js`) : un par lieu.
+  - Le désert et ses cactus, la camionnette, l'entrée gardée par sa caméra, les bureaux vert administration sous les néons.
+  - La salle informatique et ses bandes, la grande carte du centre de commandement, le radar, le silo vu de la salle d'observation, le poste de contrôle de tir.
+  - Le compte à rebours s'affiche en chiffres rouges dans les salles de contrôle.
+  - **Les états montrés** : grille ouverte, incendie, ascenseur en service, vitre brisée, armoire déverrouillée ou déplacée (l'escalier), passage du labyrinthe, panneau ouvert, et le général quand il surgit.
+- **Pièces magiques** (`hints.js`) : 12 étapes et 5 indices de situation.
+  - Les étapes : uniforme, papiers, entrée, extincteur, ascenseur, escalier, pince, passage, clé, gants, panneau, fil.
+  - Les indices de situation : le général, le bouton TROIS sans extincteur, le bouton UN, la vitre, le labyrinthe.
+- **Sons** (`sons.js`) : le jeu d'origine est muet, donc tout est en version moderne.
+  - **Dehors** : le vent, le crotale.
+  - **À l'entrée** : la radio brouillée, la voix métallique de la caméra, la grille qui coulisse ou le buzzer de refus.
+  - **Dans le bureau du commandant** : le feu, l'extincteur, la télévision.
+  - **Dans la base** : l'ascenseur, l'armoire qu'on traîne ou qu'on déverrouille, le pistolet paralysant et le cri du général, la vitre, la décharge électrique.
+  - **Au poste de tir** : le panneau, le fil coupé, le décollage du missile.
+  - **Le compte à rebours** : une sirène à dix coups de la fin, puis un bip à chaque coup.
+  - **Ambiances** : salle informatique, radar, transmissions, néons du silo, pas dans le labyrinthe.
+- **Essai Chrome** (`tests/essai-finalcountdown.js`, dans l'intégration continue avec `build.py --tout`) :
+  - niveau, commandes françaises, pièce magique ;
+  - partie entière en réagissant au général et au labyrinthe ;
+  - version classique en français et en anglais ;
+  - les trois fins : incendie, lancement par erreur, général.
+
+### 6. À faire
+
+1. Musique (Suno), dehors.
+2. Note sur 5, publication.
+
+## Décisions prises (17/11/2026)
+
+1. Incendie sans extincteur : mort expliquée.
+2. Le général : gardé tel quel.
+3. Le piège du bouton UN : rétabli.
+4. Le labyrinthe : hasard gardé.
+5. Musique : dehors (désert, camionnette, entrée).
