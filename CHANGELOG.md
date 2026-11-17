@@ -1,6 +1,6 @@
 # Journal des versions
 
-## À venir (0.7.0)
+## 0.7.1 — 17 novembre 2026
 
 Troisième aventure : **S.S. Poseidon** (Poseidon Adventure, Bill et Debbie Cook, Dragon Data, 1982).
 
@@ -15,7 +15,7 @@ Troisième aventure : **S.S. Poseidon** (Poseidon Adventure, Bill et Debbie Cook
 - Pièges d'origine gardés mais expliqués : noir sans lampe, incendie du poste radio, passage secret inondé.
   L'aide du poste radio indique l'extincteur au lieu d'un « mot magique » qui n'existait pas.
 - Traduction française complète, une illustration par lieu (le paquebot est à l'envers), carte sur trois niveaux.
-- Pièces magiques : huit étapes d'indices et huit indices de situation.
+- Pièces magiques : huit étapes d’indices et sept indices de situation.
 
 ### Moteur
 - Étagère : deux flèches hautes et étroites, de part et d'autre des boîtes, font défiler les aventures d'une boîte à la fois ;

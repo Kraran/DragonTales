@@ -61,7 +61,7 @@ El Diablero et Dragon Mountain gagnent toujours avec leur solution.
 
 ### 6. Indices (pièces magiques) — fait
 
-- `hints.js` : huit étapes à deux indices, huit indices de situation (noir complet, incendie, écoutille, tableau, corniche,
+- `hints.js` : huit étapes à deux indices, sept indices de situation (incendie, écoutille, tableau, corniche,
   couperet, nourriture, puits).
 
 ### 7. Sons et musique — fait
