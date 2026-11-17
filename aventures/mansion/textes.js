@@ -334,7 +334,7 @@ function mdSay(text,lang,classic){
     if(r===null) return;                                     // version moderne : déjà montré ailleurs
     if(r===undefined){ out.push(l+nl); return; }
     if(classic){ const t=r.kind==='writ'?r.t:r.t.toLocaleUpperCase('fr'); out.push((r.kind==='list'?' ':lead)+t+(l.endsWith(' ')&&!nl?' ':'')+nl); return; }
-    out.push(r.t+nl);
+    out.push(r.t+(nl||'\n'));                              // un PRINT « ; » suivi d'un autre texte : chacun sa ligne
   });
   return out.join('');
 }

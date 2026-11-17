@@ -109,14 +109,25 @@ Au 17/11/2026, l'aventure tourne et se gagne. Elle s'affiche avec `python build.
 - L'heure s'affiche sur le décor quand on porte la montre, comme la montre du jeu (midi + 2 minutes par commande).
 - Zone de la musique : dehors, devant le manoir, et sur la grand-place du village (la musique reste à composer).
 
-### 5. À faire
+### 5. Carte, décors, pièces magiques — faits (17/11/2026)
 
-1. **Plan** : affiner la carte des cinq niveaux, avec les liens irréguliers (puits, glaces, échelle).
-2. **Décors** : 77 lieux, à regrouper par familles (chambres, couloirs, cave, sous-cave) avec des variantes ; icônes des objets.
-3. **Indices** (pièces magiques) : étapes tirées de la solution.
-4. **Sons** : bips d'origine (SOUND, PLAY) dans les deux versions, bruitages dans la moderne (vent, chauves-souris, loup-garou, coup de feu, acide, cercueil…).
-5. **Musique** (Suno), dehors et au village.
-6. **Essai** `tests/essai-mansion.js` dans Chrome, note sur 5, publication.
+- **Carte** : cinq niveaux cohérents avec les sorties du programme. La galerie des glaces, magique, reste à part : ses sorties mènent au village, à la salle d'armes et au deuxième étage.
+- **Décors** (`scenes.js`) : un par lieu, d'après sa description.
+  - Pièces tendues de papier peint, avec un ton propre à chacune ; cave voûtée en pierre, sous-cave dans le roc.
+  - Les fenêtres, le dehors et la grand-place suivent l'heure du jeu : après-midi, soir à l'approche du coucher du soleil, puis nuit.
+  - États montrés (éléments de scène 101 à 119, `sceneExtras`) : porte d'entrée, serpent, coffre du grenier, trappe, interrupteur, lueur rouge de la cave, cave noire sans courant, loup-garou vivant ou abattu, acide calmé, cercueil, vampire, pieu, cassette, princesse ou cendres, villageois qui acclament la princesse.
+  - Les écrits chiffrés sont peints sur les murs, dans la langue de la partie.
+- **Objets** : dessins des objets transportables (icônes de la carte et des listes) ; les objets fixes font partie des décors. Noms français dans les listes (`objLabel`).
+- **Pièces magiques** (`hints.js`) : douze étapes tirées de la solution, chacune avec une piste puis la solution.
+  - Les étapes : porte, croix et ail, serpent, pistolet chargé, courant, loup-garou, sac, pieu et maillet, acide, vampire, princesse, retour.
+  - Indices de situation : la nuit qui tombe sans protection, la chute dans le puits (CHIEN), les fers (YOREL), les chauves-souris, les sables mouvants, la cassette à ne pas ouvrir trop tôt, l'interrupteur.
+- Dans la cave sans lumière, la version moderne ne montre pas les objets du lieu (le jeu dit qu'on n'y voit rien).
+
+### 6. À faire
+
+1. **Sons** : bips d'origine (SOUND, PLAY) dans les deux versions, bruitages dans la moderne (vent, chauves-souris, loup-garou, coup de feu, acide, cercueil…).
+2. **Musique** (Suno), dehors et au village.
+3. **Essai** `tests/essai-mansion.js` dans Chrome, note sur 5, publication.
 
 ## Décisions prises (17/11/2026)
 

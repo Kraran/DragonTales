@@ -2,7 +2,7 @@
 // INTÉGRATION EN COURS (17/11/2026) : le jeu tourne, se gagne (solution.txt) et il est traduit ; décors, indices,
 // sons et musique restent à faire (voir docs/PLAN-MANSION.md). Le dossier contient EN-COURS.md : build.py ne l'assemble
 // qu'avec « --tout ».
-// Ce fichier est assemblé après data.js, scenes.js et textes.js du même dossier : ROOMS, POS, SCENES, FR, mdSay/mdClean.
+// Ce fichier est assemblé après data.js, hints.js, scenes.js et textes.js du même dossier : ROOMS, POS, HINTS, SCENES, FR, mdSay/mdClean.
 // Jeu en Dragon BASIC (moteur/basic.js). La partie se lit dans ses variables :
 //   F lieu courant (1 à 77) ; A$(F) description ; B(F,1…6) sorties N S E W U D (0 = pas de sortie) ;
 //   B$(n) nom de l'objet, D$(n) description, A(n) lieu (-1 porté, 0 caché) ; H$ les mots de 3 lettres des objets ;
@@ -51,7 +51,7 @@ DragonTales.register({
  },
 
  // ---- textes, lieux, dessins ----
- FR, ROOMS, SCENES,
+ FR, ROOMS, SCENES, HINTS,
  labels:{
   fr:{
    sub:"Une aventure de Leroy C. Smith et Paul Austin, Pal Creations, 1982. Version française.",
@@ -110,10 +110,33 @@ DragonTales.register({
    return out; },
   exits(mem,off){ const l=this.links(mem,off), e={}; for(const d of ['N','S','E','W','U','D']) e[d]=l[d]!==null; return e; },
   locOf:off=>off+1, carried:-1,
-  objects(mem){ const out=[], e=mem.v('E')||66, h=mem.v('H$');
+  // objets ; dans la cave sans lumière, ceux du lieu où l'on est restent invisibles (le jeu dit qu'on n'y voit rien)
+  objects(mem){ const out=[], e=mem.v('E')||67, h=mem.v('H$'), f=Math.floor(mem.v('F')), blind=f>48&&mem.v('A6')===0;
    for(let n=1;n<=e;n++){ const name=mem.a('B$',n); if(!name) continue; const w=h.substr((n-1)*3,3);
+    if(blind&&Math.floor(mem.a('A',n))===f) continue;
     out.push({n,name,word:FULL[w]||w,loc:Math.floor(mem.a('A',n))}); } return out; },
-  sceneExtras:()=>[],
+  // éléments de scène (101 et plus) : états que les décors montrent (scenes.js)
+  objLabel:(o,lang)=>{ const a=MD_OBJ[MD_NORM(o.name)]; return a?(lang==='fr'?a[1]:a[0]).replace(/^(a|an|the|un|une|des|du|de la|la|le) |^de l['’]/i,''):o.name; },
+  sceneExtras(mem,off){ const r=off+1, l=[], v=k=>mem.v(k), h=v('H'), R=v('R');
+   if(v('B0')===1) l.push(101);                        // loup-garou abattu
+   if(v('B5')===1) l.push(102);                        // cercueil ouvert
+   if(v('B9')===1) l.push(103);                        // vampire tué
+   if(v('A6')===1) l.push(104);                        // courant rétabli : lueur rouge dans la cave
+   if(r>48&&v('A6')===0) l.push(105);                  // cave sans lumière : on n'y voit rien
+   if(v('B8')===1) l.push(106);                        // cassette ouverte
+   if(v('A8')===1) l.push(107);                        // acide neutralisé par le bicarbonate
+   if(v('A5')===1) l.push(108);                        // coffre du grenier ouvert
+   if(v('C6')===1) l.push(109);                        // porte d'entrée ouverte
+   if(v('C5')===1) l.push(110);                        // bougie soufflée
+   if(v('B2')===1) l.push(111);                        // cage ouverte
+   if(v('B3')===1) l.push(112);                        // trappe ouverte
+   if(v('C3')===1) l.push(113);                        // princesse en cendres
+   if(v('A0')===1) l.push(114);                        // boîte à chaussures ouverte
+   if(R&&h>=R-90) l.push(h>=R?116:115);                // le soir tombe, puis la nuit
+   if(v('C4')===1) l.push(117);                        // dans les fers
+   if(v('C0')===1) l.push(118);                        // fiole brisée
+   if(mem.a('A',63)===-1&&v('C3')===0&&v('B7')===0) l.push(119);   // on porte la princesse, vivante
+   return l; },
   flags(mem){ return {heure:mem.v('H'),coucher:mem.v('R'),porte:mem.v('B'),courant:mem.v('A6')===1,cercueil:mem.v('B5')===1,vampire:mem.v('B9')===1,
    fers:mem.v('C4')===1}; }
  }
