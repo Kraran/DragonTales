@@ -95,10 +95,13 @@ La solution d'essai fait 51 commandes, avec la graine 1 et le niveau expert.
   - version classique en français et en anglais ;
   - les trois fins : incendie, lancement par erreur, général.
 
-### 6. À faire
+### 6. Musique — faite (17/11/2026)
 
-1. Musique (Suno), dehors.
-2. Note sur 5, publication.
+« The Final Countdown – T Minus Zero » (Suno), 3 min 35 : synthés de thriller de guerre froide des années 80. `musique.ogg` : Opus 72 kbit/s, fondu final de 0,8 s, niveau moyen −16,1 dB comme les autres. Elle joue sur l'écran d'introduction et, avec l'option, dehors.
+
+### 7. À faire
+
+1. Note sur 5, publication.
 
 ## Décisions prises (17/11/2026)
 

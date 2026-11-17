@@ -57,6 +57,7 @@ DragonTales.register({
    sub:"Une aventure de Bill et Debbie Cook, Dragon Data, 1983. Version française.",
    bye:"Mission terminée.",
    won:"Compte à rebours arrêté !",
+   musicNote:"Elle joue dehors : dans le désert, la camionnette et devant l’entrée ; elle s’efface en fondu dès qu’on entre dans la base.",
    sfxNote:"Le jeu d’origine est muet : les bruitages de la base (vent, radio, grille, feu, ascenseur, pistolet paralysant, sirène…) ne jouent que dans la version moderne.",
    mapHint:"Clique un lieu pour t’y rendre. À gauche la surface, à droite le silo, sous terre. ▲▼ : un passage monte ou descend vers l’autre niveau.",
    intro:[
@@ -67,6 +68,7 @@ DragonTales.register({
    sub:"An adventure by Bill and Debbie Cook, Dragon Data, 1983.",
    bye:"Mission over.",
    won:"Countdown stopped!",
+   musicNote:"It plays outside: in the desert, the van and at the main gate; it fades out as soon as you enter the base.",
    sfxNote:"The original game is silent: the base sounds (wind, radio, gate, fire, elevator, taser, siren…) only play in the modern version.",
    mapHint:"Click a place to walk there. On the left the surface, on the right the silo, underground. ▲▼: a passage leads up or down to the other level.",
    intro:[
