@@ -83,8 +83,13 @@ El Diablero et Dragon Mountain gagnent toujours avec leur solution.
 4. **Bug `EAT`** (ligne 1290) : corrigé — le programme testait `O$(N,2)` au lieu de `O$(N,3)`.
 5. **Musique** : dans un deuxième temps.
 
-## Pièges d'origine gardés
+## Pièges d'origine : gardés, mais expliqués (décision du 17/11/2026)
 
-- Sans lampe, au-delà de la salle de bal, le noir est définitif (« I THINK YOU BLEW IT ») : il faut annuler.
-- Entrer au poste radio sans extincteur enferme le joueur derrière l'incendie ; le « mot magique » de l'aide n'existe pas.
-- Le tableau de l'infirmerie ouvre un passage qui noie le joueur ; l'écoutille noie qui ne porte pas le gilet.
+- **Noir** (ligne 490) : sans lampe au-delà de la salle de bal, la partie continuait sans issue jusqu'à la fin des coups.
+  C'est maintenant une mort, avec l'explication : perdu dans le noir, l'eau t'a rattrapé.
+- **Incendie du poste radio** (500, 505) : sans extincteur, on restait enfermé. Tenter de sortir tue désormais, avec
+  l'explication (la fumée) ; avec l'extincteur porté ou posé dans la pièce, rien ne change.
+- **Passage secret** (570, 590) : il mène à la salle de bal inondée. On s'y noie dès l'arrivée, avec l'explication.
+- **Mot magique** (1040) : l'aide du poste radio parlait d'un mot magique qui n'existe pas. Elle indique maintenant
+  l'extincteur de la cuisine.
+- Les textes ajoutés sont en anglais dans le programme, calés sur les 32 colonnes, et traduits comme les autres.

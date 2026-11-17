@@ -48,8 +48,7 @@ const STEPS=[
 ];
 // indices de situation
 const SPOTS=[
- {when:m=>m.v('DK')===1, fr:"Sans lumière, tu tourneras en rond pour de bon. Annule ce coup et reviens chercher la lampe torche.", en:"Without light you will go round in circles for good. Undo this move and go back for the flashlight."},
- {when:(m,o)=>o===9&&m.v('F2')===0, fr:"Les flammes te barrent la sortie, et aucun mot magique ne les éteindra. Seul l’extincteur de la cuisine en viendra à bout : utilise-le.", en:"The flames bar your way out, and no magic word will put them out. Only the extinguisher from the galley will: use it."},
+ {when:(m,o)=>o===9&&m.v('F2')===0, fr:"Les flammes te barrent la sortie. Sans l’extincteur de la cuisine, tenter de sortir te serait fatal ; si tu l’as, utilise-le.", en:"The flames bar your way out. Without the extinguisher from the galley, trying to leave would be fatal; if you have it, use it."},
  {when:(m,o)=>o===15, fr:"Cette écoutille ouvre sur un mur d’eau. Sans gilet de sauvetage sur le dos, tu te noierais ; et elle ne mène pas à la sortie.", en:"This hatch opens onto a wall of water. Without a life jacket on, you would drown; and it does not lead to the way out."},
  {when:(m,o)=>o===5&&m.v('F7')===0, fr:"Laisse le tableau où il est : le passage secret qu’il cache mène tout droit sous l’eau.", en:"Leave the painting where it is: the secret passage behind it leads straight under water."},
  {when:(m,o)=>o===14&&m.v('F5')===0, fr:"Sauter au sud sans corde attachée, c’est finir dans le mazout.", en:"Jumping south without a tied rope means ending up in the oil."},

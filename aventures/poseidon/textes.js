@@ -92,6 +92,11 @@ const PS_MSG={
  // aller
  "OKAY. YOU'VE MADE IT UP TO THE NEXT LEVEL.":["Okay. You've made it up to the next level.","D'accord. Tu es monté au niveau supérieur."],
  "IT'S TOO DARK TO SEE ANYTHING.. I THINK YOU BLEW IT.":["It's too dark to see anything... I think you blew it.","Il fait trop noir pour voir quoi que ce soit... Je crois que c'est fichu."],
+ "IT'S TOO DARK TO SEE ANYTHING.":["It's too dark to see anything.","Il fait trop noir pour voir quoi que ce soit."],
+ "WITHOUT A LIGHT YOU GOT LOST IN THE DARK PASSAGES, AND THE RISING WATER CAUGHT YOU.":["Without a light you got lost in the dark passages, and the rising water caught you.","Sans lumière, tu t'es perdu dans les coursives obscures, et l'eau qui monte t'a rattrapé."],
+ "WITHOUT AN EXTINGUISHER YOU CAN'T PUT IT OUT. THE SMOKE FILLS THE ROOM AND YOU CHOKE TO DEATH.":["Without an extinguisher you can't put it out. The smoke fills the room and you choke to death.","Sans extincteur, impossible de l'éteindre. La fumée envahit la pièce et tu meurs asphyxié."],
+ "THE SECRET PASSAGE LED INTO THE FLOODED BALLROOM, AND YOU DROWNED.":["The secret passage led into the flooded ballroom, and you drowned.","Le passage secret débouchait dans la salle de bal inondée, et tu t'es noyé."],
+ "NO MAGIC WORD WILL PUT OUT THIS FIRE. YOU NEED AN EXTINGUISHER: THERE'S ONE IN THE GALLEY.":["No magic word will put out this fire. You need an extinguisher: there's one in the galley.","Aucun mot magique n'éteindra ce feu. Il te faut un extincteur : il y en a un dans la cuisine."],
  "A RAGING FIRE BARS YOUR WAY OUT.":["A raging fire bars your way out.","Un violent incendie te barre la sortie."],
  "YOU FELL DOWN A SHAFT. YOU'RE BACK ON THE SECOND LEVEL.":["You fell down a shaft. You're back on the second level.","Tu es tombé dans un puits. Te revoilà au deuxième niveau."],
  "CLIMB SOMETHING ELSE.":["Climb something else.","Grimpe sur autre chose."],
@@ -215,7 +220,7 @@ function psSay(text,lang,classic){
 function psClean(s,moved){
   s=moved?s.replace(/\u0002/g,''):s.replace(/(^|\n)\u0002[^\n]*/g,'$1');
   s=s.replace(/\n{3,}/g,'\n\n');
-  return {text:s.replace(/^\s+|\s+$/g,''),death:/(you drowned|you're dead|too late|too much blood|can't make it|noyé|tu es mort|trop tard|trop de sang|ne t'en sortiras)/i.test(s)};
+  return {text:s.replace(/^\s+|\s+$/g,''),death:/(choke to death|caught you|asphyxié|rattrapé|you drowned|you're dead|too late|too much blood|can't make it|noyé|tu es mort|trop tard|trop de sang|ne t'en sortiras)/i.test(s)};
 }
 
 // ---- français -> commandes du jeu ----

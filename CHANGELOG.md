@@ -9,6 +9,8 @@ Troisième aventure : **S.S. Poseidon** (Poseidon Adventure, Bill et Debbie Cook
 - Version classique fidèle à l'écran du Dragon : 32 × 16, le lieu en haut, un séparateur, les messages qui défilent dessous.
 - Bips et petits airs d'origine (SOUND, PLAY) rejoués, dans les deux versions ; bruitages du navire dans la version moderne.
 - Bug d'origine corrigé : MANGER un objet que l'on porte répondait « YOU DON'T HAVE IT ».
+- Pièges d'origine gardés mais expliqués : noir sans lampe, incendie du poste radio, passage secret inondé.
+  L'aide du poste radio indique l'extincteur au lieu d'un « mot magique » qui n'existait pas.
 - Traduction française complète, une illustration par lieu (le paquebot est à l'envers), carte sur trois niveaux.
 - Pièces magiques : huit étapes d'indices et huit indices de situation.
 

@@ -76,5 +76,20 @@ let bad=0; const ok=(k,v,d)=>{ if(!v) bad++; console.log((v?'ok   ':'ÉCHEC ')+k
  await p.keyboard.type('2'); await p.keyboard.press('Enter'); await p.waitForTimeout(150);
  ok('niveau tapé au clavier',/TU ES DANS LA SALLE DE BAL/.test(await p.innerText('#cScreen')));
  await p.screenshot({path:OUT+'/ps-classique-depart.png'});
+ // les pièges d'origine : mort expliquée
+ await p.click('#cModern').catch(()=>{});
+ const piege=async(nom,L,cmd,attendu,f)=>{
+   await p.evaluate(([L,f])=>{ const d=window.__dt; const S=JSON.parse(d.m.snapshot().m); S.vars['L']=L; const o=S.arrs[Object.keys(S.arrs).find(k=>k.startsWith('O'))];
+     const r=S.arrs[Object.keys(S.arrs).find(k=>k.startsWith('R'))]; o.v[27*(o.d[1]+1)+3]=f.lampe===false?'0':'99';
+     if(f.f7){ S.vars['F7']=1; r.v[6*(r.d[1]+1)+2]='SOWE0503'; } d.m.restore({m:JSON.stringify(S)}); },[L,f||{}]);
+   await send(cmd); await p.waitForTimeout(100);
+   const t=await p.innerText('#overlay').catch(()=>''), log=await p.innerText('#log .turn:last-child');
+   ok(nom,attendu.test(t+' '+log),(t+' '+log).replace(/\n+/g,' | ').slice(0,200));
+   if(await p.$eval('#overlay',e=>!e.hidden)) await p.click('#overlay button:has-text("Annuler")');
+ };
+ await piege('aide du poste radio : l’extincteur, pas un mot magique',10,'HELP',/extincteur : il y en a un dans la cuisine/);
+ await piege('poste radio en feu sans extincteur : mort expliquée',10,'N',/Tu es mort[\s\S]*asphyxié/);
+ await piege('noir sans lampe : mort expliquée',5,'N',/Tu es mort[\s\S]*perdu dans les coursives/,{lampe:false});
+ await piege('passage secret : noyade expliquée dès l’arrivée',6,'W',/Tu es mort[\s\S]*salle de bal inondée/,{f7:1});
  ok('aucune erreur JavaScript',errs.length===0,JSON.stringify(errs));
  await b.close(); console.log(bad?bad+' échec(s)':'tout est bon'); process.exit(bad?1:0);})();

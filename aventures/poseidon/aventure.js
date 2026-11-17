@@ -32,7 +32,20 @@ DragonTales.register({
   screen:true,                                        // le texte est placé à l'écran (PRINT @) : la version classique reproduit l'écran
   // Correction du programme d'origine (décidée le 17/11/2026) : MANGER un objet que l'on porte répondait
   // « YOU DON'T HAVE IT » parce que le programme testait le mot de l'objet (O$(N,2)) au lieu de son lieu (O$(N,3)).
-  patches:{1290:'IF O$(N,3)<>"99" THEN PRINT"YOU DON\'T HAVE IT.":GOTO 200'}
+  // Les pièges mortels restent (décidé le 17/11/2026), mais chaque mort dit clairement pourquoi :
+  //  490 dans le noir sans lampe, la partie continuait sans issue jusqu'à la fin des coups : c'est désormais une mort expliquée ;
+  //  500/505 au poste radio en feu, sans extincteur, on restait enfermé : mort expliquée (avec l'extincteur, rien ne change) ;
+  //  570/590 le passage secret mène à la salle de bal inondée : on s'y noie dès l'arrivée, avec l'explication ;
+  //  1040 l'aide du poste radio parlait d'un « mot magique » qui n'existe pas : elle indique l'extincteur de la cuisine.
+  // Les textes ajoutés sont calés sur les 32 colonnes de l'écran, comme ceux d'origine.
+  patches:{
+   1290:'IF O$(N,3)<>"99" THEN PRINT"YOU DON\'T HAVE IT.":GOTO 200',
+   490:'IF L>3 AND O$(27,3)<>"99" THEN FOR A=0 TO 160 STEP 32:PRINT@A,CHR$(13):NEXT:PRINT@480,"IT\'S TOO DARK TO SEE ANYTHING.":PRINT"WITHOUT A LIGHT YOU GOT LOST IN THE DARK PASSAGES, AND THE      RISING WATER CAUGHT YOU.":DK=1:GOSUB 2230:GOTO 180',
+   500:'IF L=10 AND F2=0 AND (O$(24,3)="99" OR VAL(O$(24,3))=10) THEN PRINT"A RAGING FIRE BARS YOUR WAY OUT.":GOTO 200',
+   505:'IF L=10 AND F2=0 THEN PRINT"A RAGING FIRE BARS YOUR WAY OUT.":PRINT"WITHOUT AN EXTINGUISHER YOU     CAN\'T PUT IT OUT. THE SMOKE     FILLS THE ROOM AND YOU CHOKE TO DEATH.":GOSUB 2230:GOTO 180',
+   570:'IF L=3 AND F7=1 THEN PRINT"YOU ARE UNDERWATER.":PRINT M$(24):PRINT"THE SECRET PASSAGE LED INTO THE FLOODED BALLROOM, AND YOU       DROWNED.":GOSUB 2230:GOTO 180',
+   590:'L5=L:L=VAL(MID$(R$(L,2),A+LEN(R$(L,2))/2,2)):DB=DB+1:IF L=3 AND F7=1 THEN 570 ELSE 1400',
+   1040:'IF L=10 AND F2=0 THEN PRINT"NO MAGIC WORD WILL PUT OUT THIS FIRE. YOU NEED AN EXTINGUISHER: THERE\'S ONE IN THE GALLEY.":GOTO 200'}
  },
 
  // ---- textes, lieux, dessins ----

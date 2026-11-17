@@ -64,7 +64,8 @@ function psSfxFor(line,cmd){
   if(/RIP THE DOOR OPEN/.test(l)) return 'ps_door';
   if(/^LOOK!|YOU FIND SOMETHING/.test(l)) return 'ps_find';
   if(/WALL OF WATER/.test(l)) return 'ps_wave';
-  if(/YOU DROWNED|HOLD YOUR BREATH/.test(l)) return 'ps_bubbles';
+  if(/YOU DROWNED|HOLD YOUR BREATH|WATER CAUGHT YOU/.test(l)) return 'ps_bubbles';
+  if(/CHOKE TO DEATH/.test(l)) return 'ps_fire';
   if(/FELL DOWN A SHAFT/.test(l)) return 'fall';
   if(/FELL INTO THE OIL/.test(l)) return 'ps_oil';
   if(/FIRE'S OUT/.test(l)) return 'ps_extinguish';
