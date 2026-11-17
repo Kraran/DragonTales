@@ -1,0 +1,52 @@
+# S.S. Poseidon (Poseidon Adventure) : une suite de commandes qui mène à la victoire, pour les essais automatiques.
+# La première ligne répond au choix du niveau (1 : expert, 75 coups au plus). Le jeu n a pas de hasard qui compte.
+# Une commande anglaise du jeu par ligne ; les lignes vides et celles qui commencent par # sont ignorées.
+# Attention : ce fichier dévoile toute l aventure. (La solution PDF fournie avec le jeu est fausse par endroits.)
+1
+W
+EXAMINE DEBRIS
+GET FLASHLIGHT
+E
+GET CHAIR
+E
+READ SIGN
+DROP CHAIR
+USE FLASHLIGHT
+CLIMB CABLE
+N
+GET BEAKER
+S
+E
+S
+DRINK VITAMINS
+DROP BEAKER
+OPEN DOOR
+U
+E
+GET ROPE
+TIE ROPE
+TO LEDGE
+S
+GET CROWBAR
+N
+W
+W
+E
+N
+W
+OPEN CABINET
+WITH CROWBAR
+DROP CROWBAR
+GET WRENCH
+E
+E
+S
+U
+E
+TIE ROPE
+TO LEDGE
+S
+DROP ROPE
+E
+N
+USE WRENCH

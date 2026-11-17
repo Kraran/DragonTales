@@ -2,12 +2,15 @@
 // Il lit le programme tokenisé tel qu'il est sur la cassette et l'exécute en suivant les règles du BASIC du Dragon :
 // seuls les deux premiers caractères d'un nom de variable comptent, RND(n) rend un entier de 1 à n, NEXT X,Y, ON…GOTO, etc.
 // Même interface que Machine (moteur/machine.js) : run() exécute jusqu'à la prochaine attente et rend
-// 'line' (saisie d'une ligne), 'end' (fin du programme) ; line(s) fournit la ligne tapée.
-//   io.out(texte)      texte affiché (avec '\n')
+// 'line' (saisie d'une ligne), 'key' (INKEY$ attend une touche), 'end' (fin du programme) ;
+// line(s) fournit la ligne tapée, key(c) la touche.
+//   io.out(texte)      texte affiché, ligne par ligne (avec '\n') ; une ligne commencée est envoyée avant chaque attente
+//   io.sound(hauteur, durée), io.play(chaîne)   SOUND et PLAY du Dragon
 //   io.cls(couleur)    effacement de l'écran (CLS, CLS n)
 //   io.input(prompt)   appelé au début d'une saisie (prompt = texte de INPUT "…" ou '')
 //   io.end()           fin du programme
 // cfg (fiche de l'aventure, facultatif) : seed (graine du hasard, pour les essais), maxSteps (garde-fou),
+//   endKeyLines : lignes où une attente de touche marque la fin de la partie (« WANT TO TRY AGAIN? ») : run() rend 'end'
 //   patches : {numéro de ligne: 'texte BASIC'} — corrections du programme d'origine ('' supprime la ligne) ;
 //             appliquées sauf si io.fixes === false (pour comparer avec le programme d'origine).
 function Basic(bin, io, cfg){
@@ -93,17 +96,17 @@ function Basic(bin, io, cfg){
   function splitData(s){
     const out = []; let cur = '', q = false, quoted = false;
     for(const c of s){
-      if(c === '"'){ q = !q; quoted = true; continue; }
-      if(c === ',' && !q){ out.push(quoted ? cur : cur.trim()); cur = ''; quoted = false; continue; }
+      if(c === '"' && (q || (!cur && !quoted))){ q = !q; quoted = true; continue; }   // guillemets délimiteurs seulement en tête d'élément
+      if(c === ',' && !q){ out.push(cur); cur = ''; quoted = false; continue; }   // espaces de tête ignorés, ceux de fin gardés (comme le Dragon)
       if(q || c !== ' ' || cur) cur += c;
     }
-    out.push(quoted ? cur : cur.trim());
+    out.push(cur);
     return out;
   }
 
   // ---------- état (tout ce qu'il faut pour une sauvegarde) ----------
   let S;
-  function fresh(){ return {li:0, ti:0, vars:{}, arrs:{}, stack:[], dp:0, col:0, seed:(cfg.seed === undefined ? (Date.now() & 0x7fffffff) : cfg.seed) >>> 0 || 1, input:null, ended:false}; }
+  function fresh(){ return {li:0, ti:0, vars:{}, arrs:{}, stack:[], dp:0, col:0, lbuf:'', keys:[], seed:(cfg.seed === undefined ? (Date.now() & 0x7fffffff) : cfg.seed) >>> 0 || 1, input:null, ended:false}; }
   S = fresh();
   let wait = null;
 
@@ -165,8 +168,10 @@ function Basic(bin, io, cfg){
     if(t.k === 'id'){ P++; return getVar(t.v); }
     err('?SN ERROR');
   }
+  const KEYWAIT = {keywait:true};
   function fn(f){
-    if(f === 'INKEY$') return '';
+    if(f === 'INKEY$'){ if(S.keys.length) return S.keys.shift(); throw KEYWAIT; }   // pas de touche : on attend (et l'instruction sera reprise)
+    if(f === 'POS'){ args(); return S.col; }
     if(f === 'TIMER') return 0;
     const a = args();
     switch(f){
@@ -222,9 +227,13 @@ function Basic(bin, io, cfg){
   // ---------- affichage ----------
   function out(s){
     if(!s) return;
-    io.out(s);
+    s = s.replace(/\r/g, '\n');                                   // CHR$(13) : retour à la ligne
     const i = s.lastIndexOf('\n'); S.col = i < 0 ? S.col + s.length : s.length - i - 1;
+    S.lbuf += s;
+    const j = S.lbuf.lastIndexOf('\n');
+    if(j >= 0){ io.out(S.lbuf.slice(0, j + 1)); S.lbuf = S.lbuf.slice(j + 1); }   // lignes complètes
   }
+  function flushOut(){ if(S.lbuf){ io.out(S.lbuf); S.lbuf = ''; } }
 
   // ---------- instructions ----------
   function jump(n){ const i = byNum.get(n); if(i === undefined) err('?UL ERROR'); S.li = i; S.ti = 0; return 'jump'; }
@@ -248,6 +257,9 @@ function Basic(bin, io, cfg){
         return;
       case 'PRINT': return print();
       case 'INPUT': return input();
+      case 'LINE': need('kw','INPUT'); return input(true);
+      case 'RUN': { const seed = S.seed; S = fresh(); S.seed = seed; return jump(lines[0].n); }
+      case 'EXEC': case 'CLOAD': case 'CSAVE': case 'MOTOR': skipToEnd(); return;
       case 'IF': {
         const c = expr();
         if(!eat('kw','THEN') && !at('kw','GO')) err('?SN ERROR');
@@ -305,14 +317,17 @@ function Basic(bin, io, cfg){
         return;
       case 'RESTORE': S.dp = 0; if(at('num')) P++; return;
       case 'END': case 'STOP': S.ended = true; return 'end';
-      case 'SOUND': case 'PLAY': case 'POKE': case 'AUDIO': case 'MOTOR': case 'SCREEN': case 'PMODE': case 'PCLS': case 'COLOR':
-        { const args = []; while(!endStmt()){ if(eat('p',',')) continue; args.push(expr()); } io.sound && t.v === 'SOUND' && io.sound(args[0], args[1]); return; }
+      case 'SOUND': case 'PLAY': case 'POKE': case 'AUDIO': case 'SCREEN': case 'PMODE': case 'PCLS': case 'COLOR':
+        { const args = []; while(!endStmt()){ if(eat('p',',')) continue; args.push(expr()); }
+          if(t.v === 'SOUND' && io.sound) io.sound(args[0], args[1]);
+          if(t.v === 'PLAY' && io.play) io.play(String(args[0]));
+          return; }
       default: err('?SN ERROR (' + t.v + ')');
     }
   }
   function print(){
     let s = '', nl = true;
-    if(eat('p','@')){ expr(); eat('p',','); }   // PRINT @ : position ignorée (texte qui défile)
+    if(eat('p','@')){ expr(); eat('p',','); if(S.col > 0) out('\n'); }   // PRINT @ : le texte défile ; on repart en début de ligne
     while(!endStmt()){
       if(eat('p',';')){ nl = false; continue; }
       if(eat('p',',')){ const c = S.col + s.length; s += ' '.repeat(16 - c % 16); nl = false; continue; }
@@ -321,22 +336,22 @@ function Basic(bin, io, cfg){
     }
     out(nl ? s + '\n' : s);
   }
-  function input(){
+  function input(whole){ // whole : LINE INPUT (toute la ligne, sans « ? »)
     let prompt = '';
     if(at('str')){ prompt = peek().v; P++; if(!eat('p',';')) eat('p',','); }
     const refs = []; do refs.push(ref()); while(eat('p',','));
-    out(prompt + '? ');
-    S.input = {refs: refs.map(r => ({n:r.n, a:r.a ? r.n : null, k:r.k})), prompt};
+    out(whole ? prompt : prompt + '? ');
+    S.input = {refs: refs.map(r => ({n:r.n, a:r.a ? r.n : null, k:r.k})), prompt, whole:!!whole};
     io.input && io.input(prompt);
     return 'input';
   }
   function giveLine(text){
     const inp = S.input; if(!inp) return;
-    const parts = String(text).toUpperCase().split(',');
+    const parts = inp.whole ? [String(text).toUpperCase()] : String(text).toUpperCase().split(',');
     if(cfg.echo !== false) io.out(String(text).toUpperCase() + '\n');   // l'interface affiche elle-même la commande
     S.col = 0;
     inp.refs.forEach((r, i) => {
-      const raw = (parts[i] || '').trim(), target = r.a ? {n:r.n, a:S.arrs[r.a], k:r.k} : {n:r.n};
+      const raw = inp.whole ? parts[0] : (parts[i] || '').trim(), target = r.a ? {n:r.n, a:S.arrs[r.a], k:r.k} : {n:r.n};
       set(target, isStr(r.n) ? raw : (parseFloat(raw) || 0));
     });
     S.input = null;
@@ -346,17 +361,25 @@ function Basic(bin, io, cfg){
   function run(){
     if(S.ended){ wait = 'end'; return wait; }
     if(S.input){ wait = 'line'; return wait; }
+    if(wait === 'key' && !S.keys.length) return wait;
     let steps = 0; const max = cfg.maxSteps || 2e6;
     while(S.li < lines.length){
       T = lines[S.li].t; P = S.ti;
       let r;
       while(P < T.length){
         if(eat('p', ':')) continue;
-        r = statement();
+        const start = P;
+        try { r = statement(); }
+        catch(e){
+          if(e !== KEYWAIT) throw e;
+          S.ti = start; flushOut();                       // on reprendra cette instruction quand une touche arrivera
+          if(cfg.endKeyLines && cfg.endKeyLines.includes(lines[S.li].n)){ wait = 'end'; io.end && io.end(); return wait; }
+          wait = 'key'; return wait;
+        }
         if(r === 'jump') break;
         if(r === 'then') { r = undefined; continue; }
-        if(r === 'end'){ wait = 'end'; io.end && io.end(); return wait; }
-        if(r === 'input'){ S.ti = P; wait = 'line'; return wait; }
+        if(r === 'end'){ flushOut(); wait = 'end'; io.end && io.end(); return wait; }
+        if(r === 'input'){ S.ti = P; flushOut(); wait = 'line'; return wait; }
         if(P < T.length && !eat('p', ':') && !at('kw', 'ELSE')) err('?SN ERROR');
         if(at('kw','ELSE')) P = T.length;   // fin d'un THEN exécuté : on saute le ELSE
         if(++steps > max) err('BOUCLE SANS FIN ?');
@@ -364,7 +387,7 @@ function Basic(bin, io, cfg){
       if(r === 'jump'){ if(++steps > max) err('BOUCLE SANS FIN ?'); continue; }
       S.li++; S.ti = 0;
     }
-    S.ended = true; wait = 'end'; io.end && io.end(); return wait;
+    flushOut(); S.ended = true; wait = 'end'; io.end && io.end(); return wait;
   }
 
   const api = {
@@ -373,7 +396,7 @@ function Basic(bin, io, cfg){
     yesNo: false,
     run,
     line(s){ giveLine(s); },
-    key(){ },
+    key(c){ S.keys.push(typeof c === 'number' ? String.fromCharCode(c) : String(c || ' ').toUpperCase()); if(wait === 'key' || wait === 'end') wait = null; },
     reset(){ const seed = cfg.seed; S = fresh(); if(seed === undefined) S.seed = (Date.now() & 0x7fffffff) || 1; wait = null; },
     // lecture des variables du programme par la fiche de l'aventure
     mem: {
@@ -383,7 +406,7 @@ function Basic(bin, io, cfg){
       prompt(){ return S.input ? S.input.prompt : null; }
     },
     snapshot(){ return {m: JSON.stringify(S), c: {}}; },
-    restore(s){ S = JSON.parse(typeof s.m === 'string' ? s.m : new TextDecoder().decode(s.m)); wait = S.ended ? 'end' : S.input ? 'line' : null; },
+    restore(s){ S = JSON.parse(typeof s.m === 'string' ? s.m : new TextDecoder().decode(s.m)); S.lbuf = S.lbuf || ''; S.keys = S.keys || []; wait = S.ended ? 'end' : S.input ? 'line' : null; },
     lines: () => lines.map(l => l.n)
   };
   return api;
