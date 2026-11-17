@@ -18,6 +18,8 @@ Troisième aventure : **S.S. Poseidon** (Poseidon Adventure, Bill et Debbie Cook
 - Pièces magiques : huit étapes d'indices et huit indices de situation.
 
 ### Moteur
+- Étagère : deux flèches hautes et étroites, de part et d'autre des boîtes, font défiler les aventures d'une boîte à la fois ;
+  grisées au bout de la liste, cachées si tout tient à l'écran.
 - BASIC : LINE INPUT, INKEY$, POS, RUN, PRINT @ à l'écran, SOUND et PLAY ; une touche n'est prise que si le programme l'attend.
 - Jeux à écran (PRINT @) : la version classique reproduit l'écran du Dragon, avec défilement partiel.
 - Fenêtre de choix proposée par le jeu au départ (niveau…), état propre à l'aventure affiché sur le décor.

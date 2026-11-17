@@ -45,7 +45,7 @@ const T={
   abVersion:'Version',abDate:'Date',abAuthor:'Auteur',abRepo:'Dépôt',abStack:'Techno',abStackText:'HTML, CSS, JavaScript (émulateur 6809), Python pour l’assemblage',abGames:'Aventures',
   aboutNote:'Logiciel fourni « tel quel ». Les programmes, textes et illustrations d’origine des aventures appartiennent à leurs auteurs et éditeurs.',abProfile:'Profil Kraran',abGithub:'Dépôt GitHub',
   backShelf:'Retour à DragonTales',play:'Jouer',playing:'Partie en cours',noGame:'Pas encore commencée',by:'de',
-  shelfTag:'Les aventures textuelles du Dragon 32/64, traduites et illustrées',soon:'D’autres aventures prendront place ici.',quitShelf:'Quitter DragonTales ?',quitShelfNote:'Les parties en cours sont sauvegardées automatiquement.',
+  shelfTag:'Les aventures textuelles du Dragon 32/64, traduites et illustrées',soon:'D’autres aventures prendront place ici.',shPrev:'Aventures précédentes',shNext:'Aventures suivantes',quitShelf:'Quitter DragonTales ?',quitShelfNote:'Les parties en cours sont sauvegardées automatiquement.',
   dirs:{W:'Ouest',N:'Nord',E:'Est',S:'Sud',U:'Haut',D:'Bas'}},
  en:{here:'Here',inv:'Carrying',lex:'Words met so far',nothing:'nothing',none:'none yet',
   ph:'Click a verb then a word, or type a command…',cancel:'Cancel',
@@ -78,7 +78,7 @@ const T={
   abVersion:'Version',abDate:'Date',abAuthor:'Author',abRepo:'Repository',abStack:'Built with',abStackText:'HTML, CSS, JavaScript (6809 emulator), Python for the build',abGames:'Adventures',
   aboutNote:'Software provided “as is”. The original programs, texts and artwork of the adventures belong to their authors and publishers.',abProfile:'Kraran’s profile',abGithub:'GitHub repository',
   backShelf:'Back to DragonTales',play:'Play',playing:'Game in progress',noGame:'Not started yet',by:'by',
-  shelfTag:'Text adventures from the Dragon 32/64, translated and illustrated',soon:'More adventures will take their place here.',quitShelf:'Quit DragonTales?',quitShelfNote:'Games in progress are saved automatically.',
+  shelfTag:'Text adventures from the Dragon 32/64, translated and illustrated',soon:'More adventures will take their place here.',shPrev:'Previous adventures',shNext:'Next adventures',quitShelf:'Quit DragonTales?',quitShelfNote:'Games in progress are saved automatically.',
   dirs:{W:'West',N:'North',E:'East',S:'South',U:'Up',D:'Down'}}
 };
 const t0=()=>T[lang];
@@ -128,8 +128,23 @@ function renderShelf(){
     row.appendChild(b);
   });
   const empty=el('div','shBox shEmpty'); empty.appendChild(el('span',null,t0().soon)); row.appendChild(empty);
-  sh.appendChild(row);
+  // flèches de part et d'autre : une boîte de plus à chaque clic ; grisées au bout, cachées si tout tient
+  const strip=el('div','shStrip'), arrow=(dir,label)=>{ const b=el('button','shArrow'); b.type='button'; b.setAttribute('aria-label',label); b.title=label;
+    b.innerHTML=`<svg viewBox="0 0 22 96" aria-hidden="true"><path d="${dir<0?'M20 2 L2 48 L20 94Z':'M2 2 L20 48 L2 94Z'}"/></svg>`;
+    b.onclick=()=>{ const box=row.querySelector('.shBox'), step=box?box.offsetWidth+44:400, max=row.scrollWidth-row.clientWidth;
+      glide(Math.max(0,Math.min(max,(Math.round(row.scrollLeft/step)+dir)*step))); }; return b; };
+  // défilement animé à la main : Chrome interrompt le défilement doux du navigateur lancé pendant un clic
+  let glideId=0;
+  const glide=to=>{ const id=++glideId, from=row.scrollLeft, d=to-from, t1=performance.now(); row.style.scrollBehavior='auto';
+    const f=now=>{ if(id!==glideId) return; const k=Math.min(1,(now-t1)/340), e=1-Math.pow(1-k,3); row.scrollLeft=from+d*e;
+      if(k<1) requestAnimationFrame(f); else row.style.scrollBehavior=''; }; requestAnimationFrame(f); };
+  const left=arrow(-1,t0().shPrev), right=arrow(1,t0().shNext);
+  const arrows=()=>{ const max=row.scrollWidth-row.clientWidth, fit=max<=2; left.hidden=right.hidden=fit; left.disabled=row.scrollLeft<=2; right.disabled=row.scrollLeft>=max-2; };
+  strip.appendChild(left); strip.appendChild(row); strip.appendChild(right); sh.appendChild(strip);
+  row.addEventListener('scroll',arrows,{passive:true});
+  if(!window.__shResize){ window.__shResize=true; addEventListener('resize',()=>{ const r=document.querySelector('#shelf .shRow'); if(r) r.dispatchEvent(new Event('scroll')); }); }
   row.scrollTo({left:keep,behavior:'instant'});
+  arrows();
   // la molette fait défiler l'étagère de gauche à droite
   row.addEventListener('wheel',ev=>{ if(Math.abs(ev.deltaY)>Math.abs(ev.deltaX)&&row.scrollWidth>row.clientWidth){ ev.preventDefault(); row.scrollBy({left:ev.deltaY*1.5}); } },{passive:false});
   // la boîte choisie reste visible (flèches du clavier)
