@@ -16,7 +16,7 @@ moteur/
   sfx.js                      effets sonores synthétisés
   template.html               page et styles
   dragon.ttf, mkfont.py       police de la version classique
-  auteur.jpg                  portrait de la fenêtre « À propos »
+  auteur.webp                 portrait de la fenêtre « À propos »
 aventures/eldiablero/
   aventure.js                 la fiche : tout ce que le moteur doit savoir de ce jeu
   fr.js                       traduction (textes par adresse, vocabulaire, commandes françaises -> anglaises)
@@ -24,7 +24,7 @@ aventures/eldiablero/
   scenes.js                   illustrations (décors et objets)
   hints.js                    indices des pièces magiques
   programme.bin               code machine d'origine, extrait de la cassette
-  boite.jpg  couverture.jpg  musique.ogg
+  boite.webp  couverture.webp  musique.ogg
   solution.txt                suite de commandes menant à la victoire, pour les essais automatiques
 outils/
   cas.py, detok.py            extraction du programme d'une cassette, listing d'un programme BASIC
@@ -37,8 +37,11 @@ tests/
 
 ## Les étapes
 
-1. **Créer le dossier** `aventures/<nom>/` et y déposer `programme.bin` (le binaire extrait du `.cas`), `boite.jpg`
-   (image de l'étagère, format portrait), `couverture.jpg` (fond de l'écran d'introduction, 16/9) et, si on veut, `musique.ogg`.
+1. **Créer le dossier** `aventures/<nom>/` et y déposer `programme.bin` (le binaire extrait du `.cas`), `boite.webp`
+   (image de l'étagère, format portrait, 1000 × 1387), `couverture.webp` (fond de l'écran d'introduction, 16/9, 1792 × 1008)
+   et, si on veut, `musique.ogg`. Toutes les images et musiques sont incluses dans la page : pour qu'elle reste légère,
+   les images sont en WebP qualité 82 (`.jpg` et `.png` restent acceptés) et la musique en Opus 56 kbit/s :
+   `ffmpeg -i musique.m4a -c:a libopus -b:a 56k -map_metadata -1 musique.ogg`.
 2. **Écrire `aventure.js`** en partant de celui d'El Diablero. Il appelle `DragonTales.register({...})` avec :
    - l'identité : `id`, `storage` (préfixe des sauvegardes), `title`, `author`, `publisher`, `year`, `system`, `blurb.fr/en`,
      `rating` (difficulté et note globale sur 5, affichées en étoiles sur l'étagère : `{difficulty:3.6, overall:3.3}`) ;
