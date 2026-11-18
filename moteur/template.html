@@ -157,6 +157,15 @@ svg.links.top{pointer-events:none;z-index:2}
 .optRow button{padding:8px 22px;font-size:19px;min-width:150px}
 .optRow input[type=range]{width:300px;accent-color:var(--souci)}
 .optRow b{font:600 19px var(--sans);color:var(--sable);min-width:64px;text-align:right}
+/* lecture à voix haute */
+.voiceOpts{border-top:1px solid var(--trait);margin-top:18px;padding-top:6px}
+.voiceSel{font:19px var(--sans);color:var(--os);background:var(--nuit2);border:1px solid var(--trait);border-radius:4px;padding:8px 12px;max-width:330px}
+.card.opts{max-height:1030px;overflow-y:auto}
+#log .turn{position:relative;padding-right:44px}
+#log .turn .say{position:absolute;right:-6px;top:0;width:40px;height:40px;padding:0;border-radius:50%;border:1px solid transparent;background:none;font-size:19px;line-height:1;opacity:0;filter:grayscale(1)}
+#log .turn:hover .say,#log .turn .say:focus-visible,#log .turn.saying .say{opacity:.75}
+#log .turn .say:hover{opacity:1;border-color:var(--trait);filter:none}
+#log .turn.saying .say{filter:none;opacity:1;border-color:var(--souci)}
 .slots{display:grid;gap:10px;margin-top:10px;text-align:left}
 .slot{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;background:var(--nuit);border-radius:4px;padding:10px 12px 10px 18px}
 .slot span{font:21px var(--serif)} .slot small{display:block;font:15px var(--sans);color:var(--sourd)}
