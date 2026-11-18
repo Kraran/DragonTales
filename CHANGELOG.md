@@ -1,6 +1,8 @@
 # Journal des versions
 
-## Prochaine version (en préparation)
+## 1.0.0 — 18 novembre 2026
+
+Première version complète : cinq aventures du Dragon 32/64, traduites et illustrées, avec leur collection de fins.
 
 ### Nouveautés
 - **Collection des fins** : chaque aventure a sa liste de fins (sept ou huit morts, et la victoire). Une fin atteinte
