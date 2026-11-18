@@ -52,7 +52,7 @@ DragonTales.register({
  },
 
  // ---- textes, lieux, dessins ----
- FR, ROOMS, SCENES, HINTS,
+ FR, ROOMS, SCENES, HINTS, endings:FINS,   // FINS : fins.js (collection des fins)
  labels:{
   fr:{
    sub:"Une aventure de Bill et Debbie Cook, Dragon Data, 1983. Version française.",

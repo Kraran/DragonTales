@@ -1,5 +1,21 @@
 # Journal des versions
 
+## Prochaine version (en préparation)
+
+### Nouveautés
+- **Collection des fins** : chaque aventure a sa liste de fins (sept ou huit morts, et la victoire). Une fin atteinte
+  s'y ajoute, datée, et y reste même si l'on recommence. L'étagère indique « Fins découvertes : 2 sur 8 » et ouvre la
+  liste ; les fins pas encore trouvées restent masquées.
+- **Bilan de fin de partie** : la fenêtre de mort ou de victoire annonce la fin (nouvelle ou déjà découverte) et résume
+  la partie : coups joués, lieux découverts, pièces magiques dépensées, temps de jeu, coups annulés et morts. Le bilan
+  est gardé dans les sauvegardes.
+- Page plus légère : 15,0 Mo au lieu de 20,1 (images en WebP, musiques réencodées en Opus 56 kbit/s depuis les originaux).
+
+### Corrections
+- Après un changement de langue, les déplacements (O, B, OUEST…) s'affichent correctement dans l'historique.
+- El Diablero : le dernier texte anglais qui restait (la fin de la liste des sorties) est traduit.
+- « Mots rencontrés » garde les mots composés entiers (loup-garou, chauves-souris).
+
 ## 0.9.0 — 18 novembre 2026
 
 Cinquième aventure : **The Final Countdown** (Bill et Debbie Cook, Dragon Data, 1983).

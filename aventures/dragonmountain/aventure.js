@@ -38,7 +38,7 @@ DragonTales.register({
  },
 
  // ---- textes, lieux, dessins ----
- FR, ROOMS, SCENES, HINTS,
+ FR, ROOMS, SCENES, HINTS, endings:FINS,   // FINS : fins.js (collection des fins)
  labels:{
   fr:{
    sub:"Une aventure de Dragon Data, 1982. Version française.",

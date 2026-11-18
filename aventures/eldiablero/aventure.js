@@ -28,7 +28,7 @@ DragonTales.register({
  },
 
  // ---- textes, lieux, dessins, indices ----
- FR, ROOMS, SCENES, HINTS,
+ FR, ROOMS, SCENES, HINTS, endings:FINS,   // FINS : fins.js (collection des fins)
  labels:{
   fr:{
    sub:"Une aventure de Kenneth Kalish, Computerware, 1982. Version française.",

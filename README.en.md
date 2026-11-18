@@ -59,6 +59,8 @@ Games are saved in the browser; the saved-games window can export them to a file
 - **Mouse play**: a verb, then a word from the text, an object or a direction. Typing commands always works.
 - **A map** drawn as you explore, with visible objects and special passages; one click walks you there.
 - **Three magic coins** per game: each gives a hint suited to where you are in the adventure.
+- **Endings collection**: every death and the victory are added to the adventure's list, shown on the shelf;
+  the end-of-game window also sums up the game (moves played, places found, coins spent, time played).
 - **Machine-code or BASIC games**: the original program runs in a 6809 emulator or in a Dragon BASIC interpreter,
   patched when it contains bugs.
 - **Saved games** (autosave and three slots, export and import as files), undo, adjustable music and sound effects.
@@ -101,6 +103,8 @@ node tests/essai-dragonmountain.js  # in Chrome: Dragon Mountain (full game, sav
 node tests/essai-poseidon.js        # in Chrome: S.S. Poseidon (skill level, full game, Dragon screen, death)
 node tests/essai-mansion.js         # in Chrome: Mansion of Doom (full game, colour screens, passwords, endings)
 node tests/essai-finalcountdown.js  # in Chrome: The Final Countdown (skill level, full game despite randomness, endings)
+node tests/fins.js                  # no browser: the list of endings of each adventure
+node tests/essai-fins.js            # in Chrome: endings collection and end-of-game summary
 ```
 
 The Chrome tests need `npm install playwright` and Chrome (set `CHROME` to its path if needed).

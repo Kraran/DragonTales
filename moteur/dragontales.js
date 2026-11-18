@@ -24,6 +24,11 @@ const T={
   start:'Commencer',resume:'Reprendre la partie',
   dead:'Tu es mort',retry:'Recommencer du début',undoLast:'Annuler le dernier coup',loadSave:'Charger une sauvegarde',
   won:'Ta tâche est accomplie',again:'Rejouer',over:'Fin de la partie',
+  ends:'Fins',endsOf:a=>'Les fins de '+a,endsFound:(n,N)=>'Fins découvertes : '+n+' sur '+N,endNew:'Nouvelle fin découverte',endKnown:'Fin déjà découverte',
+  endUnknown:'Fin encore inconnue',endWon:'Victoire',endsNote:'Chaque façon de finir l’aventure s’ajoute ici. Les fins découvertes restent, même si tu recommences.',
+  endsNone:'Aucune fin découverte pour l’instant.',seeEnds:'Voir les fins',endOn:d=>'le '+d,
+  stTitle:'Ta partie',stMoves:'Coups joués',stPlaces:'Lieux découverts',stCoins:'Pièces magiques dépensées',stTime:'Temps de jeu',stUndos:'Coups annulés',stDeaths:'Morts',
+  of:(a,b)=>a+' sur '+b,minLess:'< 1 min',
   save:'Sauvegarder',load:'Charger',close:'Fermer',slot:n=>'Emplacement '+n,emptySlot:'vide',auto:'Sauvegarde automatique',
   coin:'Pièce magique',coinTip:n=>'Pièce magique : un indice pour te mettre sur la voie (il en reste '+n+')',coinAsk:n=>'Chaque pièce magique donne un indice sur ce qu’il faut chercher maintenant. Il t’en reste '+n+' pour toute la partie.',
   coinUse:'Utiliser une pièce',coinKeep:'La garder',coinNone:'Tu n’as plus de pièce magique.',coinHead:n=>n?'La pièce se dissout dans ta main. Il t’en reste '+n+'.':'La dernière pièce se dissout dans ta main.',
@@ -57,6 +62,11 @@ const T={
   start:'Begin',resume:'Resume game',
   dead:'You are dead',retry:'Start over',undoLast:'Undo the last move',loadSave:'Load a saved game',
   won:'Your task is complete',again:'Play again',over:'Game over',
+  ends:'Endings',endsOf:a=>'Endings of '+a,endsFound:(n,N)=>'Endings found: '+n+' of '+N,endNew:'New ending found',endKnown:'Ending already found',
+  endUnknown:'Ending not found yet',endWon:'Victory',endsNote:'Every way of ending the adventure is added here. Endings you found stay, even if you start over.',
+  endsNone:'No ending found yet.',seeEnds:'See the endings',endOn:d=>'on '+d,
+  stTitle:'Your game',stMoves:'Moves played',stPlaces:'Places found',stCoins:'Magic coins spent',stTime:'Time played',stUndos:'Moves undone',stDeaths:'Deaths',
+  of:(a,b)=>a+' of '+b,minLess:'< 1 min',
   save:'Save',load:'Load',close:'Close',slot:n=>'Slot '+n,emptySlot:'empty',auto:'Autosave',
   coin:'Magic coin',coinTip:n=>'Magic coin: a hint to put you on the right track ('+n+' left)',coinAsk:n=>'Each magic coin gives a hint about what to look for now. You have '+n+' left for the whole game.',
   coinUse:'Use a coin',coinKeep:'Keep it',coinNone:'You have no magic coin left.',coinHead:n=>n?'The coin dissolves in your hand. You have '+n+' left.':'The last coin dissolves in your hand.',
@@ -157,6 +167,7 @@ function renderShelf(){
     if(a.rating) info.appendChild(ratingEl(a.rating));
     const d=savedGame(a);
     info.appendChild(el('p','shState',d?t0().playing+' ('+new Date(d.date).toLocaleDateString(lang,{day:'numeric',month:'long',year:'numeric'})+')':t0().noGame));
+    if(a.endings&&a.endings.length){ const fb=el('button','shFins',t0().endsFound(finsCount(a),a.endings.length)); fb.type='button'; fb.onclick=()=>showEndings(a); info.appendChild(fb); }
     const r=el('div','row'); btn(r,t0().play,()=>launch(a),true); info.appendChild(r);
   }
   sh.appendChild(info);
@@ -178,6 +189,31 @@ function ratingEl(r){ const box=el('div','shRating'), num=v=>v.toLocaleString(la
     const row=el('div','shRate'+(k==='overall'?' all':'')); row.setAttribute('role','img'); row.setAttribute('aria-label',label+' : '+num(r[k])+' / 5');
     row.appendChild(el('span','shRateL',label)); row.appendChild(stars(r[k])); row.appendChild(el('span','shRateN',num(r[k]))); box.appendChild(row); });
   return box; }
+// ---------- fins découvertes : une collection par aventure, gardée d'une partie à l'autre ----------
+// <préfixe>.fins = {id de la fin: date de la première fois}. La liste des fins vient de aventures/<nom>/fins.js.
+function finsOf(a){ try{ const f=JSON.parse(LS.get(a.storage+'.fins')||'{}'); return f&&typeof f==='object'?f:{}; }catch(e){ return {}; } }
+function finsCount(a){ const f=finsOf(a); return (a.endings||[]).filter(e=>f[e.id]).length; }
+function showEndings(a,back){
+  const close=back||hideOverlay, f=finsOf(a), list=a.endings||[], fmt=d=>new Date(d).toLocaleDateString(lang,{day:'numeric',month:'long',year:'numeric'});
+  overlay('about fins',c=>{
+    const head=el('div','abHead'); head.appendChild(el('h3',null,t0().endsOf(a.title)));
+    const x=btn(head,'×',close); x.className='abX'; x.title=t0().close; x.setAttribute('aria-label',t0().close);
+    c.appendChild(head);
+    const n=list.filter(e=>f[e.id]).length, top=el('div','fnTop');
+    top.appendChild(el('p','fnCount',t0().endsFound(n,list.length)));
+    const bar=el('div','fnBar'); bar.setAttribute('aria-hidden','true'); const fill=el('span'); fill.style.width=(list.length?100*n/list.length:0)+'%'; bar.appendChild(fill); top.appendChild(bar);
+    c.appendChild(top);
+    const ul=el('ul','fnList');
+    list.forEach(e=>{ const got=f[e.id], li=el('li','fnItem'+(got?'':' unk')+(e.won?' won':''));
+      if(got){ const h=el('h4'); if(e.won) h.appendChild(el('span','fnTag',t0().endWon)); h.appendChild(document.createTextNode(e[lang])); li.appendChild(h);
+        li.appendChild(el('p',null,e[lang+'Note']||'')); li.appendChild(el('span','fnDate',t0().endOn(fmt(got)))); }
+      else { li.appendChild(el('h4',null,'? ? ?')); li.appendChild(el('p',null,t0().endUnknown)); }
+      ul.appendChild(li); });
+    c.appendChild(ul);
+    c.appendChild(el('p','abNote fnNote',t0().endsNote));
+    const foot=el('div','abFoot'); btn(foot,t0().close,close,true); c.appendChild(foot);
+  });
+}
 const authorOf=a=>a.author&&typeof a.author==='object'?a.author[lang]||a.author.fr:a.author;   // un nom, ou {fr, en}
 function openShelf(){ shelfOpen=true; picked=Math.max(0,ADVENTURES.findIndex(a=>current&&a.id===current.id)); $('shelf').hidden=false; renderShelf(); }
 function launch(a){
@@ -386,6 +422,13 @@ let lex=new Map();                 // mots rencontrés : mot-clé -> mot affich�
 let coins=COINS, hintUse={}, gid=newGid();            // pièces magiques restantes ; nombre d'indices déjà donnés par étape ou lieu
 let links=new Map();                // passages spéciaux découverts : 'de>vers' -> {from,to,label}
 let undo=[];                       // pile d'annulation
+// bilan de la partie : coups joués, temps de jeu (pauses de plus de trois minutes non comptées), coups annulés, morts
+const newStats=()=>({moves:0,ms:0,undos:0,deaths:0});
+let stats=newStats(), lastAct=0;
+function tick(){ const now=Date.now(); if(lastAct) stats.ms+=Math.min(now-lastAct,180000); lastAct=now; }
+// fins de l'aventure (fins.js) : la dernière reconnue, pour la fenêtre de fin
+const ENDINGS=ADV.endings||[];
+let lastEnd=null, lastItems=[], deathText='', endedAt=-1;
 let walking=false;
 let classicOn=false, classicItems=[], pendItems=[], lastCmd=null, cbuf='';   // version classique : même partie, affichage texte sur fond vert
 const logEl=$('log'), inEl=$('in');
@@ -428,7 +471,8 @@ function compact(items){ // regroupe les caractères isolés pour alléger le jo
 function flush(echo,prevOff){ // transforme la sortie du jeu en entrée du journal
   const cmd=echo?(lastCmd||{en:echo.toUpperCase(),typed:echo,tl:lang}):null;
   lastCmd=null; pending='';
-  const items=compact(pendItems); pendItems=[];
+  const items=compact(pendItems); pendItems=[]; lastItems=items;
+  if(cmd){ stats.moves++; tick(); }
   if(cmd) classicItems.push({e:cmd});
   const before=classicItems.length; classicItems.push(...items);
   if(classicOn&&SCREEN) animateScreen(before);   // pauses du jeu d'origine
@@ -450,7 +494,9 @@ function step(echo){ // fait tourner le jeu jusqu'à la prochaine attente
     if(!(classicOn&&SCREEN)){          // version moderne : on répond pour le joueur (WORLD.autoKey, sinon espace)
       pending=''; const k=WORLD.autoKey&&WORLD.autoKey(mem); m.key(k?k.charCodeAt(0):32); pendSfx=[]; return step(echo); }
   }
+  if(!lastAct) lastAct=Date.now();
   const r=flush(echo,prev);
+  checkEnding(lastItems,w);
   playSfx(prev,w);
   if(classicOn){ if(w==='end'&&!SCREEN) classicItems.push({k:won?'cWon':'cEnd'}); }   // jeu à écran : il pose lui-même sa question
   else if(menuNow()) showMenu();
@@ -467,6 +513,7 @@ function pushUndo(){
 }
 function doUndo(){
   const u=undo.pop(); if(!u) return;
+  stats.undos++;
   m.restore(u.snap); sceneKey=null; visited=u.visited; lex=u.lex; links=u.links; won=false; pending='';
   while(turns.length>u.n){ turns.pop(); logEl.removeChild(logEl.lastChild); }
   classicItems.length=Math.min(classicItems.length,u.ct); pendItems=[]; cbuf='';
@@ -828,13 +875,16 @@ function showTitle(){
   });
 }
 function showDeath(text){
-  overlay('',c=>{
+  deathText=text;
+  overlay('ending',c=>{
     c.appendChild(el('h2',null,t().dead));
     if(text){ const last=text.split(/\n{2,}/).pop(); c.appendChild(el('p',null,pretty(last))); }
+    endInfo(c);
     const r=el('div','row');
     const u=btn(r,t().undoLast,doUndo,true); u.disabled=!undo.length;
     btn(r,t().loadSave,showSaves);
     btn(r,t().retry,restart);
+    if(ENDINGS.length) btn(r,t().seeEnds,()=>showEndings(ADV,()=>showDeath(deathText)));
     c.appendChild(r);
   });
 }
@@ -852,10 +902,51 @@ function showMenu(){
   });
 }
 function showEnd(){
-  overlay('',c=>{
+  overlay('ending',c=>{
     c.appendChild(el('h2',null,won?t().won:t().over));
-    const r=el('div','row'); btn(r,t().again,restart,true); c.appendChild(r);
+    endInfo(c);
+    const r=el('div','row'); btn(r,t().again,restart,true);
+    if(ENDINGS.length) btn(r,t().seeEnds,()=>showEndings(ADV,showEnd));
+    c.appendChild(r);
   });
+}
+// Reconnaît la fin qui vient d'arriver (texte anglais d'origine du dernier coup, lieu, mort annoncée) et l'ajoute à la collection.
+function checkEnding(items,w){
+  const dead=(w==='key'&&m.yesNo)||(w==='end'&&!won);
+  if(!ENDINGS.length){ if(dead) stats.deaths++; return; }
+  const raw=items.map(it=>it.b!==undefined?it.b:it.a!==undefined?rawStr(it.a):it.r!==undefined?it.r:'').join(' ').replace(/%/g,' ').replace(/\s+/g,' ');
+  const vic=ADV.machine.victory;
+  const victory=won||(vic instanceof RegExp&&w!=='line'&&vic.test(raw));
+  let rk=null; try{ rk=WORLD.roomKey(mem,roomOff()); }catch(e){}
+  const e=victory?ENDINGS.find(x=>x.won):ENDINGS.find(x=>!x.won&&(x.test||x.room)&&(!x.test||x.test.test(raw))&&(!x.room||x.room===rk)&&(!x.dead||dead));
+  if(!e){ if(dead&&endedAt!==stats.moves) stats.deaths++; return; }   // une mort déjà comptée au même coup (version classique) ne compte pas deux fois
+  if(endedAt===stats.moves&&lastEnd&&lastEnd.e===e) return;
+  endedAt=stats.moves; if(!e.won) stats.deaths++;
+  const f=finsOf(ADV), isNew=!f[e.id];
+  if(isNew){ f[e.id]=Date.now(); LS.set(KEY+'fins',JSON.stringify(f)); }
+  lastEnd={e,isNew,n:ENDINGS.filter(x=>f[x.id]).length};
+}
+function fmtTime(ms){ const mn=Math.round(ms/60000); if(mn<1) return t().minLess; if(mn<60) return mn+' min'; return Math.floor(mn/60)+' h '+String(mn%60).padStart(2,'0'); }
+let roomTotal=0;
+function placesTotal(){ // nombre de lieux de l'aventure (cases de la carte qui ont une description)
+  if(!roomTotal){ for(let o=0;o<NROOMS;o++){ try{ if(ROOMS[WORLD.roomKey(mem,o)]) roomTotal++; }catch(e){ roomTotal++; } } roomTotal=roomTotal||NROOMS; }
+  return Math.max(roomTotal,visited.size); }
+// fenêtre de fin : la fin reconnue (nouvelle ou déjà vue) et le bilan de la partie
+function endInfo(c){
+  if(lastEnd){ const b=el('div','endBadge'+(lastEnd.isNew?' new':''));
+    b.appendChild(el('span','ebKind',lastEnd.isNew?t().endNew:t().endKnown));
+    b.appendChild(el('strong',null,lastEnd.e[lang]));
+    b.appendChild(el('span','ebCount',t().endsFound(lastEnd.n,ENDINGS.length)));
+    c.appendChild(b); }
+  const box=el('section','stBox'); box.appendChild(el('h3',null,t().stTitle));
+  const dl=el('dl','stGrid'), row=(k,v)=>{ const d=el('div'); d.appendChild(el('dt',null,k)); d.appendChild(el('dd',null,v)); dl.appendChild(d); };
+  row(t().stMoves,String(stats.moves));
+  row(t().stPlaces,t().of(visited.size,placesTotal()));
+  if(HINTS) row(t().stCoins,t().of(COINS-coins,COINS));
+  row(t().stTime,fmtTime(stats.ms));
+  if(stats.undos) row(t().stUndos,String(stats.undos));
+  if(stats.deaths) row(t().stDeaths,String(stats.deaths));
+  box.appendChild(dl); c.appendChild(box);
 }
 function showHelp(){
   overlay('',c=>{ c.classList.add('help');
@@ -865,7 +956,7 @@ function showHelp(){
   });
 }
 function clearGame(){
-  hideOverlay(); logEl.textContent=''; turns=[]; undo=[]; visited=new Set(); lex=new Map(); links=new Map(); coins=COINS; hintUse={}; won=false; pending=''; armed=null; classicItems=[]; pendItems=[]; cbuf=''; pendSfx=[]; pendNotes=[]; sceneKey=null; gid=newGid();
+  hideOverlay(); logEl.textContent=''; turns=[]; undo=[]; visited=new Set(); lex=new Map(); links=new Map(); coins=COINS; hintUse={}; won=false; pending=''; armed=null; classicItems=[]; pendItems=[]; cbuf=''; pendSfx=[]; pendNotes=[]; sceneKey=null; gid=newGid(); stats=newStats(); lastAct=0; lastEnd=null; endedAt=-1;
 }
 function restart(){ clearGame(); m.reset(); started=true; step(null); }
 // retour à l'étagère DragonTales : la partie est sauvegardée, l'aventure revient à son écran d'introduction
@@ -894,7 +985,7 @@ function spendNote(){
 function slotData(id){ const s=LS.get(KEY+'slot.'+id); if(!s) return null; try{ return JSON.parse(s); }catch(e){ return null; } }
 function packGame(withLog){ // l'état complet de la partie, pour un emplacement ou un fichier
   const sn=m.snapshot();
-  const d={format:'dragontales-save',version:1,adventure:ADV.id,gid,m:typeof sn.m==='string'?sn.m:b64(sn.m),c:sn.c,visited:[...visited],lex:[...lex],links:[...links],coins,hintUse,room:roomOff(),date:Date.now()};
+  const d={format:'dragontales-save',version:1,adventure:ADV.id,gid,m:typeof sn.m==='string'?sn.m:b64(sn.m),c:sn.c,visited:[...visited],lex:[...lex],links:[...links],coins,hintUse,stats,room:roomOff(),date:Date.now()};
   if(withLog){ d.turns=turns.slice(-80); d.classic=classicItems.slice(-600); }
   return d;
 }
@@ -911,6 +1002,7 @@ function loadData(d){
   const spent=ledger()[gid];
   if(spent){ coins=Math.min(coins,spent.c); for(const k in spent.h) hintUse[k]=Math.max(hintUse[k]||0,spent.h[k]); }
   undo=[]; won=false; pending=''; armed=null; started=true;
+  stats=Object.assign(newStats(),d.stats||{}); lastAct=0; lastEnd=null;
   turns=Array.isArray(d.turns)?d.turns.slice():[];
   while(turns.length&&turns[turns.length-1].note==='loaded') turns.pop();
   rerenderLog(); hideOverlay();

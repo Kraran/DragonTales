@@ -25,6 +25,8 @@ jobs:
             n="$(basename "$d")"
             if [ -f "$d/solution.txt" ]; then node tests/rejouer-solution.js "$n"; else echo "$n : pas de solution.txt"; fi
           done
+      - name: Liste des fins de chaque aventure
+        run: node tests/fins.js
       - name: Assembler la page
         run: python build.py
       - name: Installer Playwright (avec le Chrome de la machine)
@@ -43,6 +45,8 @@ jobs:
         run: node tests/essai-mansion.js
       - name: The Final Countdown dans Chrome
         run: node tests/essai-finalcountdown.js
+      - name: Fins et bilan dans Chrome
+        run: node tests/essai-fins.js
       - name: Garder les captures en cas d'échec
         if: failure()
         uses: actions/upload-artifact@v4

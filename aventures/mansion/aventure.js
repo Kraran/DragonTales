@@ -51,7 +51,7 @@ DragonTales.register({
  },
 
  // ---- textes, lieux, dessins ----
- FR, ROOMS, SCENES, HINTS,
+ FR, ROOMS, SCENES, HINTS, endings:FINS,   // FINS : fins.js (collection des fins)
  labels:{
   fr:{
    sub:"Une aventure de Leroy C. Smith et Paul Austin, Pal Creations, 1982. Version française.",

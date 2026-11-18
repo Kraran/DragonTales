@@ -23,6 +23,7 @@ aventures/eldiablero/
   data.js                     lieux : titre français, titre anglais, type de décor
   scenes.js                   illustrations (décors et objets)
   hints.js                    indices des pièces magiques
+  fins.js                     les fins de l'aventure (collection de l'étagère)
   programme.bin               code machine d'origine, extrait de la cassette
   boite.webp  couverture.webp  musique.ogg
   solution.txt                suite de commandes menant à la victoire, pour les essais automatiques
@@ -51,8 +52,13 @@ tests/
    - `world` : comment lire la partie en mémoire (lieu courant, sorties, objets et où ils sont), le format des commandes de
      déplacement, le nettoyage des textes (invite, listes), les zones où la musique revient, les sons d'ambiance ;
    - `labels.fr/en` : texte d'introduction, crédit, mot d'adieu ; `verbs` : les boutons de verbes ; `sfxAt` : sons liés aux textes ;
-   - les modules du dossier : `FR`, `ROOMS`, `SCENES`, `HINTS` (sans `HINTS`, pas de pièces magiques).
-3. **Écrire les modules** : `fr.js` (traduction), `data.js` (lieux), `scenes.js` (dessins), `hints.js` (indices).
+   - les modules du dossier : `FR`, `ROOMS`, `SCENES`, `HINTS` (sans `HINTS`, pas de pièces magiques), `endings:FINS`.
+3. **Écrire les modules** : `fr.js` (traduction), `data.js` (lieux), `scenes.js` (dessins), `hints.js` (indices),
+   `fins.js` (les fins). Chaque fin a un identifiant, un titre et une phrase en deux langues, et se reconnaît au texte
+   anglais d'origine du dernier coup (`test`), au lieu où elle arrive (`room`) et, avec `dead:true`, seulement quand le
+   jeu annonce la mort ; `won:true` marque la victoire. Pour les trouver : chercher dans le listing les lignes qui mènent
+   à l'écran de mort, et lancer `node outils/fins-explorer.js <nom> --profond`, qui essaie toutes les commandes le long
+   de la solution. `node tests/fins.js` vérifie que chaque texte cherché existe bien dans le programme.
    Ils sont assemblés par ordre alphabétique, `aventure.js` en dernier, dans une portée propre à l'aventure :
    deux aventures peuvent donc utiliser les mêmes noms (`FR`, `ROOMS`…) sans se gêner.
 4. **Tant que l'aventure n'est pas prête**, laisser un fichier `EN-COURS.md` dans son dossier : `build.py` ne l'inclut pas

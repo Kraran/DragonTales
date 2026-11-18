@@ -57,6 +57,8 @@ Sauvegardes permet de les exporter dans un fichier pour les reprendre ailleurs.
 - **Jeu à la souris** : un verbe, puis un mot du texte, un objet ou une direction. On peut toujours écrire ses commandes.
 - **Carte** dessinée au fil de l'exploration, avec les objets visibles et les passages particuliers ; un clic y conduit.
 - **Trois pièces magiques** par partie : chacune donne un indice adapté à l'endroit où l'on en est.
+- **Collection des fins** : chaque mort et la victoire s'ajoutent à la liste de l'aventure, visible sur l'étagère ;
+  la fenêtre de fin de partie dresse aussi le bilan (coups joués, lieux découverts, pièces dépensées, temps de jeu).
 - **Jeux en code machine ou en BASIC** : le programme d'origine tourne dans un émulateur 6809 ou dans un interpréteur
   Dragon BASIC, corrigé au besoin quand il contient des bugs.
 - **Sauvegardes** (automatique et trois emplacements, export et import par fichier), annulation du dernier coup,
@@ -106,6 +108,8 @@ node tests/essai-dragonmountain.js  # dans Chrome : Dragon Mountain (partie enti
 node tests/essai-poseidon.js        # dans Chrome : S.S. Poseidon (niveau, partie entière, écran du Dragon, mort)
 node tests/essai-mansion.js         # dans Chrome : Mansion of Doom (partie entière, écrans en couleur, mots de passe, fins)
 node tests/essai-finalcountdown.js  # dans Chrome : The Final Countdown (niveau, partie entière malgré le hasard, fins)
+node tests/fins.js                  # sans navigateur : la liste des fins de chaque aventure
+node tests/essai-fins.js            # dans Chrome : collection des fins et bilan de fin de partie
 ```
 
 Les essais dans Chrome demandent `npm install playwright` et Chrome (variable `CHROME` pour indiquer son chemin).
