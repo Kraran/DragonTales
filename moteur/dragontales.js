@@ -282,6 +282,10 @@ const FR_SKIP=new Set(ADV.frSkip||[]);
 const EN_NOUNS=new Set(Object.values(FR.NOUNS).concat(WORLD.nouns||[]).filter(v=>!DIRWORDS.has(v)&&v!==ALLW));
 const strip=s=>s.toUpperCase().replace(/Œ/g,'OE').normalize('NFD').replace(/[̀-ͯ]/g,'');
 function nounOf(word){ // mot affiché -> mot-clé anglais du jeu, ou null
+  if(word.includes('-')){ // mot composé (loup-garou, chauves-souris) : le mot entier, sinon une de ses parties
+    const whole=nounOf(word.replace(/-/g,'')); if(whole) return whole;
+    for(const part of word.split('-').reverse()){ const k=nounOf(part); if(k) return k; }
+    return null; }
   const w=strip(word);
   if(w.length<3) return null;
   if(lang==='fr'){ if(FR_SKIP.has(w)) return null; const v=FR.NOUNS[w]; return v&&!DIRWORDS.has(v)&&v!==ALLW?v:null; }
@@ -306,7 +310,7 @@ function richText(parent,s,lexSink){ // texte -> paragraphes avec mots cliquable
     const p=el('p');
     par.split('\n').forEach((line,i)=>{
       if(i) p.appendChild(el('br'));
-      let last=0; const re=/[\p{L}]+/gu; let mt;
+      let last=0; const re=/\p{L}+(?:-\p{L}+)*/gu; let mt;
       while((mt=re.exec(line))){
         const kw=nounOf(mt[0]);
         if(!kw) continue;
@@ -557,7 +561,7 @@ function refresh(){
   chips($('inv'),t().inv,o.inv,coins?'':t().nothing);
   for(let i=0;i<coins;i++){ const b=el('button','coin'); b.type='button'; b.title=t().coinTip(coins); b.setAttribute('aria-label',t().coin); b.innerHTML=COIN_SVG; b.onclick=askCoin; $('inv').appendChild(b); }
   const shown=new Set([...o.here,...o.inv].map(x=>x.kw));
-  chips($('lex'),t().lex,[...lex].filter(([k])=>!shown.has(k)).map(([kw,name])=>({kw,name:lang==='fr'&&FR.NOUNS[strip(name)]===kw||lang==='en'&&nounOf(name)===kw?name:(lang==='en'?kw:Object.keys(FR.NOUNS).find(w=>FR.NOUNS[w]===kw)||kw).toLowerCase()})),t().none,'lexi');
+  chips($('lex'),t().lex,[...lex].filter(([k])=>!shown.has(k)).map(([kw,name])=>({kw,name:nounOf(name)===kw?name:(lang==='en'?kw:Object.keys(FR.NOUNS).find(w=>FR.NOUNS[w]===kw)||kw).toLowerCase()})),t().none,'lexi');
   $('tool-undo').disabled=!undo.length;
   drawMap(off,ok);
   musicUpdate(3500);
@@ -973,7 +977,12 @@ const REV=(function(){ // anglais -> premier mot français, pour réafficher une
   for(const w in FR.NOUNS){ const e=FR.NOUNS[w]; if(!n[e]) n[e]=w; }
   Object.assign(v,ADV.revExtra||{});
   const find=(tab,w)=>{ if(tab[w]) return tab[w]; const p=w.slice(0,4); for(const e in tab){ if(e.slice(0,4)===p) return tab[e]; } return w; };
-  return en=>{ const p=en.trim().split(/\s+/); if(!p[0]) return ''; return find(v,p[0])+(p.length>1?' '+find(n,p[p.length-1]):''); };
+  // directions : une lettre seule (N, W, D…) ou un mot (WEST, DOWN) deviennent la lettre ou le mot français
+  const DIR1={N:'N',S:'S',E:'E',W:'O',U:'H',D:'B'}, DIRW={NORTH:'NORD',SOUTH:'SUD',EAST:'EST',WEST:'OUEST',UP:'HAUT',DOWN:'BAS'};
+  return en=>{ const p=en.trim().toUpperCase().split(/\s+/); if(!p[0]) return '';
+    if(p.length===1&&DIR1[p[0]]) return DIR1[p[0]];
+    if(p.length===1&&DIRW[p[0]]) return DIRW[p[0]];
+    return find(v,p[0])+(p.length>1?' '+(DIRW[p[p.length-1]]||find(n,p[p.length-1])):''); };
 })();
 const HELP_EN=ADV.helpEn||'';
 function composeItems(items,classic){ // recompose une suite d'éléments du journal dans la langue courante (classic : écran d'origine)
