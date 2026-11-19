@@ -1,5 +1,15 @@
 # Journal des versions
 
+## Prochaine version (en préparation)
+
+### Nouveautés
+- **Lecture à voix haute** : chaque réponse du jeu est lue (pas le titre du lieu ni la commande ; les indices des
+  pièces, oui). Dans Microsoft Edge, ce sont les voix neurales en ligne de Microsoft, les mêmes que Bifurk :
+  Rémy multilingue par défaut (Andrew multilingue en anglais). La lecture s'active d'office quand Rémy est disponible ;
+  ailleurs, elle reste désactivée et utilise les voix de l'ordinateur. Options : activer, voix, « Écouter », vitesse,
+  volume ; le choix du joueur est gardé et vaut pour toutes les aventures. Un bouton 🔊 sur chaque entrée du journal
+  la relit ; la musique baisse pendant la voix.
+
 ## 1.0.0 — 18 novembre 2026
 
 Première version complète : cinq aventures du Dragon 32/64, traduites et illustrées, avec leur collection de fins.

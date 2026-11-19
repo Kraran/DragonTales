@@ -59,6 +59,8 @@ Games are saved in the browser; the saved-games window can export them to a file
 - **Mouse play**: a verb, then a word from the text, an object or a direction. Typing commands always works.
 - **A map** drawn as you explore, with visible objects and special passages; one click walks you there.
 - **Three magic coins** per game: each gives a hint suited to where you are in the adventure.
+- **Read aloud**: in Microsoft Edge, the game's answers are read by Microsoft's neural voices
+  (Rémy Multilingual by default); voice, speed and volume are set in Options.
 - **Endings collection**: every death and the victory are added to the adventure's list, shown on the shelf;
   the end-of-game window also sums up the game (moves played, places found, coins spent, time played).
 - **Machine-code or BASIC games**: the original program runs in a 6809 emulator or in a Dragon BASIC interpreter,
@@ -105,6 +107,7 @@ node tests/essai-mansion.js         # in Chrome: Mansion of Doom (full game, col
 node tests/essai-finalcountdown.js  # in Chrome: The Final Countdown (skill level, full game despite randomness, endings)
 node tests/fins.js                  # no browser: the list of endings of each adventure
 node tests/essai-fins.js            # in Chrome: endings collection and end-of-game summary
+node tests/essai-voix.js            # in Chrome: read aloud (simulated Edge voices)
 ```
 
 The Chrome tests need `npm install playwright` and Chrome (set `CHROME` to its path if needed).

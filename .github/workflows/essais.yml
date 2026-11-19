@@ -47,6 +47,8 @@ jobs:
         run: node tests/essai-finalcountdown.js
       - name: Fins et bilan dans Chrome
         run: node tests/essai-fins.js
+      - name: Lecture à voix haute dans Chrome
+        run: node tests/essai-voix.js
       - name: Garder les captures en cas d'échec
         if: failure()
         uses: actions/upload-artifact@v4

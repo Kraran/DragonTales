@@ -57,6 +57,8 @@ Sauvegardes permet de les exporter dans un fichier pour les reprendre ailleurs.
 - **Jeu à la souris** : un verbe, puis un mot du texte, un objet ou une direction. On peut toujours écrire ses commandes.
 - **Carte** dessinée au fil de l'exploration, avec les objets visibles et les passages particuliers ; un clic y conduit.
 - **Trois pièces magiques** par partie : chacune donne un indice adapté à l'endroit où l'on en est.
+- **Lecture à voix haute** : dans Microsoft Edge, les réponses du jeu sont lues par les voix neurales de Microsoft
+  (Rémy multilingue par défaut) ; voix, vitesse et volume se règlent dans Options.
 - **Collection des fins** : chaque mort et la victoire s'ajoutent à la liste de l'aventure, visible sur l'étagère ;
   la fenêtre de fin de partie dresse aussi le bilan (coups joués, lieux découverts, pièces dépensées, temps de jeu).
 - **Jeux en code machine ou en BASIC** : le programme d'origine tourne dans un émulateur 6809 ou dans un interpréteur
@@ -110,6 +112,7 @@ node tests/essai-mansion.js         # dans Chrome : Mansion of Doom (partie enti
 node tests/essai-finalcountdown.js  # dans Chrome : The Final Countdown (niveau, partie entière malgré le hasard, fins)
 node tests/fins.js                  # sans navigateur : la liste des fins de chaque aventure
 node tests/essai-fins.js            # dans Chrome : collection des fins et bilan de fin de partie
+node tests/essai-voix.js            # dans Chrome : lecture à voix haute (voix d'Edge simulées)
 ```
 
 Les essais dans Chrome demandent `npm install playwright` et Chrome (variable `CHROME` pour indiquer son chemin).
