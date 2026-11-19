@@ -29,6 +29,10 @@ const T={
   endsNone:'Aucune fin découverte pour l’instant.',seeEnds:'Voir les fins',endOn:d=>'le '+d,
   stTitle:'Ta partie',stMoves:'Coups joués',stPlaces:'Lieux découverts',stCoins:'Pièces magiques dépensées',stTime:'Temps de jeu',stUndos:'Coups annulés',stDeaths:'Morts',
   of:(a,b)=>a+' sur '+b,minLess:'< 1 min',
+  voice:'Lecture à voix haute',voiceWho:'Voix',voiceRate:'Vitesse',voiceVol:'Volume de la voix',voiceTest:'Écouter',voiceAuto:'Tout lire',
+  voiceNote:'Lit chaque réponse du jeu. Les voix les plus naturelles (Rémy, Vivienne, Denise…, les mêmes que Bifurk) sont celles de Microsoft Edge, en ligne ; dans un autre navigateur, ce sont les voix de l’ordinateur.',
+  voiceNone:'Aucune voix française dans ce navigateur.',voiceSample:'Bienvenue dans DragonTales. Que veux-tu faire ?',say:'Lire à voix haute',sayStop:'Arrêter la lecture',
+  voiceOnline:'en ligne',voiceMulti:'multilingue',
   save:'Sauvegarder',load:'Charger',close:'Fermer',slot:n=>'Emplacement '+n,emptySlot:'vide',auto:'Sauvegarde automatique',
   coin:'Pièce magique',coinTip:n=>'Pièce magique : un indice pour te mettre sur la voie (il en reste '+n+')',coinAsk:n=>'Chaque pièce magique donne un indice sur ce qu’il faut chercher maintenant. Il t’en reste '+n+' pour toute la partie.',
   coinUse:'Utiliser une pièce',coinKeep:'La garder',coinNone:'Tu n’as plus de pièce magique.',coinHead:n=>n?'La pièce se dissout dans ta main. Il t’en reste '+n+'.':'La dernière pièce se dissout dans ta main.',
@@ -67,6 +71,10 @@ const T={
   endsNone:'No ending found yet.',seeEnds:'See the endings',endOn:d=>'on '+d,
   stTitle:'Your game',stMoves:'Moves played',stPlaces:'Places found',stCoins:'Magic coins spent',stTime:'Time played',stUndos:'Moves undone',stDeaths:'Deaths',
   of:(a,b)=>a+' of '+b,minLess:'< 1 min',
+  voice:'Read aloud',voiceWho:'Voice',voiceRate:'Speed',voiceVol:'Voice volume',voiceTest:'Listen',voiceAuto:'Read everything',
+  voiceNote:'Reads every answer of the game. The most natural voices (the same as Bifurk) are Microsoft Edge’s online voices; in another browser, they are the computer’s own voices.',
+  voiceNone:'No English voice in this browser.',voiceSample:'Welcome to DragonTales. What do you want to do?',say:'Read aloud',sayStop:'Stop reading',
+  voiceOnline:'online',voiceMulti:'multilingual',
   save:'Save',load:'Load',close:'Close',slot:n=>'Slot '+n,emptySlot:'empty',auto:'Autosave',
   coin:'Magic coin',coinTip:n=>'Magic coin: a hint to put you on the right track ('+n+' left)',coinAsk:n=>'Each magic coin gives a hint about what to look for now. You have '+n+' left for the whole game.',
   coinUse:'Use a coin',coinKeep:'Keep it',coinNone:'You have no magic coin left.',coinHead:n=>n?'The coin dissolves in your hand. You have '+n+' left.':'The last coin dissolves in your hand.',
@@ -439,6 +447,10 @@ function cleanText(s,moved){ return WORLD.clean(s,!!moved); }   // moved : le jo
 function cmdText(c){ return c.tl===lang?c.typed:(lang==='en'?c.en:REV(c.en)).toLocaleLowerCase(lang); }
 function turnEl(d){
   const turn=el('div','turn');
+  if(TTS.ok&&(!d.note||d.note==='hint')){ const b=el('button','say','🔊'); b.type='button'; b.title=t().say; b.setAttribute('aria-label',t().say);
+    b.onclick=ev=>{ ev.stopPropagation(); if(TTS.talking()&&turn.classList.contains('saying')){ TTS.stop(); return; }
+      sayTurn(d); document.querySelectorAll('#log .turn.saying').forEach(x=>x.classList.remove('saying')); turn.classList.add('saying'); };
+    turn.appendChild(b); }
   if(d.note==='hint'){ turn.classList.add('hint'); turn.appendChild(el('p','note',t().coinHead(d.left))); let src=d.spot!=null?HINTS.SPOTS[d.spot][lang]:HINTS.STEPS[d.step][lang][d.lvl];
     if(typeof src==='function') src=src(d.args||{},lang,n=>roomInfo(n-1).title);   // indice qui dépend de la partie (lieu d'un objet…)
     turn.appendChild(el('p','hintText',src)); return turn; }
@@ -454,6 +466,7 @@ function addTurn(d){
   const e=turnEl(d); if(!e.childNodes.length) return;
   [...logEl.querySelectorAll('.turn:not(.old)')].forEach(x=>x.classList.add('old'));
   turns.push(d); logEl.appendChild(e);
+  if(voiceOn()&&started&&(!d.note||d.note==='hint')) sayTurn(d);
   while(turns.length>300){ turns.shift(); logEl.removeChild(logEl.firstChild); undo.forEach(x=>{ x.n=Math.max(0,x.n-1); }); }
 }
 function rerenderLog(){
@@ -513,7 +526,7 @@ function pushUndo(){
 }
 function doUndo(){
   const u=undo.pop(); if(!u) return;
-  stats.undos++;
+  stats.undos++; TTS.stop();
   m.restore(u.snap); sceneKey=null; visited=u.visited; lex=u.lex; links=u.links; won=false; pending='';
   while(turns.length>u.n){ turns.pop(); logEl.removeChild(logEl.lastChild); }
   classicItems.length=Math.min(classicItems.length,u.ct); pendItems=[]; cbuf='';
@@ -522,7 +535,7 @@ function doUndo(){
 
 function send(en,echo){ // envoie une commande anglaise au jeu
   if(m.wait!=='line') return false;
-  pushUndo(); disarm();
+  TTS.stop(); pushUndo(); disarm();
   lastCmd={en,typed:echo||en,tl:lang};
   const cmdObj=lastCmd;
   const before=roomOff();
@@ -738,7 +751,7 @@ function inDesert(){
 }
 let quitting=false;
 function musicWant(){ if(quitting||shelfOpen) return 0; if(!started) return 1; if(m.wait==='end') return 0; return opts.music&&inDesert()?1:0; }
-function applyVol(){ audio.volume=Math.max(0,Math.min(1,opts.vol*gate*gate)); }
+function applyVol(){ audio.volume=Math.max(0,Math.min(1,opts.vol*gate*gate*(ducked?0.35:1))); }
 function musicTick(){
   const s=50/fadeMs;
   gate=gate<gateTarget?Math.min(gateTarget,gate+s):Math.max(gateTarget,gate-s);
@@ -776,14 +789,96 @@ function showOptions(){
     sl2.oninput=()=>{ opts.sfxVol=sl2.value/100; LS.set(KEY+'sfxvol',String(opts.sfxVol)); val2.textContent=sl2.value+' %'; SFX.setVolume(opts.sfxVol); };
     sl2.onchange=()=>{ SFX.play('click'); };
     row4.appendChild(sl2); row4.appendChild(val2); c.appendChild(row4);
+    if(TTS.ok) voiceOptions(c);
     const row5=el('div','optRow'); row5.appendChild(el('span',null,t().language));
     btn(row5,t().lang,()=>{ toggleLang(); showOptions(); });
     c.appendChild(row5);
     const r=el('div','row'); btn(r,t().full,fullscreen); btn(r,t().close,closeOverlay,true); c.appendChild(r);
   });
 }
+function voiceOptions(c){
+  const sec=el('div','voiceOpts');
+  const r1=el('div','optRow'); r1.appendChild(el('span',null,t().voice));
+  const tg=btn(r1,voiceOn()?t().on:t().off,()=>{ const on=!voiceOn(); LS.set(VKEY+'voice',on?'1':'0'); tg.textContent=on?t().on:t().off; tg.classList.toggle('main',on); if(!on) TTS.stop(); },voiceOn());
+  sec.appendChild(r1); sec.appendChild(el('p','small',t().voiceNote));
+  const L=TTS.list(lang), r2=el('div','optRow'); r2.appendChild(el('span',null,t().voiceWho));
+  if(L.length){ const sel=el('select','voiceSel'); const cur=TTS.pick(lang);
+    L.forEach(v=>{ const o=el('option',null,TTS.label(v)); o.value=v.name; if(cur&&v.name===cur.name) o.selected=true; sel.appendChild(o); });
+    sel.onchange=()=>{ vopt[lang]=sel.value; LS.set(VKEY+'voice'+lang,sel.value); TTS.speak(t().voiceSample,lang); };
+    r2.appendChild(sel); btn(r2,t().voiceTest,()=>TTS.speak(t().voiceSample,lang)); }
+  else r2.appendChild(el('b',null,t().voiceNone));
+  sec.appendChild(r2);
+  const r3=el('div','optRow'); r3.appendChild(el('span',null,t().voiceRate));
+  const s3=el('input'); s3.type='range'; s3.min=50; s3.max=160; s3.step=5; s3.value=Math.round(vopt.rate*100);
+  const v3=el('b',null,s3.value+' %');
+  s3.oninput=()=>{ vopt.rate=s3.value/100; LS.set(VKEY+'voicerate',String(vopt.rate)); v3.textContent=s3.value+' %'; };
+  s3.onchange=()=>TTS.speak(t().voiceSample,lang);
+  r3.appendChild(s3); r3.appendChild(v3); sec.appendChild(r3);
+  const r4=el('div','optRow'); r4.appendChild(el('span',null,t().voiceVol));
+  const s4=el('input'); s4.type='range'; s4.min=0; s4.max=100; s4.value=Math.round(vopt.vol*100);
+  const v4=el('b',null,s4.value+' %');
+  s4.oninput=()=>{ vopt.vol=s4.value/100; LS.set(VKEY+'voicevol',String(vopt.vol)); v4.textContent=s4.value+' %'; };
+  s4.onchange=()=>TTS.speak(t().voiceSample,lang);
+  r4.appendChild(s4); r4.appendChild(v4); sec.appendChild(r4);
+  c.appendChild(sec);
+  // les voix en ligne d'Edge arrivent parfois après l'ouverture : la liste se complète
+  if(!L.length||L.every(v=>v.localService)) setTimeout(()=>{ if(c.isConnected&&TTS.list(lang).length!==L.length){ const n=el('div'); voiceOptions(n); sec.replaceWith(n.firstChild); } },1500);
+}
 function closeOverlay(){ if(!started) showTitle(); else if(!classicOn&&menuNow()) showMenu(); else if(!classicOn&&m.wait==='key'&&m.yesNo) showDeath(''); else if(!classicOn&&m.wait==='end') showEnd(); else hideOverlay(); }
 SFX.setEnabled(opts.sfx); SFX.setVolume(opts.sfxVol);
+
+// ---------- lecture à voix haute ----------
+// Synthèse vocale du navigateur. Dans Microsoft Edge, elle propose les voix neurales en ligne de Microsoft (Rémy,
+// Vivienne, Denise, Henri, Eloise…), celles qu'utilise Bifurk par edge-tts ; ailleurs, les voix de l'ordinateur.
+// Le texte est découpé en phrases (certains navigateurs coupent les longues lectures) ; la musique baisse pendant la voix.
+const VKEY='dragontales.';   // réglages de la voix : communs à toutes les aventures
+const VOICE_PREF={fr:['Remy Multilingual','Vivienne Multilingual','Denise','Henri','Eloise','Google français','Hortense','Paul','Julie'],
+                  en:['Andrew Multilingual','Ava Multilingual','Emma Multilingual','Brian Multilingual','Ryan','Sonia','Google UK English Male','Google US English','Zira','David']};
+const vopt={rate:(v=>isNaN(v)?1:Math.max(0.5,Math.min(1.6,v)))(parseFloat(LS.get(VKEY+'voicerate'))),vol:num(VKEY+'voicevol',1),fr:LS.get(VKEY+'voicefr')||'',en:LS.get(VKEY+'voiceen')||''};
+const TTS=(()=>{
+  const ss=window.speechSynthesis; let voices=[], talking=false, gen=0;
+  const load=()=>{ try{ voices=ss?ss.getVoices():[]; }catch(e){ voices=[]; } };
+  if(ss){ load(); try{ ss.addEventListener('voiceschanged',load); }catch(e){} }
+  const list=l=>{ const L=voices.filter(v=>(v.lang||'').toLowerCase().startsWith(l));
+    const rank=v=>{ const i=VOICE_PREF[l].findIndex(p=>v.name.includes(p)); return (i<0?99:i)+(v.localService?0:-0.5); };
+    return L.sort((a,b)=>rank(a)-rank(b)||a.name.localeCompare(b.name)); };
+  const pick=l=>{ const L=list(l); return L.find(v=>v.name===vopt[l])||L[0]||null; };
+  const label=v=>{ let n=v.name.replace(/^Microsoft\s+/,'').replace(/\s+-\s+.*$/,'').replace(/\s*\(Natural\)/,'');
+    const online=/Online/.test(n); n=n.replace(/\s*Online/,'').replace(/Remy/,'Rémy').replace(/Multilingual/,t().voiceMulti);
+    const reg=(v.lang||'').split(/[-_]/)[1]; return n+(online?' ('+t().voiceOnline+')':'')+(reg&&!/^(FR|US)$/i.test(reg)?' – '+reg.toUpperCase():''); };
+  const chunks=text=>{ const out=[]; let cur='';
+    for(const p of text.split(/(?<=[.!?…»])\s+|\n+/)){ const q=p.trim(); if(!q) continue;
+      if(cur&&(cur+' '+q).length>220){ out.push(cur); cur=q; } else cur=cur?cur+' '+q:q; }
+    if(cur) out.push(cur); return out; };
+  const setTalking=v=>{ if(talking===v) return; talking=v; duck(v); document.body.classList.toggle('talking',v); if(!v) document.querySelectorAll('#log .turn.saying').forEach(x=>x.classList.remove('saying')); };
+  function stop(){ gen++; if(ss&&(ss.speaking||ss.pending)) ss.cancel(); setTalking(false); }
+  function speak(text,l){
+    stop(); if(!ss||!text) return;
+    const v=pick(l), parts=chunks(text), my=gen; if(!parts.length) return;
+    parts.forEach((part,i)=>{ const u=new SpeechSynthesisUtterance(part);
+      if(v) u.voice=v; u.lang=v?v.lang:(l==='fr'?'fr-FR':'en-GB'); u.rate=vopt.rate; u.volume=vopt.vol;
+      u.onstart=()=>{ if(my===gen) setTalking(true); };
+      u.onend=u.onerror=()=>{ if(my===gen&&i===parts.length-1) setTalking(false); };
+      ss.speak(u); });
+    window.__ttsLog&&window.__ttsLog.push({l,voice:v&&v.name,parts});
+  }
+  const hasRemy=()=>voices.some(v=>/Remy Multilingual/i.test(v.name));
+  return {ok:!!ss,list,pick,label,speak,stop,hasRemy,talking:()=>talking};
+})();
+// Lecture activée : le choix du joueur s'il en a fait un (gardé dans le navigateur), sinon oui dès que la voix
+// Rémy multilingue (celle de Bifurk, en ligne dans Edge) est disponible.
+function voiceOn(){ const v=LS.get(VKEY+'voice'); return v==='1'||v!=='0'&&TTS.hasRemy(); }
+let ducked=false;
+function duck(on){ ducked=on; applyVol(); }
+// texte lu pour une entrée du journal : texte du jeu, indice ; ni le titre du lieu, ni la commande, ni les notes de l'interface
+function speechOf(d){
+  if(d.note==='hint'){ let src=d.spot!=null?HINTS.SPOTS[d.spot][lang]:HINTS.STEPS[d.step][lang][d.lvl];
+    if(typeof src==='function') src=src(d.args||{},lang,n=>roomInfo(n-1).title); return String(src||''); }
+  if(d.note) return '';
+  const s=cleanText(composeItems(d.items),d.off!=null).text;   // le titre du lieu n'est pas lu
+  return s?pretty(s):'';
+}
+function sayTurn(d){ if(!classicOn) TTS.speak(speechOf(d),lang); }
 function playSfx(prevOff,w){ // joue les sons du tour (version moderne seulement)
   const list=pendSfx; pendSfx=[];
   const notes=pendNotes; pendNotes=[];
@@ -961,6 +1056,7 @@ function clearGame(){
 function restart(){ clearGame(); m.reset(); started=true; step(null); }
 // retour à l'étagère DragonTales : la partie est sauvegardée, l'aventure revient à son écran d'introduction
 function leave(){
+  TTS.stop();
   if(started&&m.wait==='line') saveSlot('auto');
   if(classicOn) setClassic(false);
   $('bigmap').hidden=true; quitting=false;
@@ -1185,6 +1281,7 @@ function renderClassic(){
 }
 function setClassic(on){
   if(on&&!started) return;
+  TTS.stop();
   classicOn=on; LS.set(KEY+'view',on?'classic':'modern');
   $('classic').hidden=!on; cbuf='';
   if(on){ hideOverlay(); $('bigmap').hidden=true; disarm(); inEl.blur(); renderClassic(); }
@@ -1222,7 +1319,7 @@ function classicKey(ev){
 }
 
 // ---------- divers ----------
-function toggleLang(){ flipLang(); relang(); }
+function toggleLang(){ TTS.stop(); flipLang(); relang(); }
 function relang(){ buildStatic(); if(started){ rerenderLog(); refresh(); } renderClassic(); if(!classicOn&&!ov.hidden&&ov.classList.contains('menu')) showMenu(); if(!started&&!shelfOpen&&!ov.hidden&&ov.classList.contains('title')) showTitle(); }
 
 $('cmd').addEventListener('submit',ev=>{ ev.preventDefault(); const v=inEl.value; inEl.value=''; if(armed&&!v.trim()){ arm(armed); return; } if(armed&&v.trim()){ const a=armed; const line=verbLabel(a)+' '+v.trim(); send(a[0]+' '+(lang==='fr'?(ADV.nounEn(v)||v.trim().toUpperCase()):v.trim().toUpperCase()),line); return; } typed(v); });
