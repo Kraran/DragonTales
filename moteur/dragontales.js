@@ -466,7 +466,7 @@ function addTurn(d){
   const e=turnEl(d); if(!e.childNodes.length) return;
   [...logEl.querySelectorAll('.turn:not(.old)')].forEach(x=>x.classList.add('old'));
   turns.push(d); logEl.appendChild(e);
-  if(vopt.on&&started&&(!d.note||d.note==='hint')) sayTurn(d);
+  if(voiceOn()&&started&&(!d.note||d.note==='hint')) sayTurn(d);
   while(turns.length>300){ turns.shift(); logEl.removeChild(logEl.firstChild); undo.forEach(x=>{ x.n=Math.max(0,x.n-1); }); }
 }
 function rerenderLog(){
@@ -799,25 +799,25 @@ function showOptions(){
 function voiceOptions(c){
   const sec=el('div','voiceOpts');
   const r1=el('div','optRow'); r1.appendChild(el('span',null,t().voice));
-  const tg=btn(r1,vopt.on?t().on:t().off,()=>{ vopt.on=!vopt.on; LS.set(KEY+'voice',vopt.on?'1':'0'); tg.textContent=vopt.on?t().on:t().off; tg.classList.toggle('main',vopt.on); if(!vopt.on) TTS.stop(); },vopt.on);
+  const tg=btn(r1,voiceOn()?t().on:t().off,()=>{ const on=!voiceOn(); LS.set(VKEY+'voice',on?'1':'0'); tg.textContent=on?t().on:t().off; tg.classList.toggle('main',on); if(!on) TTS.stop(); },voiceOn());
   sec.appendChild(r1); sec.appendChild(el('p','small',t().voiceNote));
   const L=TTS.list(lang), r2=el('div','optRow'); r2.appendChild(el('span',null,t().voiceWho));
   if(L.length){ const sel=el('select','voiceSel'); const cur=TTS.pick(lang);
     L.forEach(v=>{ const o=el('option',null,TTS.label(v)); o.value=v.name; if(cur&&v.name===cur.name) o.selected=true; sel.appendChild(o); });
-    sel.onchange=()=>{ vopt[lang]=sel.value; LS.set(KEY+'voice'+lang,sel.value); TTS.speak(t().voiceSample,lang); };
+    sel.onchange=()=>{ vopt[lang]=sel.value; LS.set(VKEY+'voice'+lang,sel.value); TTS.speak(t().voiceSample,lang); };
     r2.appendChild(sel); btn(r2,t().voiceTest,()=>TTS.speak(t().voiceSample,lang)); }
   else r2.appendChild(el('b',null,t().voiceNone));
   sec.appendChild(r2);
   const r3=el('div','optRow'); r3.appendChild(el('span',null,t().voiceRate));
   const s3=el('input'); s3.type='range'; s3.min=50; s3.max=160; s3.step=5; s3.value=Math.round(vopt.rate*100);
   const v3=el('b',null,s3.value+' %');
-  s3.oninput=()=>{ vopt.rate=s3.value/100; LS.set(KEY+'voicerate',String(vopt.rate)); v3.textContent=s3.value+' %'; };
+  s3.oninput=()=>{ vopt.rate=s3.value/100; LS.set(VKEY+'voicerate',String(vopt.rate)); v3.textContent=s3.value+' %'; };
   s3.onchange=()=>TTS.speak(t().voiceSample,lang);
   r3.appendChild(s3); r3.appendChild(v3); sec.appendChild(r3);
   const r4=el('div','optRow'); r4.appendChild(el('span',null,t().voiceVol));
   const s4=el('input'); s4.type='range'; s4.min=0; s4.max=100; s4.value=Math.round(vopt.vol*100);
   const v4=el('b',null,s4.value+' %');
-  s4.oninput=()=>{ vopt.vol=s4.value/100; LS.set(KEY+'voicevol',String(vopt.vol)); v4.textContent=s4.value+' %'; };
+  s4.oninput=()=>{ vopt.vol=s4.value/100; LS.set(VKEY+'voicevol',String(vopt.vol)); v4.textContent=s4.value+' %'; };
   s4.onchange=()=>TTS.speak(t().voiceSample,lang);
   r4.appendChild(s4); r4.appendChild(v4); sec.appendChild(r4);
   c.appendChild(sec);
@@ -831,9 +831,10 @@ SFX.setEnabled(opts.sfx); SFX.setVolume(opts.sfxVol);
 // Synthèse vocale du navigateur. Dans Microsoft Edge, elle propose les voix neurales en ligne de Microsoft (Rémy,
 // Vivienne, Denise, Henri, Eloise…), celles qu'utilise Bifurk par edge-tts ; ailleurs, les voix de l'ordinateur.
 // Le texte est découpé en phrases (certains navigateurs coupent les longues lectures) ; la musique baisse pendant la voix.
+const VKEY='dragontales.';   // réglages de la voix : communs à toutes les aventures
 const VOICE_PREF={fr:['Remy Multilingual','Vivienne Multilingual','Denise','Henri','Eloise','Google français','Hortense','Paul','Julie'],
                   en:['Andrew Multilingual','Ava Multilingual','Emma Multilingual','Brian Multilingual','Ryan','Sonia','Google UK English Male','Google US English','Zira','David']};
-const vopt={on:LS.get(KEY+'voice')==='1',rate:(v=>isNaN(v)?1:Math.max(0.5,Math.min(1.6,v)))(parseFloat(LS.get(KEY+'voicerate'))),vol:num(KEY+'voicevol',1),fr:LS.get(KEY+'voicefr')||'',en:LS.get(KEY+'voiceen')||''};
+const vopt={rate:(v=>isNaN(v)?1:Math.max(0.5,Math.min(1.6,v)))(parseFloat(LS.get(VKEY+'voicerate'))),vol:num(VKEY+'voicevol',1),fr:LS.get(VKEY+'voicefr')||'',en:LS.get(VKEY+'voiceen')||''};
 const TTS=(()=>{
   const ss=window.speechSynthesis; let voices=[], talking=false, gen=0;
   const load=()=>{ try{ voices=ss?ss.getVoices():[]; }catch(e){ voices=[]; } };
@@ -861,8 +862,12 @@ const TTS=(()=>{
       ss.speak(u); });
     window.__ttsLog&&window.__ttsLog.push({l,voice:v&&v.name,parts});
   }
-  return {ok:!!ss,list,pick,label,speak,stop,talking:()=>talking};
+  const hasRemy=()=>voices.some(v=>/Remy Multilingual/i.test(v.name));
+  return {ok:!!ss,list,pick,label,speak,stop,hasRemy,talking:()=>talking};
 })();
+// Lecture activée : le choix du joueur s'il en a fait un (gardé dans le navigateur), sinon oui dès que la voix
+// Rémy multilingue (celle de Bifurk, en ligne dans Edge) est disponible.
+function voiceOn(){ const v=LS.get(VKEY+'voice'); return v==='1'||v!=='0'&&TTS.hasRemy(); }
 let ducked=false;
 function duck(on){ ducked=on; applyVol(); }
 // texte lu pour une entrée du journal : texte du jeu, indice ; ni le titre du lieu, ni la commande, ni les notes de l'interface

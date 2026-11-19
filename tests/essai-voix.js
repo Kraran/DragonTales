@@ -37,9 +37,17 @@ const FAKE=()=>{
  await clickOv(/^Écouter$/); await p.waitForTimeout(100);
  let said=await p.evaluate(()=>window.__said.slice());
  ok('Écouter lit la phrase d’essai avec Rémy',said.length===1&&/Bienvenue/.test(said[0].text)&&/Remy/.test(said[0].voice),JSON.stringify(said));
- // activer la lecture
- await p.evaluate(()=>{ const b=[...document.querySelectorAll('.voiceOpts .optRow button')][0]; b.click(); });
- ok('lecture activée et gardée',await p.evaluate(()=>Object.keys(localStorage).some(k=>k.endsWith('.voice')&&localStorage[k]==='1')));
+ // Rémy multilingue disponible : lecture activée d'office, sans rien enregistrer ; le choix du joueur est gardé
+ const tog=()=>p.evaluate(()=>[...document.querySelectorAll('.voiceOpts .optRow button')][0].innerText);
+ const stored=()=>p.evaluate(()=>{ const k=Object.keys(localStorage).find(k=>k.endsWith('.voice')); return k?localStorage[k]:null; });
+ ok('lecture activée par défaut avec Rémy multilingue',(await tog())==='Activée'&&(await stored())===null);
+ await p.evaluate(()=>[...document.querySelectorAll('.voiceOpts .optRow button')][0].click());
+ ok('désactivée par le joueur : choix gardé',(await tog())==='Désactivée'&&(await stored())==='0');
+ await p.reload(); await p.waitForTimeout(300); await p.click('#shelf button.main'); await p.waitForTimeout(300);
+ await clickOv(/^Options$/); await p.waitForTimeout(200);
+ ok('après rechargement, le choix du joueur l’emporte',(await tog())==='Désactivée');
+ await p.evaluate(()=>[...document.querySelectorAll('.voiceOpts .optRow button')][0].click());
+ ok('réactivée par le joueur',(await tog())==='Activée'&&(await stored())==='1');
  await clickOv(/^Fermer$/); await p.waitForTimeout(100);
  await p.evaluate(()=>{ window.__said.length=0; });
  await clickOv(/Commencer/); await p.waitForTimeout(600);
@@ -68,6 +76,18 @@ const FAKE=()=>{
  await send('LOOK'); await p.waitForTimeout(200);
  said=await p.evaluate(()=>window.__said.slice());
  ok('en anglais : voix Andrew multilingue',said.length>=1&&said.every(x=>/Andrew/.test(x.voice)),JSON.stringify(said).slice(0,200));
+ // sans Rémy multilingue (autre navigateur) : lecture désactivée par défaut, Hortense proposée
+ const p2=await b.newPage({viewport:{width:1920,height:1080}});
+ await p2.addInitScript(()=>{ const V=(name,lang)=>({name,lang,localService:true,voiceURI:name,default:false});
+   const vs=[V('Microsoft Hortense - French (France)','fr-FR'),V('Microsoft Paul - French (France)','fr-FR')];
+   Object.defineProperty(window,'speechSynthesis',{value:{speaking:false,pending:false,getVoices:()=>vs,addEventListener(){},speak(){},cancel(){}},configurable:true});
+   window.SpeechSynthesisUtterance=function(t){ this.text=t; }; });
+ await p2.goto(PAGE); await p2.waitForTimeout(300);
+ await p2.evaluate(()=>localStorage.clear()); await p2.reload(); await p2.waitForTimeout(300);
+ await p2.click('#shelf button.main'); await p2.waitForTimeout(300);
+ await p2.evaluate(()=>{ const b=[...document.querySelectorAll('#overlay button')].find(x=>x.innerText==='Options'); b.click(); }); await p2.waitForTimeout(200);
+ const r2=await p2.evaluate(()=>({tog:[...document.querySelectorAll('.voiceOpts .optRow button')][0].innerText,cur:document.querySelector('.voiceSel').selectedOptions[0].textContent}));
+ ok('sans Rémy multilingue : lecture désactivée par défaut',r2.tog==='Désactivée'&&r2.cur==='Hortense',JSON.stringify(r2));
  ok('aucune erreur JavaScript',!errs.length,JSON.stringify(errs));
  await b.close(); console.log(bad?bad+' échec(s)':'tout est bon'); process.exit(bad?1:0);
 })();
