@@ -55,20 +55,30 @@ BASIC et tourne sur `moteur/basic.js`. Au 19/11/2026, elle tourne, se gagne et s
 - Essai `tests/essai-eno.js` (Chrome) : étagère, introduction, mort par l'aquarium, partie entière avec des commandes
   françaises, victoire.
 
-### 3. Décisions à prendre
+### 3. Décisions (prises le 19/11/2026)
 
-1. **ENO = ONE à l'envers** : l'énigme repose sur l'anglais. Garder le nom Eno (c'est le titre), et compter sur le
-   fait que « one » est connu, avec un indice des pièces magiques qui le dit ? Ou rebaptiser le chat en français ?
-2. **« CALL FOR HELP? »** : le jeu repose la question en boucle tant qu'on ne tape pas HELP. Faire mourir quelle que
-   soit la réponse ?
-3. **HELP d'origine** : garder ses plaisanteries à côté des pièces magiques, comme dans Mansion of Doom ?
-4. **Petites incohérences** : EXAMINE SAFE répond « IT'S LOCKED. » même ouvert ; EXAMINE DOORS ouvertes répond
-   « NOTHING SPECIAL ». Les corriger ?
-5. **Musique** : tout le jeu se passe dans le salon. Une musique dans tout le salon ?
+1. **ENO = ONE à l'envers** : on garde le nom Eno ; l'indice de la combinaison (pièces magiques) l'explique.
+2. **« CALL FOR HELP? »** : toute réponse mène à la fin (correctif de la ligne 2180).
+3. **HELP d'origine** : gardé, avec ses plaisanteries, à côté des pièces magiques.
+4. **Petites incohérences corrigées** : le coffre-fort ouvert se dit ouvert (1210), les portes ouvertes de la table
+   d'appoint aussi (1350) ; fermer les portes ou le livre les ferme vraiment (1090, 1100).
+5. **Musique** : dans tout le salon.
 
-### 4. À faire ensuite
+### 4. Décors, indices, bruitages — fait
 
-- Décors : le salon vu depuis chaque case, avec ses meubles et les objets trouvés.
-- Indices des pièces magiques (`hints.js`).
-- Bruitages et musique.
-- Retirer `EN-COURS.md`, publier.
+- **Décors** (`scenes.js`) : le salon de la tante, papier peint à médaillons, lambris, parquet. Chaque case montre son
+  meuble au centre et ceux des cases voisines sur les côtés ; aux bords de la grille, le mur latéral. Les états se voient :
+  le tapis, la latte, le trou et le chat ; le tableau, puis le coffre-fort, fermé ou ouvert avec les billets ; le coussin
+  sur le fauteuil ; le livre fermé ou ouvert ; les portes de la table d'appoint et les chaussures ; les rideaux ouverts sur
+  la rue où passe le facteur. La télévision montre la chaîne 11, un ciel étoilé.
+- **Indices** (`hints.js`) : huit étapes (le chat sous la latte, sa gueule, le livre, la revue, les poissons, le coffre,
+  la combinaison, le million) et quatre indices de situation (ne pas toucher l'aquarium ni la télévision, ne pas ouvrir
+  la mauvaise table d'appoint, une seule erreur de combinaison).
+- **Bruitages** (`sons.js`) : tapis, latte, découvertes, pages, rideaux, petites portes, cadran et porte du coffre,
+  alarme, rat et cœur, aquarium qui éclate, court-circuit, fortune ; ambiances : bulles de l'aquarium, télévision,
+  pendule, rue quand les rideaux sont ouverts.
+
+### 5. À faire
+
+- Musique : morceau Suno à déposer dans `D:\ElDiablero` (« Eno – The Aunt's Last Will »).
+- Retirer `EN-COURS.md`, ajouter l'essai aux essais automatiques, publier.

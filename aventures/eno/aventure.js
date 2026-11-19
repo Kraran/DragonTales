@@ -1,6 +1,6 @@
 // Eno — Paul Austin et Leroy C. Smith, Pal Creations, 1982 (diffusé par Dragon Data) — fiche de l'aventure.
 // Intégration commencée le 19/11/2026 : voir docs/PLAN-ENO.md.
-// Ce fichier est assemblé après data.js, fins.js, scenes.js, sons.js et textes.js du même dossier : ROOMS, POS, FINS, SCENES,
+// Ce fichier est assemblé après data.js, fins.js, hints.js, scenes.js, sons.js et textes.js du même dossier : ROOMS, POS, FINS, HINTS, SCENES,
 // ENO_SFX/enoSfxFor/enoAmbient, FR, ENO_OBJ, enoSay/enoClean.
 // Jeu en Dragon BASIC (moteur/basic.js), des mêmes auteurs que Mansion of Doom. La partie se lit dans ses variables :
 //   F lieu courant (1 à 15) ; A$(F) description ; B(F,1…6) sorties N S E W U D (0 = pas de sortie) ;
@@ -32,19 +32,28 @@ DragonTales.register({
   screen:true,                                        // écran titre, scénario et vocabulaire (PRINT @)
   // Sur le Dragon, l'écran titre restait affiché pendant que le programme lisait ses DATA, quelques secondes.
   // Ici la lecture est instantanée : une pause de 4 secondes avant le scénario rend l'écran titre (comme Mansion of Doom).
+  // Correctifs (décisions du 19/11/2026, docs/PLAN-ENO.md) :
+  //   2180 : après le rat, « CALL FOR HELP? » se reposait en boucle tant qu'on ne tapait pas HELP : toute réponse mène à la fin ;
+  //   1210 : le coffre-fort ouvert ne se dit plus « fermé à clé » ; 1350 : les portes ouvertes de la table d'appoint le disent ;
+  //   1090, 1100 : fermer les portes ou le livre les fermait pour de faux (le jeu disait « fermé » sans rien changer).
   patches:{
+   1090:'IFM=20ANDC(2)=1THENPRINT"OK, THEY\'RE CLOSED.":C(2)=0:GOTO330:ELSEIFM=20THENPRINT"THEY\'RE ALREADY CLOSED":GOTO330',
+   1100:'IFM=24ANDC(1)=1THENPRINT"OK, IT\'S CLOSED.":C(1)=0:GOTO330:ELSEIFM=24THENPRINT"IT\'S ALREADY CLOSED":GOTO330',
+   1210:'IFM=6ANDA(7)=0THENPRINT"IT\'S LOCKED.":GOTO330:ELSEIFM=6THENPRINT"IT\'S OPEN.":GOTO330',
+   1350:'IFM=20ANDC(2)=0THENPRINT"THEY\'RE CLOSED.":GOTO330:ELSEIFM=20THENPRINT"THEY\'RE OPEN.":GOTO330',
+   2180:'CLS:PRINT"YOU SHOULD HAVE WATCHED YOUR    CHOLESTEROL INTAKE. YOU ARE DEAD":GOTO2190',
    130:'FOR Z9=1 TO 2700:NEXT:CLS:PRINT"YOUR ECCENTRIC AUNT HAS JUST    DIED AND LEFT YOU HER ESTATE.   SHE HAD MILLIONS.":PRINT"IF YOU FIND IT, IT\'S YOURS!!!   YOUR ONLY CLUE: LIVING ROOM!?!?!"'}
  },
 
  // ---- textes, lieux, dessins ----
- FR, ROOMS, SCENES, endings:FINS,   // FINS : fins.js (collection des fins) ; HINTS (pièces magiques) : étape suivante
+ FR, ROOMS, SCENES, HINTS, endings:FINS,   // FINS : fins.js (collection des fins)
  labels:{
   fr:{
    sub:"Une aventure de Paul Austin et Leroy C. Smith, Pal Creations, 1982. Version française.",
    bye:"Bonne chasse au trésor.",
    won:"Te voilà millionnaire !",
    musicNote:"Elle joue dans tout le salon.",
-   sfxNote:"Les bips du jeu d’origine jouent dans les deux versions ; les bruitages du salon seulement dans la version moderne.",
+   sfxNote:"Le bip de l’invite du jeu d’origine joue dans les deux versions ; les bruitages du salon seulement dans la version moderne.",
    mapHint:"Clique un endroit du salon pour t’y rendre.",
    intro:[
     "Ta tante excentrique vient de mourir et te laisse tous ses biens. Elle avait des millions : s’ils sont à toi, encore faut-il les trouver.",
@@ -55,7 +64,7 @@ DragonTales.register({
    bye:"Good hunting.",
    won:"You are now a millionaire!",
    musicNote:"It plays throughout the living room.",
-   sfxNote:"The beeps of the original game play in both versions; the living room sounds only in the modern version.",
+   sfxNote:"The prompt beep of the original game plays in both versions; the living room sounds only in the modern version.",
    mapHint:"Click a spot in the living room to walk there.",
    intro:[
     "Your eccentric aunt has just died and left you her whole estate. She had millions: they are yours, if you can find them.",
@@ -86,7 +95,7 @@ DragonTales.register({
   say:(text,lang,classic)=>enoSay(text,lang,classic),
   clean:(s,moved)=>enoClean(s,moved),
   autoKey:mem=>' ',                                   // écrans titre et vocabulaire : une touche
-  musicZone:(key,kind)=>true,                          // provisoire : tout le salon (à décider, docs/PLAN-ENO.md)
+  musicZone:(key,kind)=>true,                          // la musique joue dans tout le salon
   roomOff:mem=>Math.max(1,Math.floor(mem.v('F')))-1,
   roomKey:(mem,off)=>String(off+1),
   links(mem,off){ const r=off+1, out={N:null,S:null,E:null,W:null,U:null,D:null};

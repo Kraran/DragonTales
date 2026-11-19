@@ -36,6 +36,21 @@ let bad=0; const ok=(k,v,d)=>{ if(!v) bad++; console.log((v?'ok   ':'ÉCHEC ')+k
  ok('textes en français',/« Le chat aux neuf vies »/.test(L)&&/chaîne 11/.test(L)&&/29 poissons rouges/.test(L)&&/Troisième nombre de la combinaison/.test(L));
  ok('victoire',/Te voilà millionnaire/.test(t)&&/L’héritage/.test(t),t.replace(/\n+/g,' | ').slice(0,200));
  await p.screenshot({path:OUT+'/eno-victoire.png'});
+ // le rat : n'importe quelle réponse à « Appeler à l'aide ? » mène à la fin (correctif 2180)
+ await clickOv(/Rejouer/); await p.waitForTimeout(500);
+ // une pièce magique au départ : l'indice du tapis
+ await p.click('.coin'); await p.click('#overlay button.main'); await p.waitForTimeout(100);
+ ok('pièce magique : le tapis',/tapis persan/i.test(await p.innerText('#log .turn.hint:last-of-type')),await p.innerText('#log .turn.hint:last-of-type'));
+ // près de l'aquarium : l'indice de situation passe avant
+ for(const c of ['N','E','E']) await send(c);
+ await p.click('.coin'); await p.click('#overlay button.main'); await p.waitForTimeout(100);
+ ok('pièce magique près de l’aquarium : n’y touche pas',/n’y touche pas/.test(await p.innerText('#log .turn.hint:last-of-type')));
+ await p.screenshot({path:OUT+'/eno-aquarium.png'});
+ for(const c of ['W','W','S']) await send(c);
+ for(const c of ['W','N','W','EXAMINE TABLE','OPEN DOORS']) await send(c);
+ await type('NON'); await p.waitForTimeout(300);
+ t=await p.innerText('#overlay');
+ ok('le rat : « non » mène aussi à la fin',/Tu es mort/.test(t)&&/cholestérol/.test(t)&&/Le rat/.test(t),t.replace(/\n+/g,' | ').slice(0,160));
  ok('aucune erreur JavaScript',!errs.length,JSON.stringify(errs));
  await b.close(); console.log(bad?bad+' échec(s)':'tout est bon'); process.exit(bad?1:0);
 })();

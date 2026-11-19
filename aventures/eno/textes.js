@@ -111,6 +111,8 @@ const ENO_MSG={
  "PINK":["Pink.","Rose."],
  "PICTURE OF A BLACK CAT.":["A picture of a black cat.","Le portrait d'un chat noir."],
  "IT'S LOCKED.":["It's locked.","Il est fermé à clé."],
+ "IT'S OPEN.":["It's open.","Il est ouvert."],
+ "THEY'RE OPEN.":["They're open.","Elles sont ouvertes."],
  "GREEN":["Green.","Vert."],
  "THERE ARE 29 GOLDFISH IN HERE.":["There are 29 goldfish in here.","Il y a 29 poissons rouges là-dedans."],
  "SWIMMING":["Swimming.","Ils nagent."],
