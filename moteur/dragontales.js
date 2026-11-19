@@ -865,15 +865,13 @@ const TTS=(()=>{
 })();
 let ducked=false;
 function duck(on){ ducked=on; applyVol(); }
-// texte lu pour une entrée du journal : titre du lieu, texte du jeu, indice ; pas la commande ni les notes de l'interface
+// texte lu pour une entrée du journal : texte du jeu, indice ; ni le titre du lieu, ni la commande, ni les notes de l'interface
 function speechOf(d){
   if(d.note==='hint'){ let src=d.spot!=null?HINTS.SPOTS[d.spot][lang]:HINTS.STEPS[d.step][lang][d.lvl];
     if(typeof src==='function') src=src(d.args||{},lang,n=>roomInfo(n-1).title); return String(src||''); }
   if(d.note) return '';
-  const s=cleanText(composeItems(d.items),d.off!=null).text, parts=[];
-  if(d.off!=null) parts.push(roomInfo(d.off).title+'.');
-  if(s) parts.push(pretty(s));
-  return parts.join('\n');
+  const s=cleanText(composeItems(d.items),d.off!=null).text;   // le titre du lieu n'est pas lu
+  return s?pretty(s):'';
 }
 function sayTurn(d){ if(!classicOn) TTS.speak(speechOf(d),lang); }
 function playSfx(prevOff,w){ // joue les sons du tour (version moderne seulement)

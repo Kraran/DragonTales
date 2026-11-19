@@ -45,6 +45,7 @@ const FAKE=()=>{
  await clickOv(/Commencer/); await p.waitForTimeout(600);
  said=await p.evaluate(()=>window.__said.slice());
  ok('première réponse lue automatiquement',said.length>=1&&said.every(x=>/Remy/.test(x.voice)),JSON.stringify(said).slice(0,300));
+ ok('le titre du lieu n’est pas lu',said.length>=1&&!/^La mare jaune/.test(said[0].text),said[0]&&said[0].text.slice(0,40));
  ok('morceaux de 220 caractères au plus',said.every(x=>x.text.length<=260),said.map(x=>x.text.length).join(','));
  const talking=await p.evaluate(()=>document.body.classList.contains('talking'));
  ok('pendant la voix, le corps porte la classe talking (musique baissée)',talking);
