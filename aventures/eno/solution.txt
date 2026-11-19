@@ -1,0 +1,37 @@
+# Eno : une suite de commandes qui mène à la victoire, pour les essais automatiques (d'après la solution fournie).
+# Le jeu n'a pas de hasard. Une commande anglaise du jeu par ligne ; les lignes vides et celles qui commencent par # sont ignorées.
+# Les écrans de titre et de vocabulaire attendent une touche : la fiche y répond (WORLD.autoKey).
+GET RUG
+W
+EXAMINE TABLE
+LOOK
+EXAMINE BOOK
+OPEN BOOK
+READ BOOK
+E
+GET BOARD
+LOOK
+EXAMINE CAT
+E
+E
+EXAMINE TV
+S
+EXAMINE CHAIR
+LOOK
+EXAMINE CUSHION
+READ MAGAZINE
+N
+N
+EXAMINE TANK
+W
+W
+EXAMINE PICTURE
+GET PICTURE
+LOOK
+OPEN SAFE
+# la combinaison : le chat Eno (ONE, 1), les poissons (29 et les restes d'un, 30), l'espace (chaîne 11, ALIEN)
+1
+30
+11
+LOOK
+GET BUCKS
