@@ -1,6 +1,6 @@
 # Journal des versions
 
-## Prochaine version (en préparation)
+## 1.0.1 — 19 novembre 2026
 
 ### Nouveautés
 - **Lecture à voix haute** : chaque réponse du jeu est lue (pas le titre du lieu ni la commande ; les indices des
