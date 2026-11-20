@@ -45,6 +45,8 @@ jobs:
         run: node tests/essai-mansion.js
       - name: The Final Countdown dans Chrome
         run: node tests/essai-finalcountdown.js
+      - name: Eno dans Chrome
+        run: node tests/essai-eno.js
       - name: Fins et bilan dans Chrome
         run: node tests/essai-fins.js
       - name: Lecture à voix haute dans Chrome

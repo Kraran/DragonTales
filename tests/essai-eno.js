@@ -29,7 +29,7 @@ let bad=0; const ok=(k,v,d)=>{ if(!v) bad++; console.log((v?'ok   ':'ÉCHEC ')+k
  // la partie entière, en français pour quelques commandes
  const FRC={'GET RUG':'PRENDRE LE TAPIS','EXAMINE TABLE':'EXAMINER LA TABLE BASSE','OPEN BOOK':'OUVRIR LE LIVRE','READ BOOK':'LIRE LE LIVRE','EXAMINE TANK':'REGARDER L AQUARIUM',
   'READ MAGAZINE':'LIRE LA REVUE','OPEN SAFE':'OUVRIR LE COFFRE-FORT','GET BUCKS':'PRENDRE LES DOLLARS'};
- let n=0; for(const c of adv.solution){ if(!(FRC[c]?await type(FRC[c]):await send(c))) break; n++; if(c==='READ MAGAZINE') await p.screenshot({path:OUT+'/eno-jeu.png'}); }
+ let n=0; for(const c of adv.solution){ if(!(FRC[c]?await type(FRC[c]):await send(c))) break; n++; if(c==='READ MAGAZINE') await p.screenshot({path:OUT+'/eno-jeu.png'}); if(n===adv.solution.length-1) await p.screenshot({path:OUT+'/eno-coffre.png'}); }
  await p.waitForTimeout(400);
  const L=await log(); t=await p.innerText('#overlay');
  ok('solution jouée jusqu’au bout',n===adv.solution.length,n+'/'+adv.solution.length);

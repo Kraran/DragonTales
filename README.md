@@ -26,6 +26,8 @@ DragonTales l'habille : textes traduits, jeu à la souris, carte, illustrations,
 
 ![The Final Countdown en version moderne](docs/finalcountdown.jpg)
 
+![Eno en version moderne](docs/eno.jpg)
+
 ## Aventures
 
 | Aventure | Auteur, éditeur | Année | Machine | Langues |
@@ -35,6 +37,7 @@ DragonTales l'habille : textes traduits, jeu à la souris, carte, illustrations,
 | S.S. Poseidon | Bill et Debbie Cook, Dragon Data | 1982 | Dragon 32 | français, anglais |
 | Mansion of Doom | Leroy C. Smith et Paul Austin, Pal Creations / Dragon Data | 1982 | Dragon 32 | français, anglais |
 | The Final Countdown | Bill et Debbie Cook, Dragon Data | 1983 | Dragon 32 | français, anglais |
+| Eno | Paul Austin et Leroy C. Smith, Pal Creations / Dragon Data | 1982 | Dragon 32 | français, anglais |
 
 ## Jouer
 
@@ -110,6 +113,7 @@ node tests/essai-dragonmountain.js  # dans Chrome : Dragon Mountain (partie enti
 node tests/essai-poseidon.js        # dans Chrome : S.S. Poseidon (niveau, partie entière, écran du Dragon, mort)
 node tests/essai-mansion.js         # dans Chrome : Mansion of Doom (partie entière, écrans en couleur, mots de passe, fins)
 node tests/essai-finalcountdown.js  # dans Chrome : The Final Countdown (niveau, partie entière malgré le hasard, fins)
+node tests/essai-eno.js             # dans Chrome : Eno (partie entière en français, morts, pièces magiques)
 node tests/fins.js                  # sans navigateur : la liste des fins de chaque aventure
 node tests/essai-fins.js            # dans Chrome : collection des fins et bilan de fin de partie
 node tests/essai-voix.js            # dans Chrome : lecture à voix haute (voix d'Edge simulées)
@@ -132,5 +136,8 @@ Attention : les fichiers `solution.txt` des aventures dévoilent tout le jeu.
   Le programme et la boîte d'origine appartiennent à leurs ayants droit.
 - **The Final Countdown** : programme et textes d'origine de Bill et Debbie Cook, publiés par Dragon Data en 1983.
   Le programme et la boîte d'origine appartiennent à leurs ayants droit.
+- **Eno** : programme et textes d'origine de Paul Austin et Leroy C. Smith, Pal Creations, diffusés par Dragon Data en 1982.
+  Le programme et la boîte d'origine appartiennent à leurs ayants droit.
 - Portage, traductions françaises, interface, illustrations vectorielles, indices et effets sonores : projet DragonTales.
-- Musiques : « Awakening in the Desert » (El Diablero) et « The Guardian's Hoard » (Dragon Mountain), créées pour ce projet.
+- Musiques : « Awakening in the Desert » (El Diablero), « The Guardian's Hoard » (Dragon Mountain), « The Last Waltz » (S.S. Poseidon),
+  « The Count's Last Night » (Mansion of Doom), « T Minus Zero » (The Final Countdown) et « The Aunt's Last Will » (Eno), créées pour ce projet.

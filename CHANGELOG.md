@@ -1,5 +1,14 @@
 # Journal des versions
 
+## Prochaine version (en préparation)
+
+### Nouveautés
+- **Eno** (Paul Austin et Leroy C. Smith, Pal Creations, 1982), sixième aventure : ta tante excentrique te lègue ses
+  millions, à condition de les trouver dans son salon. Traduction française complète, salon illustré case par case,
+  carte, indices des pièces magiques, bruitages, cinq fins et une musique, « The Aunt's Last Will ».
+  Correctifs : l'appel à l'aide après le rat ne tourne plus en boucle ; le coffre-fort et les portes ouverts se disent
+  ouverts ; fermer le livre ou les portes les ferme vraiment.
+
 ## 1.0.1 — 19 novembre 2026
 
 ### Nouveautés

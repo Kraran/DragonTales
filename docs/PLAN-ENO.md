@@ -1,8 +1,7 @@
 # Plan d'intégration — Eno (Pal Creations / Dragon Data, 1982)
 
 Sixième aventure de DragonTales, écrite par Paul Austin et Leroy C. Smith, les auteurs de Mansion of Doom. Elle est en
-BASIC et tourne sur `moteur/basic.js`. Au 19/11/2026, elle tourne, se gagne et se joue en français ; le dossier porte
-`EN-COURS.md` (absent de la page tant que l'intégration n'est pas finie, `python build.py --tout` pour l'inclure).
+BASIC et tourne sur `moteur/basic.js`. Intégrée le 20/11/2026 (pas encore publiée).
 
 ## Le jeu en bref
 
@@ -78,7 +77,9 @@ BASIC et tourne sur `moteur/basic.js`. Au 19/11/2026, elle tourne, se gagne et s
   alarme, rat et cœur, aquarium qui éclate, court-circuit, fortune ; ambiances : bulles de l'aquarium, télévision,
   pendule, rue quand les rideaux sont ouverts.
 
-### 5. À faire
+### 5. Musique et fin de l'intégration — fait (20/11/2026)
 
-- Musique : morceau Suno à déposer dans `D:\ElDiablero` (« Eno – The Aunt's Last Will »).
-- Retirer `EN-COURS.md`, ajouter l'essai aux essais automatiques, publier.
+- Musique « Eno – The Aunt's Last Will » (Suno, 2 min 14) : `musique.ogg`, Opus 56 kbit/s, fondu final de 0,8 s,
+  niveau moyen −16,7 dB ; elle joue dans tout le salon.
+- `EN-COURS.md` retiré : Eno est sur l'étagère. Essai `tests/essai-eno.js` ajouté aux essais automatiques,
+  README (capture `docs/eno.jpg`, tableau, crédits) et journal des versions à jour.
