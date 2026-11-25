@@ -1,0 +1,88 @@
+# Stalag : une suite de commandes qui mène à la victoire, pour les essais automatiques (d'après la solution fournie).
+# Le bombardement arrive au hasard : la graine ci-dessous donne une partie où les avions ne frappent pas.
+# Une commande anglaise du jeu par ligne ; les lignes vides et celles qui commencent par # sont ignorées.
+@graine 1
+# sortir du mitard
+INVENTORY
+PICK HOLE
+LOOK
+S
+DROP NEEDLE
+EXAMINE DOOR
+EXAMINE LOCK
+W
+N
+E
+EXAMINE HOOKS
+# le numéro de matricule du blouson : C660723
+EXAMINE JACKET
+W
+S
+E
+OPEN LOCK
+660723
+LOOK
+OPEN DOOR
+LOOK
+S
+# les outils
+W
+N
+GET CANOPENER
+S
+E
+N
+W
+GET AXE
+N
+W
+EXAMINE TABLE
+GET SCISSORS
+E
+N
+W
+N
+EXAMINE LOCKER
+EXAMINE LOCKER
+GET SHOVEL
+S
+E
+S
+E
+E
+E
+EXAMINE ICEBOX
+OPEN TIN
+LOOK
+GET HAM
+W
+S
+DROP HAM
+EXAMINE FOOTBALL
+EXAMINE LACING
+CUT LACING
+LOOK
+GET KEY
+# l'évasion
+N
+N
+E
+N
+EXAMINE DOOR
+OPEN PADLOCK
+OPEN DOOR
+LOOK
+N
+PUSH BEDS
+LOOK
+DROP CANOPENER
+DROP SCISSORS
+GET TILES
+LOOK
+GET BOARDS
+LOOK
+D
+E
+DIG TUNNEL
+LOOK
+U

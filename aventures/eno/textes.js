@@ -171,9 +171,14 @@ function enoLine(l,fr,classic){
   const k=ENO_NORM(l), pick=a=>fr?a[1]:a[0];
   if(!k) return undefined;
   if(!classic&&ENO_SCREEN_ONLY.has(k)) return null;
+  // Les messages en deux lignes (deux PRINT) arrivent parfois séparément : chaque moitié se traduit seule.
+  if(k==="SORRY, I JUST DON'T KNOW HOW TO") return classic?{t:fr?'JE NE SAIS PAS FAIRE :':k}:{t:fr?'Désolé, je ne sais pas faire ça.':"Sorry, I just don't know how to do that."};
+  if(k==="SORRY, I JUST DON'T SEE ANY"||k==="SORRY, YOU JUST DON'T SEE ANY") return classic?{t:fr?'TU NE VOIS PAS DE :':k}:{t:fr?'Désolé, tu ne vois pas ça ici.':"Sorry, you don't see that here."};
   if(Object.prototype.hasOwnProperty.call(ENO_MSG,k)) return ENO_MSG[k]===null?(classic?undefined:null):{t:pick(ENO_MSG[k])};
   let m;
   if(/^={32}/.test(k)) return classic?undefined:null;
+  let m2;
+  if((m2=/^(.+) (ANYTHING|HERE)\.$/.exec(k))) return classic?{t:fr?'« '+m2[1]+' »'+(m2[2]==='HERE'?' ICI.':'.'):k}:null;
   if(/^WHAT NOW\??$/.test(k)) return classic?{t:fr?'ET MAINTENANT ?':'WHAT NOW?'}:null;
   if((m=/^YOU ARE (.*)$/.exec(k))&&ENO_DESC[m[1]]) return {t:(fr?'Tu es ':'You are ')+pick(ENO_DESC[m[1]])};
   if(k==='YOU CAN SEE:') return classic?{t:fr?'TU VOIS :':'You can see:'}:null;

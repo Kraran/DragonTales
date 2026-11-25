@@ -106,6 +106,8 @@ DragonTales.register({
   objects(mem){ const out=[], e=mem.v('E')||28, h=mem.v('H$')||'';
    for(let n=1;n<=e;n++){ const name=mem.a('B$',n); if(!name) continue; const w=h.substr((n-1)*3,3).trim();
     out.push({n,name,word:FULL[w]||w,loc:Math.floor(mem.a('A',n))}); } return out; },
+  // noms propres que la mise en minuscules de la version moderne ne doit pas toucher
+  proper:(s,lang)=>s.replace(/\beno\b/g,'Eno').replace(/\balien\b/g,'Alien').replace(/\bpologne\b/g,'Pologne').replace(/\bpoland\b/g,'Poland').replace(/\bone\b(?= à l’envers| backwards)/g,'ONE'),
   objLabel:(o,lang)=>{ const a=ENO_OBJ[ENO_NORM(o.name)]; return a?(lang==='fr'?a[1]:a[0]).replace(/^(a|an|the|un|une|des|les|le|la) |^l['’]/i,''):o.name; },
   sfxFor:(line,cmd,mem)=>enoSfxFor(line,cmd,mem),       // sons.js
   ambient:(mem,off)=>enoAmbient(mem,off+1),
