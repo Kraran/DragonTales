@@ -12,6 +12,7 @@ function grad(stops,dir){ const id='eng'+(uid++); const [x2,y2]=dir==='h'?[1,0]:
   return [`url(#${id})`,`<defs><linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops.map((c,i)=>`<stop offset="${(i/(stops.length-1)).toFixed(2)}" stop-color="${c}"/>`).join('')}</linearGradient></defs>`]; }
 function glow(cx,cy,rx,ry,c,o){ const id='enl'+(uid++); return `<defs><radialGradient id="${id}"><stop offset="0" stop-color="${c}" stop-opacity="${o||.55}"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#${id})"/>`; }
 const veil=()=>{ const [u,d]=grad(['rgba(12,8,6,0)','rgba(12,8,6,0)','rgba(12,8,6,.85)']); return d+`<rect width="${W}" height="${H}" fill="${u}"/>`; };
+const dl=(d,x)=>` style="animation-delay:-${d.toFixed(1)}s${x?';'+x:''}"`;
 const g=(x,k,s,y)=>`<g transform="translate(${x.toFixed(0)} ${(y===undefined?G:y).toFixed(0)}) scale(${k})">${s}</g>`;
 
 // ---------- le salon : papier peint, lambris, parquet ----------
@@ -46,15 +47,15 @@ const F={
  tank:()=>{ let s=`<rect x="-140" y="-104" width="280" height="104" fill="#5a3418"/><rect x="-130" y="-94" width="125" height="84" fill="#6a4226"/><rect x="5" y="-94" width="125" height="84" fill="#6a4226"/>`;
    const [u,d]=grad(['#7ac8e8','#2a7aa8']); s+=d+`<rect x="-150" y="-252" width="300" height="148" fill="${u}" opacity=".9"/>`;
    s+=`<path d="M-150 -118 q40 -12 80 0 t80 0 t80 0 t60 -4 V-104 H-150Z" fill="#c8a868"/>`;
-   for(const [x,h] of [[-120,70],[-100,50],[110,80],[126,56]]) s+=`<path d="M${x} -112 q-10 ${-h/2} 0 ${-h} q10 ${h/2} 0 ${h}" stroke="#3a8a3a" stroke-width="6" fill="none"/>`;
+   for(const [x,h] of [[-120,70],[-100,50],[110,80],[126,56]]) s+=`<path class="an-sway"${dl(x/40+3)} d="M${x} -112 q-10 ${-h/2} 0 ${-h} q10 ${h/2} 0 ${h}" stroke="#3a8a3a" stroke-width="6" fill="none"/>`;
    for(const [x,y,k] of [[-60,-200,1],[10,-160,.8],[60,-215,.9],[-20,-226,.7],[90,-170,1],[-90,-150,.8],[30,-196,.75]])
-     s+=`<g transform="translate(${x} ${y}) scale(${k})"><ellipse cx="0" cy="0" rx="13" ry="8" fill="#ff8a2a"/><path d="M12 0 l12 -8 v16Z" fill="#ff6a1a"/><circle cx="-6" cy="-2" r="1.8" fill="#111"/></g>`;
-   for(let i=0;i<6;i++) s+=`<circle cx="${-30+i%2*8}" cy="${-130-i*20}" r="${3+i%3}" fill="none" stroke="#e8f8ff" stroke-width="1.5" opacity=".7"/>`;
+     s+=`<g class="an-glide"${dl((x+200)/40,'animation-duration:'+(5+((x+200)%7)).toFixed(0)+'s')}><g transform="translate(${x} ${y}) scale(${k})"><ellipse cx="0" cy="0" rx="13" ry="8" fill="#ff8a2a"/><path class="an-sway" style="transform-origin:0% 50%;animation-duration:.6s" d="M12 0 l12 -8 v16Z" fill="#ff6a1a"/><circle cx="-6" cy="-2" r="1.8" fill="#111"/></g></g>`;
+   for(let i=0;i<6;i++) s+=`<circle class="an-rise"${dl(i*1.1,'animation-duration:6s')} cx="${-30+i%2*8}" cy="-126" r="${3+i%3}" fill="none" stroke="#e8f8ff" stroke-width="1.5" opacity=".7"/>`;
    return s+`<rect x="-156" y="-258" width="312" height="10" fill="#2a2a2a"/><rect x="-150" y="-252" width="300" height="148" fill="none" stroke="#1a1a1a" stroke-width="5"/><path d="M-130 -240 l60 0 M-130 -228 l30 0" stroke="#fff" stroke-width="4" opacity=".35"/>`; },
  // le téléviseur en meuble, allumé sur la chaîne 11
  tv:()=>{ let s=`<rect x="-170" y="-170" width="340" height="150" rx="6" fill="#6a4228"/><rect x="-170" y="-170" width="340" height="12" fill="#7a5032"/>`;
-   s+=`<rect x="-150" y="-150" width="200" height="118" rx="16" fill="#0a1418"/>`+glow(-50,-91,110,70,'#6ad8a8',.35);
-   s+=`<circle cx="-90" cy="-110" r="22" fill="#2a4a3a"/><circle cx="-84" cy="-114" r="22" fill="#0a1418"/>`+[[-30,-130],[0,-80],[20,-120],[-120,-60],[30,-60]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.6" fill="#e8fff0"/>`).join('');
+   s+=`<rect x="-150" y="-150" width="200" height="118" rx="16" fill="#0a1418"/><g class="an-pulse" style="animation-duration:1.7s">${glow(-50,-91,110,70,'#6ad8a8',.35)}</g>`;
+   s+=`<circle cx="-90" cy="-110" r="22" fill="#2a4a3a"/><circle cx="-84" cy="-114" r="22" fill="#0a1418"/>`+[[-30,-130],[0,-80],[20,-120],[-120,-60],[30,-60]].map(([x,y],i)=>`<circle class="an-twinkle"${dl(i*.5)} cx="${x}" cy="${y}" r="1.6" fill="#e8fff0"/>`).join('');
    s+=`<path d="M-60 -50 q30 -40 60 0" stroke="#4ad88a" stroke-width="3" fill="none" opacity=".7"/><text x="34" y="-126" font-family="sans-serif" font-weight="bold" font-size="18" fill="#8affc8" opacity=".85">11</text>`;
    s+=`<rect x="70" y="-150" width="84" height="118" fill="#4a2a16"/>`+[0,1,2,3,4,5,6].map(i=>`<path d="M78 ${-142+i*16} H146" stroke="#2a180c" stroke-width="5"/>`).join('');
    s+=[0,1].map(i=>`<circle cx="${92+i*40}" cy="-44" r="8" fill="#c8a868"/>`).join('');
@@ -74,7 +75,7 @@ const F={
      if(shoes) s+=`<path d="M-50 -30 q0 -16 18 -16 h26 q8 0 8 10 v6Z M2 -30 q0 -16 18 -16 h26 q8 0 8 10 v6Z" fill="#f4f0e8"/><path d="M-30 -60 q6 -10 0 -18 M10 -64 q6 -10 0 -18" stroke="#9ab84a" stroke-width="3" fill="none" opacity=".8"/>`;
      s+=`<path d="M-62 -126 L-110 -116 V-30 L-62 -22Z M62 -126 L110 -116 V-30 L62 -22Z" fill="#8a5a32"/>`; }
    else s+=`<path d="M0 -126 V-22" stroke="#4a2a16" stroke-width="3"/><rect x="-62" y="-126" width="124" height="104" fill="none" stroke="#5a3418" stroke-width="3"/><circle cx="-10" cy="-74" r="4" fill="#c8a868"/><circle cx="10" cy="-74" r="4" fill="#c8a868"/>`;
-   return s+`<ellipse cx="0" cy="-166" rx="26" ry="20" fill="#3a6a8a"/><rect x="-4" y="-200" width="8" height="30" fill="#c8a868"/><path d="M-50 -196 L-34 -250 H34 L50 -196Z" fill="#f0e0b8"/>`+glow(0,-220,90,60,'#fff0b0',.35); },
+   return s+`<ellipse cx="0" cy="-166" rx="26" ry="20" fill="#3a6a8a"/><rect x="-4" y="-200" width="8" height="30" fill="#c8a868"/><path d="M-50 -196 L-34 -250 H34 L50 -196Z" fill="#f0e0b8"/>`+`<g class="an-pulse" style="animation-duration:5s">${glow(0,-220,90,60,'#fff0b0',.35)}</g>`; },
  // le canapé vert pomme
  sofa:()=>`<rect x="-240" y="-150" width="480" height="96" rx="30" fill="#8aa83a"/><rect x="-250" y="-72" width="500" height="46" rx="14" fill="#9ab84a"/>`+
    `<rect x="-276" y="-120" width="50" height="98" rx="20" fill="#7a9830"/><rect x="226" y="-120" width="50" height="98" rx="20" fill="#7a9830"/><path d="M-80 -150 V-72 M80 -150 V-72" stroke="#6a8828" stroke-width="3"/>`+
@@ -87,6 +88,7 @@ const F={
 function windowW(x,open){
   let s=`<rect x="${x-190}" y="40" width="380" height="160" fill="#f4f0e8"/>`;
   const [u,d]=grad(['#9ad0f0','#d8f0ff']); s+=d+`<rect x="${x-178}" y="52" width="356" height="136" fill="${u}"/>`;
+  if(open){ const cid='enc'+(uid++); s+=`<defs><clipPath id="${cid}"><rect x="${x-178}" y="52" width="356" height="136"/></clipPath></defs><g clip-path="url(#${cid})"><g class="an-drift" style="animation-duration:30s"><path d="M${x-150} 80 q30 -12 60 0 q20 -8 40 2Z M${x+40} 70 q30 -10 60 0 q20 -8 40 2Z" fill="#fff" opacity=".8"/></g></g>`; }
   s+=`<path d="M${x-178} 160 H${x+178} V188 H${x-178}Z" fill="#7ab84a"/><rect x="${x+60}" y="128" width="8" height="40" fill="#4a4a4a"/><rect x="${x+48}" y="116" width="32" height="18" rx="6" fill="#3a5a8a"/>`;
   s+=`<g transform="translate(${x-60} 166)"><circle cx="0" cy="-48" r="8" fill="#e8b890"/><rect x="-9" y="-40" width="18" height="30" rx="5" fill="#3a5a9a"/><path d="M-7 -10 v14 M7 -10 v14" stroke="#2a3a6a" stroke-width="5"/><rect x="8" y="-34" width="16" height="18" fill="#8a5a2a"/><path d="M-10 -55 h20 v-5 h-20Z" fill="#2a3a6a"/></g>`;
   s+=`<path d="M${x} 52 V188 M${x-178} 120 H${x+178}" stroke="#f4f0e8" stroke-width="8"/>`;
@@ -136,11 +138,11 @@ const GRID=[[15,14,2,3,4],[12,13,1,6,5],[11,10,9,8,7]];
 function where(r){ for(let y=0;y<3;y++){ const x=GRID[y].indexOf(r); if(x>=0) return [x,y]; } return [2,1]; }
 // décor mural des cases sans meuble
 const DECOR={
- 1:()=>`<path d="M600 0 V40" stroke="#c8a868" stroke-width="3"/><ellipse cx="600" cy="52" rx="60" ry="14" fill="#c8a868"/>`+[-48,-24,0,24,48].map(x=>`<path d="M${600+x} 52 v-12" stroke="#f4ecd8" stroke-width="5"/>`+glow(600+x,36,16,16,'#fff0b0',.6)).join('')+[-40,-14,14,40].map(x=>`<path d="M${600+x} 62 l-3 14 h6Z" fill="#e8f0ff" opacity=".8"/>`).join(''),
+ 1:()=>`<path d="M600 0 V40" stroke="#c8a868" stroke-width="3"/><ellipse cx="600" cy="52" rx="60" ry="14" fill="#c8a868"/>`+[-48,-24,0,24,48].map(x=>`<path d="M${600+x} 52 v-12" stroke="#f4ecd8" stroke-width="5"/>`+glow(600+x,36,16,16,'#fff0b0',.6)).join('')+[-40,-14,14,40].map((x,i)=>`<path class="an-twinkle"${dl(i*.6)} d="M${600+x} 62 l-3 14 h6Z" fill="#e8f0ff" opacity=".8"/>`).join(''),
  3:()=>[[-110,70,60,78],[-30,96,44,56],[40,64,70,90]].map(([dx,y,w,h])=>`<rect x="${600+dx}" y="${y}" width="${w}" height="${h}" fill="#c8a040"/><rect x="${606+dx}" y="${y+6}" width="${w-12}" height="${h-12}" fill="#8aa8b8"/><circle cx="${600+dx+w/2}" cy="${y+h/2-4}" r="${w/6}" fill="#e8c8a8"/>`).join(''),
  6:()=>`<rect x="560" y="70" width="80" height="110" rx="40" fill="#c8a040"/><rect x="568" y="78" width="64" height="94" rx="32" fill="#b8d0d8"/><path d="M576 90 q20 30 48 60" stroke="#fff" stroke-width="4" opacity=".5"/>`,
- 10:()=>g(600,1,`<path d="M-30 0 L-24 -60 H24 L30 0Z" fill="#a85a2a"/>`+[[-50,-150],[-20,-190],[10,-170],[40,-140],[-36,-110],[30,-110]].map(([x,y])=>`<path d="M0 -60 Q${x/2} ${y/2} ${x} ${y}" stroke="#3a6a2a" stroke-width="5" fill="none"/><ellipse cx="${x}" cy="${y}" rx="18" ry="9" fill="#4a8a3a" transform="rotate(${x/2} ${x} ${y})"/>`).join('')),
- 14:()=>`<circle cx="600" cy="110" r="44" fill="#6a4226"/><circle cx="600" cy="110" r="36" fill="#f4ecd8"/><path d="M600 110 V84 M600 110 L620 120" stroke="#2a1a10" stroke-width="4"/>`+[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>`<circle cx="${(600+Math.sin(i*.5236)*30).toFixed(1)}" cy="${(110-Math.cos(i*.5236)*30).toFixed(1)}" r="2" fill="#2a1a10"/>`).join('')
+ 10:()=>g(600,1,`<path d="M-30 0 L-24 -60 H24 L30 0Z" fill="#a85a2a"/><g class="an-sway" style="animation-duration:7s">`+[[-50,-150],[-20,-190],[10,-170],[40,-140],[-36,-110],[30,-110]].map(([x,y])=>`<path d="M0 -60 Q${x/2} ${y/2} ${x} ${y}" stroke="#3a6a2a" stroke-width="5" fill="none"/><ellipse cx="${x}" cy="${y}" rx="18" ry="9" fill="#4a8a3a" transform="rotate(${x/2} ${x} ${y})"/>`).join('')+'</g>'),
+ 14:()=>`<circle cx="600" cy="110" r="44" fill="#6a4226"/><circle cx="600" cy="110" r="36" fill="#f4ecd8"/><path d="M600 110 V84 M600 110 L620 120" stroke="#2a1a10" stroke-width="4"/><path class="an-spin" style="transform-box:view-box;transform-origin:600px 110px;animation-duration:60s" d="M600 110 V82" stroke="#c0392b" stroke-width="1.5"/>`+[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>`<circle cx="${(600+Math.sin(i*.5236)*30).toFixed(1)}" cy="${(110-Math.cos(i*.5236)*30).toFixed(1)}" r="2" fill="#2a1a10"/>`).join('')
 };
 function place(r){
   const [cx,cy]=where(r), wallL=cx===0, wallR=cx===4;
