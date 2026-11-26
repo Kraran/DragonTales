@@ -44,7 +44,7 @@ MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septem
 m=re.search(r'^## %s — (\d{1,2})(?:er)? (\S+) (\d{4})'%re.escape(version),rd('CHANGELOG.md'),re.M)
 date='%s-%02d-%02d'%(m.group(3),MOIS.index(m.group(2).lower())+1,int(m.group(1))) if m and m.group(2).lower() in MOIS else ''
 auteur='data:image/webp;base64,'+b64('moteur','auteur.webp')
-for k,v in (('@@VERSION@@',version),('@@DATE@@',date),('@@AUTEUR@@',auteur),('@@FONT@@',font),('@@CPU@@',strip(rd('moteur','cpu6809.js'))),('@@MACHINE@@',strip(rd('moteur','machine.js'))),('@@BASIC@@',strip(rd('moteur','basic.js'))),('@@SFX@@',strip(rd('moteur','sfx.js'))),
+for k,v in (('@@VERSION@@',version),('@@DATE@@',date),('@@AUTEUR@@',auteur),('@@FONT@@',font),('@@CPU@@',strip(rd('moteur','cpu6809.js'))),('@@MACHINE@@',strip(rd('moteur','machine.js'))),('@@BASIC@@',strip(rd('moteur','basic.js'))),('@@FLUX@@',strip(rd('moteur','flux.js'))),('@@SFX@@',strip(rd('moteur','sfx.js'))),
             ('@@AVENTURES@@','\n'.join(aventure(n) for n in names)),('@@MOTEUR@@',rd('moteur','dragontales.js'))):
     assert k in t,k
     t=t.replace(k,v)

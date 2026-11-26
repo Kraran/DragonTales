@@ -299,7 +299,8 @@ const FR=ADV.FR, ROOMS=ADV.ROOMS, SCENES=ADV.SCENES, HINTS=ADV.HINTS||null, WORL
 const KEY=ADV.storage+'.';                       // préfixe des sauvegardes et réglages
 const VERBS=ADV.verbs, SFX_AT=ADV.sfxAt||{}, DIRS=WORLD.dirs, ALLW=WORLD.allWord||'';
 const COLS=WORLD.cols||0, NROOMS=WORLD.rooms, DELTA={W:-1,N:-COLS,E:1,S:COLS};
-const BASIC=ADV.machine.kind==='basic';             // jeu écrit en BASIC (moteur/basic.js) plutôt qu'en code machine
+const FLUX=ADV.machine.kind==='flux';               // code machine lu comme un flux de texte (moteur/flux.js), traité comme un jeu BASIC
+const BASIC=ADV.machine.kind==='basic'||FLUX;       // jeu écrit en BASIC (moteur/basic.js) plutôt qu'en code machine
 const SCREEN=BASIC&&!!ADV.machine.screen;           // jeu qui place son texte à l'écran (PRINT @) : la version classique reproduit l'écran 32×16
 // Géométrie de la carte. Par défaut, la grille du programme (COLS colonnes) ; sinon la fiche donne pour chaque lieu
 // sa colonne, sa ligne et son étage (WORLD.pos) et la destination de chaque sortie (WORLD.links).
@@ -395,7 +396,7 @@ const ioBasic={
   end(){ won=!!(ADV.machine.victory&&ADV.machine.victory.test(pending)); }
 };
 const SEED=/[#&]graine=(\d+)/.exec(location.hash);   // essais : DragonTales.html#graine=2 fixe le hasard des jeux BASIC
-const m=BASIC?Basic(bin,ioBasic,Object.assign({echo:false},ADV.machine,SEED?{seed:+SEED[1]}:{})):Machine(bin,io,ADV.machine);
+const m=FLUX?Flux(bin,ioBasic,Object.assign({},ADV.machine,SEED?{seed:+SEED[1]}:{})):BASIC?Basic(bin,ioBasic,Object.assign({echo:false},ADV.machine,SEED?{seed:+SEED[1]}:{})):Machine(bin,io,ADV.machine);
 const mem=m.mem;
 
 // ---------- lecture de l'état du jeu ----------

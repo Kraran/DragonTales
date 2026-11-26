@@ -1,0 +1,3 @@
+# Madness and the Minotaur : solution à écrire pour une graine donnée (les énigmes changent à chaque partie).
+@graine 7
+LOOK

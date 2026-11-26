@@ -1,4 +1,4 @@
-// Emulateur Motorola 6809 minimal (suffisant pour El Diablero)
+// Emulateur Motorola 6809 minimal (suffisant pour El Diablero et Madness and the Minotaur)
 function CPU6809(mem){
   let A=0,B=0,X=0,Y=0,U=0,S=0,PC=0,DP=0,CC=0x50;
   const rd=a=>mem[a&0xffff], wr=(a,v)=>{mem[a&0xffff]=v&0xff;};
@@ -150,6 +150,7 @@ function CPU6809(mem){
       case 0x36:{const pb=f8();if(pb&0x80)pshu16(PC);if(pb&0x40)pshu16(S);if(pb&0x20)pshu16(Y);if(pb&0x10)pshu16(X);if(pb&8)pshu8(DP);if(pb&4)pshu8(B);if(pb&2)pshu8(A);if(pb&1)pshu8(CC);return;}
       case 0x37:{const pb=f8();if(pb&1)CC=pulu8();if(pb&2)A=pulu8();if(pb&4)B=pulu8();if(pb&8)DP=pulu8();if(pb&0x10)X=pulu16();if(pb&0x20)Y=pulu16();if(pb&0x40)S=pulu16();if(pb&0x80)PC=pulu16();return;}
       case 0x39:PC=puls16();return;
+      case 0x3b:CC=puls8();if(CC&0x80){A=puls8();B=puls8();DP=puls8();X=puls16();Y=puls16();U=puls16();}PC=puls16();return;   // RTI
       case 0x3a:X=(X+B)&0xffff;return;
       case 0x3d:{const r=A*B;setD(r);CC=(CC&~5)|(r===0?4:0)|((r&0x80)?1:0);return;}
     }
@@ -159,7 +160,9 @@ function CPU6809(mem){
     get PC(){return PC;},set PC(v){PC=v&0xffff;},get A(){return A;},set A(v){A=v&0xff;},get B(){return B;},set B(v){B=v&0xff;},
     get X(){return X;},set X(v){X=v&0xffff;},get Y(){return Y;},set Y(v){Y=v&0xffff;},get U(){return U;},set U(v){U=v&0xffff;},
     get S(){return S;},set S(v){S=v&0xffff;},get CC(){return CC;},set CC(v){CC=v&0xff;},get DP(){return DP;},set DP(v){DP=v&0xff;},
-    rts(){PC=puls16();},setZ(z){CC=z?(CC|4):(CC&~4);},
+    rts(){PC=puls16();},
+    // interruption IRQ (Madness and the Minotaur) : si elle n'est pas masquée, empile tout l'état et saute au vecteur
+    irq(vec){ if(CC&0x10) return false; CC|=0x80; pshs16(PC);pshs16(U);pshs16(Y);pshs16(X);pshs8(DP);pshs8(B);pshs8(A);pshs8(CC); CC|=0x10; PC=vec&0xffff; return true; },setZ(z){CC=z?(CC|4):(CC&~4);},
     dump(){return {A,B,X,Y,U,S,PC,DP,CC};},load(s){({A,B,X,Y,U,S,PC,DP,CC}=s);}};
 }
 if(typeof module!=='undefined')module.exports=CPU6809;

@@ -4,11 +4,11 @@
 const Machine=require('../moteur/machine.js');
 const name=process.argv.slice(2).find(a=>!a.startsWith('--'))||'eldiablero', adv=require('./charger.js')(name), cmds=adv.solution;
 if(!cmds.length){ console.log('aventures/'+name+'/solution.txt est absent ou vide'); process.exit(1); }
-const basic=adv.machine.kind==='basic';
+const basic=adv.machine.kind==='basic'||adv.machine.kind==='flux';
 let won=false, texts=0, missing=new Set(), shown='';
 const io={out(s){ shown+=s; },puts(){},cls(){},save(){},load(){return null;},quit(v){won=!!v;},fixes:!process.argv.includes('--sans-correctifs'),
   text:basic?undefined:(a=>{ texts++; const k=a.toString(16).toUpperCase().padStart(4,'0'); if(adv.FR.TEXT[k]===undefined) missing.add(k); return null; })};
-const m=basic?require('../moteur/basic.js')(adv.bin,io,Object.assign({},adv.machine,{seed:adv.seed})):Machine(adv.bin,io,adv.machine), W=adv.world, vis=new Set();
+const m=adv.machine.kind==='flux'?require('../moteur/flux.js')(adv.bin,io,Object.assign({},adv.machine,{seed:adv.seed})):basic?require('../moteur/basic.js')(adv.bin,io,Object.assign({},adv.machine,{seed:adv.seed})):Machine(adv.bin,io,adv.machine), W=adv.world, vis=new Set();
 let w=m.run(); if(!basic){ m.key(32); w=m.run(); } let n=0, step=-1, back=0;
 // attentes de touche (INKEY$) : la réponse de la fiche (WORLD.autoKey), sinon espace
 const keys=()=>{ let g=0; while(w==='key'&&g++<50){ const k=W.autoKey&&W.autoKey(m.mem); m.key(k||' '); w=m.run(); } };
