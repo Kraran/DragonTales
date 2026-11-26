@@ -13,31 +13,32 @@ function grad(stops,dir){ const id='sgg'+(uid++); const [x2,y2]=dir==='h'?[1,0]:
   return [`url(#${id})`,`<defs><linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops.map((c,i)=>`<stop offset="${(i/(stops.length-1)).toFixed(2)}" stop-color="${c}"/>`).join('')}</linearGradient></defs>`]; }
 function glow(cx,cy,rx,ry,c,o){ const id='sgl'+(uid++); return `<defs><radialGradient id="${id}"><stop offset="0" stop-color="${c}" stop-opacity="${o||.55}"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#${id})"/>`; }
 const veil=()=>{ const [u,d]=grad(['rgba(10,8,14,0)','rgba(10,8,14,0)','rgba(10,8,14,.85)']); return d+`<rect width="${W}" height="${H}" fill="${u}"/>`; };
+const dl=(d,x)=>` style="animation-delay:-${d.toFixed(1)}s${x?';'+x:''}"`;
 const g=(x,k,s,y)=>`<g transform="translate(${x.toFixed(0)} ${(y===undefined?G:y).toFixed(0)}) scale(${k})">${s}</g>`;
 
 // ---------- dehors : ciel du soir, terre rouge, baraques, miradors, barbelés ----------
 function sky(seed){
   const [u,d]=grad(['#2a2a5a','#6a4a7a','#c8664a','#e8a050']); let s=d+`<rect width="${W}" height="${H}" fill="${u}"/>`;
   const r=rng(seed);
-  for(let i=0;i<5;i++){ const x=r()*W, y=40+r()*90, w=120+r()*180; s+=`<path d="M${x} ${y} q${w/3} -14 ${w/2} 0 q${w/4} -10 ${w/2} 2 q-${w/2} 12 -${w} -2Z" fill="#a8586a" opacity=".45"/>`; }
+  s+='<g class="an-drift">'; for(let i=0;i<5;i++){ const x=r()*W, y=40+r()*90, w=120+r()*180; s+=`<path d="M${x} ${y} q${w/3} -14 ${w/2} 0 q${w/4} -10 ${w/2} 2 q-${w/2} 12 -${w} -2Z" fill="#a8586a" opacity=".45"/>`; } s+='</g>';
   if(X.has(109)) for(const [x,y,k] of [[180,70,1],[300,52,.8],[420,84,.7],[880,60,.9],[990,90,.6]]) s+=plane(x,y,k);
   return s;
 }
-function plane(x,y,k){ return `<g transform="translate(${x} ${y}) scale(${k})" fill="#2a2030"><path d="M-30 0 h60 l6 3 h-72Z"/><path d="M-6 0 l-14 -16 h6 l18 16Z M-6 3 l-14 16 h6 l18 -16Z"/><path d="M-30 0 l-6 -8 h4 l8 8Z"/></g>`; }
+function plane(x,y,k){ return `<g class="an-fly"${dl((x/100)%14)}><g transform="translate(${x} ${y}) scale(${k})" fill="#2a2030"><path d="M-30 0 h60 l6 3 h-72Z"/><path d="M-6 0 l-14 -16 h6 l18 16Z M-6 3 l-14 16 h6 l18 -16Z"/><path d="M-30 0 l-6 -8 h4 l8 8Z"/></g></g>`; }
 function ground(){ const [u,d]=grad(['#8a4a2a','#5a2e1a']); let s=d+`<path d="M0 250 H${W} V${H} H0Z" fill="${u}"/>`;
   const r=rng(7); for(let i=0;i<40;i++){ const x=r()*W, y=262+r()*120; s+=`<path d="M${x} ${y} h${8+r()*20}" stroke="#4a2414" stroke-width="2" opacity=".5"/>`; } return s; }
 // baraque à toit arrondi (vue de face, en perspective légère)
 function hut(x,y,k,door){ return `<g transform="translate(${x} ${y}) scale(${k})"><path d="M-110 0 V-40 Q-110 -110 0 -112 Q110 -110 110 -40 V0Z" fill="#6a5a7a"/>`+
   [-80,-40,0,40,80].map(dx=>`<path d="M${dx} -110 Q${dx*1.05} -60 ${dx} 0" stroke="#4a3e5a" stroke-width="3" fill="none"/>`).join('')+
-  `<rect x="-110" y="-40" width="220" height="40" fill="#5a4a3a"/><rect x="-80" y="-34" width="34" height="22" fill="#e8b060" opacity=".7"/><rect x="46" y="-34" width="34" height="22" fill="#e8b060" opacity=".7"/>`+
+  `<rect x="-110" y="-40" width="220" height="40" fill="#5a4a3a"/><rect x="-80" y="-34" width="34" height="22" fill="#e8b060" opacity=".7"/><rect x="46" y="-34" width="34" height="22" fill="#e8b060" opacity=".7"/><g class="an-pulse"${dl(x%4,'animation-duration:5s')}>${glow(-63,-23,40,20,'#ffb060',.4)}${glow(63,-23,40,20,'#ffb060',.4)}</g>`+
   (door?`<rect x="-16" y="-40" width="32" height="40" fill="#3a2a1e"/>`:'')+`</g>`; }
-function tower(x,y,k){ return `<g transform="translate(${x} ${y}) scale(${k})" stroke="#3a2a22" stroke-width="5" fill="none"><path d="M-40 0 L-26 -170 M40 0 L26 -170 M-36 -40 L34 -100 M36 -40 L-34 -100 M-33 -100 L30 -150 M33 -100 L-30 -150"/>`+
-  `<rect x="-50" y="-215" width="100" height="45" fill="#6a4a32"/><path d="M-60 -215 L0 -250 L60 -215Z" fill="#4a3226"/><rect x="-36" y="-205" width="72" height="18" fill="#2a1e18" stroke="none"/></g>`; }
+function tower(x,y,k){ return `<g transform="translate(${x} ${y}) scale(${k})"><g class="an-sweep"${dl((x%7))}><path d="M0 -196 L-90 200 H90Z" fill="#fff4d0" opacity=".1"/></g></g><g transform="translate(${x} ${y}) scale(${k})" stroke="#3a2a22" stroke-width="5" fill="none"><path d="M-40 0 L-26 -170 M40 0 L26 -170 M-36 -40 L34 -100 M36 -40 L-34 -100 M-33 -100 L30 -150 M33 -100 L-30 -150"/>`+
+  `<rect x="-50" y="-215" width="100" height="45" fill="#6a4a32"/><path d="M-60 -215 L0 -250 L60 -215Z" fill="#4a3226"/><rect x="-36" y="-205" width="72" height="18" fill="#2a1e18" stroke="none"/><circle class="an-pulse" cx="0" cy="-196" r="7" fill="#fff4d0" stroke="none"/></g>`; }
 // la clôture de barbelés au premier plan (sur toute la largeur)
 function fence(y,live){ let s=''; for(let x=40;x<W;x+=190) s+=`<rect x="${x}" y="${y-170}" width="12" height="190" fill="#7a6a5a"/><path d="M${x+6} ${y-170} l-26 -20" stroke="#7a6a5a" stroke-width="7"/>`;
   for(let i=0;i<6;i++){ const yy=y-150+i*26; s+=`<path d="M0 ${yy} Q300 ${yy+8} 600 ${yy} T${W} ${yy}" stroke="#9a9aa8" stroke-width="2.5" fill="none"/>`;
     for(let x=20+i*13;x<W;x+=64) s+=`<path d="M${x-4} ${yy-4} l8 8 m0 -8 l-8 8" stroke="#9a9aa8" stroke-width="2"/>`; }
-  if(live) s+=`<g opacity=".8">${[200,560,930].map(x=>`<path d="M${x} ${y-120} l8 -10 l-4 0 l8 -12" stroke="#bfe8ff" stroke-width="2" fill="none"/>`).join('')}</g>`;
+  if(live) s+=`<g opacity=".8">${[200,560,930].map((x,i)=>`<path class="an-buzz"${dl(i*1.3,'animation-duration:'+(2+i*.7).toFixed(1)+'s')} d="M${x} ${y-120} l8 -10 l-4 0 l8 -12" stroke="#bfe8ff" stroke-width="2" fill="none"/>`).join('')}</g>`;
   return s; }
 // ---------- dedans : murs de planches, plancher, fenêtre sur le soir ----------
 function room(o){
@@ -49,7 +50,7 @@ function room(o){
   const [fu,fd]=grad([o.floor||'#8a6a48','#5a4028']); s+=fd+`<path d="M0 260 H${W} V${H} H0Z" fill="${fu}"/>`;
   for(let i=-9;i<=9;i++) s+=`<path d="M${598+i*70} 260 L${598+i*190} ${H}" stroke="#3a2818" stroke-width="2" opacity=".35"/>`;
   for(const wx of (o.windows||[])) s+=`<rect x="${wx-46}" y="70" width="92" height="74" fill="#3a2a1e"/>`+(()=>{ const [u,d]=grad(['#6a4a7a','#e89050']); return d+`<rect x="${wx-40}" y="76" width="80" height="62" fill="${u}"/>`; })()+`<path d="M${wx} 76 V138 M${wx-40} 107 H${wx+40}" stroke="#3a2a1e" stroke-width="5"/>`+glow(wx,150,140,70,'#e89050',.25);
-  if(o.lamp) s+=`<path d="M${o.lamp} 0 V50" stroke="#2a2a2a" stroke-width="3"/><path d="M${o.lamp-24} 64 L${o.lamp} 46 L${o.lamp+24} 64Z" fill="#4a4a3a"/>`+glow(o.lamp,70,90,60,'#ffe0a0',.45);
+  if(o.lamp) s+=`<g class="an-swing" style="animation-duration:5s"><path d="M${o.lamp} 0 V50" stroke="#2a2a2a" stroke-width="3"/><path d="M${o.lamp-24} 64 L${o.lamp} 46 L${o.lamp+24} 64Z" fill="#4a4a3a"/><g class="an-pulse" style="animation-duration:3s">${glow(o.lamp,70,90,60,'#ffe0a0',.45)}</g></g>`;
   return s;
 }
 // ---------- meubles et choses fixes (origine au milieu de leur base, au sol) ----------
@@ -69,7 +70,7 @@ const F={
  hooks:()=>[-150,-90,-30,30,90,150].map(x=>`<path d="M${x} -200 v12 q0 8 8 8" stroke="#3a3a3a" stroke-width="4" fill="none"/>`).join(''),
  benches:()=>[-180,180].map(x=>`<rect x="${x-130}" y="-50" width="260" height="14" fill="#6a4a2e"/><rect x="${x-120}" y="-36" width="10" height="36" fill="#4a3220"/><rect x="${x+110}" y="-36" width="10" height="36" fill="#4a3220"/>`).join('')+`<rect x="-120" y="-90" width="240" height="14" fill="#7a5a3a"/>`,
  icebox:()=>`<rect x="-50" y="-190" width="100" height="190" rx="8" fill="#e8e0c8"/><path d="M-50 -110 H50" stroke="#a8a090" stroke-width="3"/><rect x="30" y="-170" width="10" height="40" rx="4" fill="#9a9a90"/><rect x="30" y="-96" width="10" height="40" rx="4" fill="#9a9a90"/>`,
- stove:()=>`<rect x="-70" y="-110" width="140" height="110" fill="#2a2a2a"/><rect x="-70" y="-120" width="140" height="12" fill="#3a3a3a"/><rect x="-50" y="-90" width="70" height="50" fill="#1a1a1a"/>`+glow(-15,-64,30,20,'#ff7a2a',.3)+`<rect x="30" y="-260" width="20" height="140" fill="#2a2a2a"/>`,
+ stove:()=>`<rect x="-70" y="-110" width="140" height="110" fill="#2a2a2a"/><rect x="-70" y="-120" width="140" height="12" fill="#3a3a3a"/><rect x="-50" y="-90" width="70" height="50" fill="#1a1a1a"/>`+`<g class="an-pulse" style="animation-duration:1.2s">${glow(-15,-64,30,20,'#ff7a2a',.3)}</g><circle class="an-smoke" cx="40" cy="-264" r="10" fill="#d8d0c8" opacity=".35"/><circle class="an-smoke" style="animation-delay:-3.5s" cx="40" cy="-264" r="10" fill="#d8d0c8" opacity=".35"/><rect x="30" y="-260" width="20" height="140" fill="#2a2a2a"/>`,
  counter:()=>`<rect x="-160" y="-100" width="320" height="100" fill="#6a4a2e"/><rect x="-170" y="-108" width="340" height="12" fill="#8a6a48"/><rect x="-60" y="-84" width="120" height="30" fill="none" stroke="#3a2818" stroke-width="3"/><circle cx="0" cy="-69" r="4" fill="#c8a868"/>`,
  soil:()=>[0,1,2,3].map(i=>`<path d="M${-300+i*40} ${-8-i*14} Q0 ${-22-i*14} ${300-i*40} ${-8-i*14}" stroke="#2a1a12" stroke-width="16" fill="none" stroke-linecap="round"/>`).join('')+[-200,-100,0,100,200].map((x,i)=>`<path d="M${x} ${-30-i%2*14} q-10 -20 0 -30 q10 10 0 30 M${x} ${-30-i%2*14} q14 -16 24 -12" stroke="#4a8a3a" stroke-width="4" fill="none"/>`).join(''),
  wheelbarrow:()=>`<path d="M-70 -50 L60 -50 L40 -14 L-50 -14Z" fill="#6a7a6a"/><circle cx="66" cy="-14" r="14" fill="none" stroke="#3a3a3a" stroke-width="5"/><path d="M-70 -50 l-40 -14 M-50 -14 v14" stroke="#5a3a22" stroke-width="6"/>`,
@@ -108,8 +109,8 @@ function tunnelBg(r){ let s=`<rect width="${W}" height="${H}" fill="#1a100a"/>`;
   const [u,d]=grad(['#4a2a18','#2a1810']); s+=d+`<path d="M220 ${H} L380 90 Q600 40 820 90 L980 ${H}Z" fill="${u}"/>`;
   s+=`<path d="M420 ${H} L500 150 Q600 120 700 150 L780 ${H}Z" fill="#0a0604"/>`;
   for(const [x0,y0,x1] of [[290,330,370],[830,330,910]]) s+=`<rect x="${x0}" y="110" width="22" height="${y0-110}" fill="#6a4a2a" transform="skewX(${x0<600?6:-6})"/>`;
-  s+=`<rect x="330" y="96" width="540" height="22" fill="#6a4a2a"/>`+glow(600,140,240,90,'#ffb060',.18);
-  for(let i=0;i<30;i++){ const rr=rng(r*31+i); s+=`<circle cx="${(rr()*W).toFixed(0)}" cy="${(rr()*H).toFixed(0)}" r="${(1+rr()*3).toFixed(1)}" fill="#6a4a30" opacity=".6"/>`; }
+  s+=`<rect x="330" y="96" width="540" height="22" fill="#6a4a2a"/><g class="an-pulse">${glow(600,140,240,90,'#ffb060',.18)}</g>`;
+  for(let i=0;i<30;i++){ const rr=rng(r*31+i); s+=`<circle class="an-float"${dl(i*.23)} cx="${(rr()*W).toFixed(0)}" cy="${(rr()*H).toFixed(0)}" r="${(1+rr()*3).toFixed(1)}" fill="#6a4a30" opacity=".6"/>`; }
   return s; }
 function place(r){
   const k=KIND[r], own=[]; let s='';
@@ -129,7 +130,7 @@ function place(r){
      s+=fence(300,!has(106)); break;
    case 'gate': s=sky(r)+ground()+tower(140,300,.8)+tower(1060,300,.8)+g(600,1,F.gate(!has(106)),338)+fence(320,!has(106)).replace(/<rect x="(4|2|6|8)\d\d" [^>]*>/g,''); break;
    case 'forest': { const [u,d]=grad(['#1a2a4a','#4a4a6a','#c87a4a']); s=d+`<rect width="${W}" height="${H}" fill="${u}"/>`;
-     const rr=rng(33); for(let i=0;i<26;i++){ const x=rr()*W, h=160+rr()*180, w=40+rr()*40; s+=`<path d="M${x} ${300} L${x-w} 300 L${x} ${300-h} L${x+w} 300Z" fill="${i%2?'#1a3a2a':'#24442e'}"/><rect x="${x-5}" y="300" width="10" height="20" fill="#2a1a12"/>`; }
+     const rr=rng(33); for(let i=0;i<26;i++){ const x=rr()*W, h=160+rr()*180, w=40+rr()*40; s+=`<path class="an-sway"${dl(i*.4,'animation-duration:'+(6+i%4)+'s')} d="M${x} ${300} L${x-w} 300 L${x} ${300-h} L${x+w} 300Z" fill="${i%2?'#1a3a2a':'#24442e'}"/><rect x="${x-5}" y="300" width="10" height="20" fill="#2a1a12"/>`; }
      s+=`<path d="M0 300 H${W} V${H} H0Z" fill="#2a2a1a"/><ellipse cx="600" cy="352" rx="60" ry="16" fill="#120a06"/><path d="M570 352 q30 -30 60 0" stroke="#6a4a2a" stroke-width="5" fill="none"/>`+glow(980,120,200,120,'#ffb060',.35);
      if(has(109)) s+=plane(300,80,1)+plane(420,60,.8); break; }
    case 'hole': s=`<rect width="${W}" height="${H}" fill="#120804"/>`+(()=>{ const [u,d]=grad(['#e8a050','#6a4a7a']); return d+`<ellipse cx="600" cy="30" rx="180" ry="40" fill="${u}"/>`; })()+
