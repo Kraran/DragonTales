@@ -1,6 +1,9 @@
 # Journal des versions
 
-## Prochaine version (en préparation)
+## 1.2.0 — 26 novembre 2026
+
+Des décors plus riches et vivants : El Diablero et Dragon Mountain redessinés, petites animations dans les huit
+aventures.
 
 ### Améliorations
 - **El Diablero, illustrations retravaillées** : soleil et halo, nuages du soir, mesas à l'horizon, saguaros avec
