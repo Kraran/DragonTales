@@ -20,7 +20,7 @@ function glyphs(x,y,n,c,r,sz){ sz=sz||14; let s=''; for(let i=0;i<n;i++){ const 
     :k===3?`<path d="M${gx} ${y} l${sz/2} ${sz} l${sz/2} ${-sz}" fill="none" stroke="${c}" stroke-width="2.5"/>`
     :`<path d="M${gx} ${y+sz*.3} h${sz} M${gx} ${y+sz*.7} h${sz} M${gx+sz/2} ${y} v${sz}" stroke="${c}" stroke-width="2.5"/>`; }
   return `<g opacity=".8">${s}</g>`; }
-const dl=(d)=>` style="animation-delay:-${d.toFixed(1)}s"`;
+const dl=(d,x)=>` style="animation-delay:-${d.toFixed(1)}s${x?';'+x:''}"`;
 function radial(cx,cy,rx,ry,c,o){ const id='sr'+(uid++); return `<defs><radialGradient id="${id}"><stop offset="0" stop-color="${c}" stop-opacity="${o}"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs><ellipse cx="${cx.toFixed?cx.toFixed(0):cx}" cy="${cy.toFixed?cy.toFixed(0):cy}" rx="${rx}" ry="${ry}" fill="url(#${id})"/>`; }
 // soleil avec son halo
 function sun(x,y,rad,c,halo){ return radial(x,y,rad*4.2,rad*3.2,halo||c,.45)+`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${rad}" fill="${c}"/>`; }
@@ -237,7 +237,7 @@ const U={ // décors souterrains, par clé
    s+=`<path d="M0 0 H1196 V40 Q900 20 600 36 T0 30Z" fill="#8fd3d6" opacity=".12"/>`;
    for(const [x,w,dx] of [[160,70,90],[480,50,-40],[760,90,120],[1020,40,60]]) s+=`<path d="M${x} 0 h${w} l${dx+w*.6} 396 h-${w*1.6}Z" fill="#a8e8f0" opacity=".06"/>`;
    s+=`<path d="M0 396 V350 Q300 320 600 344 T1196 336 V396Z" fill="#0d2430"/>`+pebbles(r,30,0,W,350,394,'#1c3a44');
-   for(let i=0;i<9;i++){ const x=40+r()*1120, h=60+r()*110, sw=(r()<.5?-1:1)*(10+r()*20); s+=`<path class="an-sway"${dl(r()*5)} style="animation-duration:${(4+r()*3).toFixed(1)}s" d="M${x.toFixed(0)} 360 q${sw.toFixed(0)} -${(h/2).toFixed(0)} 0 -${h.toFixed(0)} q${(-sw).toFixed(0)} -${(h/3).toFixed(0)} ${(sw/2).toFixed(0)} -${(h/2).toFixed(0)}" stroke="#2f6a4a" stroke-width="${(5+r()*5).toFixed(0)}" fill="none" stroke-linecap="round" opacity=".8"/>`; }
+   for(let i=0;i<9;i++){ const x=40+r()*1120, h=60+r()*110, sw=(r()<.5?-1:1)*(10+r()*20); s+=`<path class="an-sway"${dl(r()*5,'animation-duration:'+(4+r()*3).toFixed(1)+'s')} d="M${x.toFixed(0)} 360 q${sw.toFixed(0)} -${(h/2).toFixed(0)} 0 -${h.toFixed(0)} q${(-sw).toFixed(0)} -${(h/3).toFixed(0)} ${(sw/2).toFixed(0)} -${(h/2).toFixed(0)}" stroke="#2f6a4a" stroke-width="${(5+r()*5).toFixed(0)}" fill="none" stroke-linecap="round" opacity=".8"/>`; }
    return {s,G:356,x0:300,x1:900}; }
 };
 const cf=r=>frame(r);

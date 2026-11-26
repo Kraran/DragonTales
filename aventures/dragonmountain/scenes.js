@@ -11,7 +11,7 @@ function grad(stops,dir){ const id='dmg'+(uid++); const [x2,y2]=dir==='h'?[1,0]:
 function glow(cx,cy,rx,ry,c,o){ const id='dml'+(uid++); return `<defs><radialGradient id="${id}"><stop offset="0" stop-color="${c}" stop-opacity="${o||.55}"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#${id})"/>`; }
 const veil=()=>{ const [u,d]=grad(['rgba(20,14,26,0)','rgba(20,14,26,0)','rgba(20,14,26,.85)']); return d+`<rect width="${W}" height="${H}" fill="${u}"/>`; };
 const f0=n=>n.toFixed(0);
-const dl=d=>` style="animation-delay:-${d.toFixed(1)}s"`;
+const dl=(d,x)=>` style="animation-delay:-${d.toFixed(1)}s${x?';'+x:''}"`;
 // torche murale : support de fer, flamme qui vacille, halo qui respire
 function torch(x,y){ return `<g class="an-pulse">${glow(x,y-14,150,120,'#ffb04a',.38)}</g><path d="M${x-12} ${y+30} h24 l-6 10 h-12Z" fill="#2a2228"/><path d="M${x} ${y+40} v18" stroke="#2a2228" stroke-width="6"/><path d="M${x-9} ${y+2} h18 l-4 28 h-10Z" fill="#5a3a22"/>`+
   `<path class="an-flicker"${dl((x%7)/7)} d="M${x} ${y+4} q-16 -14 -6 -34 q2 10 8 6 q-2 -14 6 -22 q12 18 6 38 q-4 12 -14 12Z" fill="#ff8a3a"/><path class="an-flicker"${dl((x%5)/5)} d="M${x} ${y+2} q-8 -10 -2 -22 q8 10 6 22Z" fill="#ffe08a"/>`; }
