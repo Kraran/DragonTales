@@ -23,6 +23,20 @@
   de la cheminée, du feu de camp et de la grande lampe, fumée du poêle, braises du repaire, poussière dans la lumière,
   reflets des miroirs, éclats du trésor et de la grille d'or ; le dragon bat de la queue et fume des naseaux, les
   yeux du démon clignent.
+- **Petites animations dans toutes les aventures** :
+  - S.S. Poseidon : coulures de rouille, gouttes qui tombent, néon qui grésille, flaques et hublots qui miroitent,
+    vapeur de la cuisine, incendie, eau qui monte en ondulant, lustre qui scintille, aiguilles et voyants des pupitres,
+    compas, câble qui se balance, bulles dans la salle de bal engloutie.
+  - Mansion of Doom : flammes des appliques, chandeliers, torches et cheminée ; nuages et éclairs aux fenêtres, étoiles,
+    toiles d'araignée dans le courant d'air, yeux du portrait, lueur rouge de la cave, chauves-souris, acide qui
+    bouillonne, gouttes, rivière souterraine, fumée des cheminées du village.
+  - The Final Countdown : radar qui tourne, bandes magnétiques, voyants et curseurs qui clignotent, trajectoire du
+    missile, compte à rebours, néon qui grésille, incendie, drapeau, soleil du désert.
+  - Eno : poissons qui nagent, bulles et algues de l'aquarium, télévision qui scintille, lustre, plante, pendule, nuages.
+  - Stalag : projecteurs des miradors qui balaient le camp, bombardiers qui passent, nuages, clôture électrifiée qui
+    crépite, lampes qui se balancent, poêle qui fume, poussière du tunnel, sapins dans le vent.
+  - Madness and the Minotaur : torches, bassin, huile, brouillard, aura, notes de musique, étoiles, poussière, têtes de
+    l'hydre, lutin, Oracle et sortilèges.
 
 ## 1.1.0 — 26 novembre 2026
 
