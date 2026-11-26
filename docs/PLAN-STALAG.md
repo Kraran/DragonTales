@@ -81,7 +81,7 @@ sur `moteur/basic.js`. Au 26/11/2026, elle tourne, se gagne et se joue en franç
   festin), ciseaux, lit qu'on pousse, carreaux, planches, pelle et pioche, la lumière au bout du tunnel, la forêt ;
   ambiances : vent, bourdonnement de la clôture, gouttes des douches, poêle du réfectoire, terre du tunnel, oiseaux.
 
-### 5. À faire ensuite
+### 5. Musique et mise en place
 
-- La musique (`musique.ogg`, Suno), puis retirer `EN-COURS.md`, ajouter `essai-stalag` à l'intégration continue,
-  README, CHANGELOG, et publier.
+- Fait le 26/11/2026 : musique « Before the Bombs » (Suno, 2 min 42, Opus 56k), `EN-COURS.md` retiré, essai dans
+  l’intégration continue, README, CHANGELOG. Reste la publication.

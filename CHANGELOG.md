@@ -8,6 +8,12 @@
   carte, indices des pièces magiques, bruitages, cinq fins et une musique, « The Aunt's Last Will ».
   Correctifs : l'appel à l'aide après le rat ne tourne plus en boucle ; le coffre-fort et les portes ouverts se disent
   ouverts ; fermer le livre ou les portes les ferme vraiment.
+- **Stalag** (Paul Austin et Leroy C. Smith, Pal Creations, 1982), septième aventure : en 1944, oublié au mitard d'un
+  camp de prisonniers évacué, tu dois t'évader avant le bombardement allié. Traduction française complète, camp
+  illustré au crépuscule, carte de 34 lieux, indices des pièces magiques, bruitages, sept fins et une musique,
+  « Before the Bombs » (en surface seulement). Correctifs : la victoire ne tourne plus en boucle ; le trou creusé près
+  de la clôture est devient une fin expliquée ; la boîte de jambon ouverte se dit ouverte ; la porte de la baraque n° 3
+  se referme vraiment, et son cadenas ne se reverrouille que porte fermée.
 
 ## 1.0.1 — 19 novembre 2026
 

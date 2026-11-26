@@ -28,6 +28,8 @@ DragonTales l'habille : textes traduits, jeu à la souris, carte, illustrations,
 
 ![Eno en version moderne](docs/eno.jpg)
 
+![Stalag en version moderne](docs/stalag.jpg)
+
 ## Aventures
 
 | Aventure | Auteur, éditeur | Année | Machine | Langues |
@@ -38,6 +40,7 @@ DragonTales l'habille : textes traduits, jeu à la souris, carte, illustrations,
 | Mansion of Doom | Leroy C. Smith et Paul Austin, Pal Creations / Dragon Data | 1982 | Dragon 32 | français, anglais |
 | The Final Countdown | Bill et Debbie Cook, Dragon Data | 1983 | Dragon 32 | français, anglais |
 | Eno | Paul Austin et Leroy C. Smith, Pal Creations / Dragon Data | 1982 | Dragon 32 | français, anglais |
+| Stalag | Paul Austin et Leroy C. Smith, Pal Creations / Dragon Data | 1982 | Dragon 32 | français, anglais |
 
 ## Jouer
 
@@ -114,6 +117,7 @@ node tests/essai-poseidon.js        # dans Chrome : S.S. Poseidon (niveau, parti
 node tests/essai-mansion.js         # dans Chrome : Mansion of Doom (partie entière, écrans en couleur, mots de passe, fins)
 node tests/essai-finalcountdown.js  # dans Chrome : The Final Countdown (niveau, partie entière malgré le hasard, fins)
 node tests/essai-eno.js             # dans Chrome : Eno (partie entière en français, morts, pièces magiques)
+node tests/essai-stalag.js          # dans Chrome : Stalag (partie entière en français, mort, pièce magique)
 node tests/fins.js                  # sans navigateur : la liste des fins de chaque aventure
 node tests/essai-fins.js            # dans Chrome : collection des fins et bilan de fin de partie
 node tests/essai-voix.js            # dans Chrome : lecture à voix haute (voix d'Edge simulées)
@@ -138,6 +142,8 @@ Attention : les fichiers `solution.txt` des aventures dévoilent tout le jeu.
   Le programme et la boîte d'origine appartiennent à leurs ayants droit.
 - **Eno** : programme et textes d'origine de Paul Austin et Leroy C. Smith, Pal Creations, diffusés par Dragon Data en 1982.
   Le programme et la boîte d'origine appartiennent à leurs ayants droit.
+- **Stalag** : programme et textes d'origine de Paul Austin et Leroy C. Smith, Pal Creations, diffusés par Dragon Data en 1982.
+  Le programme et la boîte d'origine appartiennent à leurs ayants droit.
 - Portage, traductions françaises, interface, illustrations vectorielles, indices et effets sonores : projet DragonTales.
 - Musiques : « Awakening in the Desert » (El Diablero), « The Guardian's Hoard » (Dragon Mountain), « The Last Waltz » (S.S. Poseidon),
-  « The Count's Last Night » (Mansion of Doom), « T Minus Zero » (The Final Countdown) et « The Aunt's Last Will » (Eno), créées pour ce projet.
+  « The Count's Last Night » (Mansion of Doom), « T Minus Zero » (The Final Countdown), « The Aunt's Last Will » (Eno) et « Before the Bombs » (Stalag), créées pour ce projet.
