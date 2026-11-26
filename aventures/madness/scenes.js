@@ -14,6 +14,7 @@ function rng(seed){ let s=(seed*2654435761+12345)>>>0; return ()=>{ s=(s*1664525
 function grad(stops,dir){ const id='mgg'+(uid++); const [x2,y2]=dir==='h'?[1,0]:[0,1];
   return [`url(#${id})`,`<defs><linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops.map((c,i)=>`<stop offset="${(i/(stops.length-1)).toFixed(2)}" stop-color="${c}"/>`).join('')}</linearGradient></defs>`]; }
 function glow(cx,cy,rx,ry,c,o){ const id='mgl'+(uid++); return `<defs><radialGradient id="${id}"><stop offset="0" stop-color="${c}" stop-opacity="${o||.55}"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#${id})"/>`; }
+const dl=(d,x)=>` style="animation-delay:-${d.toFixed(1)}s${x?';'+x:''}"`;
 const g=(x,k,s,y)=>`<g transform="translate(${x.toFixed(0)} ${(y===undefined?G:y).toFixed(0)}) scale(${k})">${s}</g>`;
 
 // ---------- teintes des quatre étages : pierre, joints, ombre, lumière lointaine ----------
@@ -64,7 +65,7 @@ function exits(v){ let s=''; const mid=598;
   return s; }
 // ---------- décors fixes ----------
 const D={
- torch:(P)=>`<rect x="-6" y="-200" width="12" height="40" fill="#3a2a1e"/><path d="M-10 -200 h20 l-4 -10 h-12Z" fill="#5a4030"/><path d="M0 -236 q-12 14 -6 26 h12 q6 -12 -6 -26Z" fill="#f0a040"/><path d="M0 -226 q-5 8 -2 14 h4 q3 -6 -2 -14Z" fill="#fff0b0"/>`+glow(0,-215,90,70,'#f0a040',.35),
+ torch:(P)=>`<rect x="-6" y="-200" width="12" height="40" fill="#3a2a1e"/><path d="M-10 -200 h20 l-4 -10 h-12Z" fill="#5a4030"/><path class="an-flicker" d="M0 -236 q-12 14 -6 26 h12 q6 -12 -6 -26Z" fill="#f0a040"/><path class="an-flicker" style="animation-delay:-.4s" d="M0 -226 q-5 8 -2 14 h4 q3 -6 -2 -14Z" fill="#fff0b0"/><g class="an-pulse">${glow(0,-215,90,70,'#f0a040',.35)}</g>`,
  column:(P)=>`<rect x="-26" y="-250" width="52" height="250" fill="${P.stone}"/>`+[-14,0,14].map(x=>`<path d="M${x} -244 V-6" stroke="${P.joint}" stroke-width="3"/>`).join('')+
    `<rect x="-38" y="-262" width="76" height="16" fill="${P.joint}"/><rect x="-34" y="-12" width="68" height="12" fill="${P.joint}"/>`,
  minoan:(P)=>`<path d="M-22 -250 h44 l-8 240 h-28Z" fill="#8a2a22"/><ellipse cx="0" cy="-256" rx="34" ry="12" fill="#2a1a14"/><rect x="-30" y="-12" width="60" height="12" fill="#2a1a14"/>`,
@@ -79,17 +80,17 @@ const D={
    [0,1,2,3,4].map(i=>`<rect x="${x-46+i*20}" y="${y-30}" width="14" height="30" rx="3" fill="${['#c8b890','#a89870','#d8c8a0','#8a6a48','#c8a878'][(i+x/120+y)&3&&i%5]}"/>`).join('')).join('')).join(''),
  well:(P)=>`<ellipse cx="0" cy="0" rx="150" ry="34" fill="#05040a" stroke="${P.joint}" stroke-width="10"/><ellipse cx="0" cy="4" rx="120" ry="22" fill="none" stroke="${P.stone}" stroke-width="3" opacity=".4"/>`,
  water:(P)=>{ const [u,d]=grad(['#3a6a8a','#12283a']); return d+`<ellipse cx="0" cy="0" rx="200" ry="40" fill="${u}" stroke="${P.joint}" stroke-width="8"/>`+
-   [0,1,2].map(i=>`<path d="M${-120+i*70} ${-6+i*6} q20 -6 40 0" stroke="#a8d0e8" stroke-width="2" fill="none" opacity=".6"/>`).join(''); },
- oil:()=>`<ellipse cx="0" cy="0" rx="90" ry="16" fill="#1a1610"/><ellipse cx="-20" cy="-4" rx="40" ry="5" fill="#6a5a3a" opacity=".5"/>`,
+   [0,1,2].map(i=>`<path class="an-wave"${dl(i*2)} d="M${-120+i*70} ${-6+i*6} q20 -6 40 0" stroke="#a8d0e8" stroke-width="2" fill="none" opacity=".6"/>`).join(''); },
+ oil:()=>`<ellipse cx="0" cy="0" rx="90" ry="16" fill="#1a1610"/><ellipse class="an-shimmer" cx="-20" cy="-4" rx="40" ry="5" fill="#6a5a3a" opacity=".5"/>`,
  ledge:(P)=>`<path d="M-160 -150 H160 L140 -126 H-140Z" fill="${P.stone}" stroke="${P.joint}" stroke-width="4"/><path d="M-160 -150 H160" stroke="${P.far}" stroke-width="2" opacity=".5"/>`,
- rocks:(lit)=>[[-60,0,40],[0,-10,52],[60,0,38],[-28,-40,30],[30,-44,28]].map(([x,y,r])=>`<ellipse cx="${x}" cy="${y-r/2}" rx="${r}" ry="${r*.7}" fill="${lit?'#6a8a5a':'#4a4a52'}" stroke="#2a2a30" stroke-width="3"/>`).join('')+(lit?glow(0,-30,140,80,'#a8f0a0',.45):''),
- fog:()=>{ let s=''; const r=rng(5); for(let i=0;i<9;i++){ const x=r()*W, y=200+r()*150; s+=`<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(160+r()*160).toFixed(0)}" ry="${(18+r()*20).toFixed(0)}" fill="#c8e8a8" opacity=".16"/>`; } return s; },
- aura:()=>glow(598,200,260,170,'#c8a8ff',.5)+[0,1,2,3,4,5].map(i=>`<circle cx="${480+i*46}" cy="${120+(i*37)%90}" r="3" fill="#f0e8ff" opacity=".8"/>`).join(''),
- notes:()=>[[300,120],[860,90],[640,70]].map(([x,y])=>`<g transform="translate(${x} ${y})" fill="#e8d8a0" opacity=".7"><ellipse cx="0" cy="0" rx="8" ry="6"/><rect x="6" y="-30" width="3" height="30"/><path d="M9 -30 q12 6 10 16" stroke="#e8d8a0" stroke-width="3" fill="none"/></g>`).join('')
+ rocks:(lit)=>[[-60,0,40],[0,-10,52],[60,0,38],[-28,-40,30],[30,-44,28]].map(([x,y,r])=>`<ellipse cx="${x}" cy="${y-r/2}" rx="${r}" ry="${r*.7}" fill="${lit?'#6a8a5a':'#4a4a52'}" stroke="#2a2a30" stroke-width="3"/>`).join('')+(lit?`<g class="an-pulse">${glow(0,-30,140,80,'#a8f0a0',.45)}</g>`:''),
+ fog:()=>{ let s=''; const r=rng(5); for(let i=0;i<9;i++){ const x=r()*W, y=200+r()*150; s+=`<ellipse class="an-drift"${dl(r()*40,'animation-duration:'+(20+r()*20).toFixed(0)+'s')} cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(160+r()*160).toFixed(0)}" ry="${(18+r()*20).toFixed(0)}" fill="#c8e8a8" opacity=".16"/>`; } return s; },
+ aura:()=>`<g class="an-pulse">${glow(598,200,260,170,'#c8a8ff',.5)}</g>`+[0,1,2,3,4,5].map(i=>`<circle class="an-twinkle"${dl(i*.4)} cx="${480+i*46}" cy="${120+(i*37)%90}" r="3" fill="#f0e8ff" opacity=".8"/>`).join(''),
+ notes:()=>[[300,120],[860,90],[640,70]].map(([x,y],i)=>`<g class="an-float"${dl(i*2)}><g transform="translate(${x} ${y})" fill="#e8d8a0" opacity=".7"><ellipse cx="0" cy="0" rx="8" ry="6"/><rect x="6" y="-30" width="3" height="30"/><path d="M9 -30 q12 6 10 16" stroke="#e8d8a0" stroke-width="3" fill="none"/></g></g>`).join('')
 };
 // ---------- créatures (debout sur le sol, origine aux pieds) ----------
 const C={
- 25:()=>`<g opacity=".9">${glow(0,-150,60,60,'#a8f0ff',.6)}<path d="M0 -180 q-14 20 -10 40 q10 16 20 0 q4 -20 -10 -40Z" fill="#c8f0ff"/><path d="M-6 -150 q-30 -20 -40 -6 q20 6 40 14 M6 -150 q30 -20 40 -6 q-20 6 -40 14" fill="#a8e0f0" opacity=".6"/></g>`,
+ 25:()=>`<g class="an-float" style="animation-duration:3s"><g opacity=".9">${glow(0,-150,60,60,'#a8f0ff',.6)}<path d="M0 -180 q-14 20 -10 40 q10 16 20 0 q4 -20 -10 -40Z" fill="#c8f0ff"/><path d="M-6 -150 q-30 -20 -40 -6 q20 6 40 14 M6 -150 q30 -20 40 -6 q-20 6 -40 14" fill="#a8e0f0" opacity=".6"/></g></g>`,
  26:()=>`<path d="M-40 0 l10 -80 q-20 -30 0 -70 q30 -24 60 0 q16 40 -4 70 l12 80 h-20 l-8 -60 h-24 l-8 60Z" fill="#5a6a3a"/><ellipse cx="10" cy="-170" rx="26" ry="22" fill="#6a7a44"/><circle cx="2" cy="-174" r="4" fill="#f0e040"/><circle cx="20" cy="-174" r="4" fill="#f0e040"/>`+
    `<path d="M-30 -120 l-40 40 M50 -120 l40 30" stroke="#5a6a3a" stroke-width="14" stroke-linecap="round"/><path d="M90 -90 l20 -60" stroke="#5a3a22" stroke-width="10" stroke-linecap="round"/>`,
  27:()=>`<ellipse cx="0" cy="-16" rx="60" ry="16" fill="#3a2418"/>`+[-40,-20,0,20,40].map(x=>`<path d="M${x} -10 l${x/3} 14 M${x} -20 l${x/3} -14" stroke="#3a2418" stroke-width="5"/>`).join('')+
@@ -102,7 +103,7 @@ const C={
    `<path d="M-50 -160 l-40 50 l-10 40 M50 -160 l40 40" stroke="#7a4a2e" stroke-width="22" stroke-linecap="round" fill="none"/><path d="M-26 -230 q-4 -30 26 -34 q30 4 26 34 l-6 34 h-40Z" fill="#4a2e1e"/>`+
    `<path d="M-24 -246 q-40 -6 -46 -40 q24 18 46 20 M24 -246 q40 -6 46 -40 q-24 18 -46 20" fill="#e8d8b0"/><circle cx="-10" cy="-226" r="5" fill="#ff4020"/><circle cx="10" cy="-226" r="5" fill="#ff4020"/>`+
    `<path d="M90 -120 l20 -40" stroke="#5a5a62" stroke-width="6"/><circle cx="112" cy="-166" r="14" fill="#5a5a62"/>`+[0,60,120,180,240,300].map(a=>`<path d="M112 -166 l${(20*Math.cos(a*Math.PI/180)).toFixed(0)} ${(20*Math.sin(a*Math.PI/180)).toFixed(0)}" stroke="#5a5a62" stroke-width="4"/>`).join(''),
- 31:()=>glow(0,-120,110,120,'#f0e0a0',.45)+`<path d="M-50 0 Q-60 -100 -30 -180 h60 Q60 -100 50 0Z" fill="#e8e0d0" opacity=".85"/><path d="M-30 -180 q30 -50 60 0Z" fill="#d8d0c0"/><ellipse cx="0" cy="-150" rx="18" ry="8" fill="#2a2030"/>`,
+ 31:()=>`<g class="an-pulse">${glow(0,-120,110,120,'#f0e0a0',.45)}</g>`+`<path d="M-50 0 Q-60 -100 -30 -180 h60 Q60 -100 50 0Z" fill="#e8e0d0" opacity=".85"/><path d="M-30 -180 q30 -50 60 0Z" fill="#d8d0c0"/><ellipse cx="0" cy="-150" rx="18" ry="8" fill="#2a2030"/>`,
 };
 // ---------- objets qu'on peut porter (posés au sol, et icônes) ----------
 const gem=(c)=>`<path d="M-14 -16 l8 -10 h12 l8 10 l-14 16Z" fill="${c}" stroke="#fff" stroke-width="1.5" stroke-opacity=".6"/><path d="M-14 -16 h28 M-6 -26 l6 26 l6 -26" stroke="#fff" stroke-width="1" opacity=".5" fill="none"/>`;
@@ -147,7 +148,7 @@ const OBJ={
  46:()=>`<ellipse cx="0" cy="-12" rx="16" ry="12" fill="#e8e0f0"/><ellipse cx="-4" cy="-14" rx="8" ry="5" fill="#a0f0d0" opacity=".7"/><ellipse cx="6" cy="-10" rx="5" ry="3" fill="#f0a0c0" opacity=".7"/>`,
  47:()=>gem('#2040c8'),
 };
-for(let n=55;n<=62;n++) OBJ[n]=()=>glow(0,-20,40,30,'#c8a8ff',.6)+`<path d="M-12 -8 l12 -24 l12 24 l-20 -14 h16Z" fill="none" stroke="#e8d8ff" stroke-width="3"/>`;
+for(let n=55;n<=62;n++) OBJ[n]=()=>`<g class="an-pulse">${glow(0,-20,40,30,'#c8a8ff',.6)}</g>`+`<path class="an-twinkle" d="M-12 -8 l12 -24 l12 24 l-20 -14 h16Z" fill="none" stroke="#e8d8ff" stroke-width="3"/>`;
 for(const n in C) OBJ[n]=C[n];
 // ---------- les lieux, d'après leur sorte (data.js) ----------
 function place(r,kind){
@@ -156,7 +157,7 @@ function place(r,kind){
   switch(kind){
    case 'forest': {
      const [u,d]=grad(['#0a1030','#2a3060','#4a4a70']); s=d+`<rect width="${W}" height="${H}" fill="${u}"/>`;
-     const rn=rng(3); for(let i=0;i<40;i++) s+=`<circle cx="${(rn()*W).toFixed(0)}" cy="${(rn()*140).toFixed(0)}" r="${(rn()*1.6+.4).toFixed(1)}" fill="#e8e8ff"/>`;
+     const rn=rng(3); for(let i=0;i<40;i++) s+=`<circle${i%3?'':` class="an-twinkle"${dl(i*.3)}`} cx="${(rn()*W).toFixed(0)}" cy="${(rn()*140).toFixed(0)}" r="${(rn()*1.6+.4).toFixed(1)}" fill="#e8e8ff"/>`;
      s+=`<circle cx="980" cy="70" r="30" fill="#f0ecd0"/>`+glow(980,70,90,90,'#f0ecd0',.3);
      s+=`<path d="M0 300 Q300 270 600 290 T${W} 280 V${H} H0Z" fill="#1a2a1a"/>`;
      // l'entrée du labyrinthe, dans la colline
@@ -184,7 +185,7 @@ function place(r,kind){
      { const rn=rng(r+5); for(let i=0;i<14;i++) s+=D.stalac(rn()*W,30+rn()*70,v.P);
        s+=`<path d="M0 ${H} Q120 300 250 330 T560 340 Q760 320 900 344 T${W} 330 V${H}Z" fill="${v.P.joint}" opacity=".6"/>`; } break;
    case 'pit': v=vault(r,{}); s=v.s+exits(v)+g(598,1.2,D.well(v.P),346); break;
-   case 'shaft': v=vault(r,{narrow:true}); s=v.s+exits(v)+glow(598,60,90,200,v.P.far,.35)+`<path d="M560 0 H636 L680 ${v.top} H516Z" fill="${v.P.far}" opacity=".12"/>`; break;
+   case 'shaft': v=vault(r,{narrow:true}); s=v.s+exits(v)+glow(598,60,90,200,v.P.far,.35)+[...Array(14).keys()].map(i=>`<circle class="an-float"${dl(i*.5)} cx="${540+(i*37)%120}" cy="${30+(i*53)%200}" r="1.5" fill="${v.P.far}" opacity=".6"/>`).join('')+`<path d="M560 0 H636 L680 ${v.top} H516Z" fill="${v.P.far}" opacity=".12"/>`; break;
    case 'tunnel': v=vault(r,{narrow:true,low:true}); s=v.s+exits(v); break;
    case 'passage': v=vault(r,{narrow:true}); s=v.s+exits(v)+g(v.L+40,1,D.torch(v.P),v.back-10); break;
    case 'maze': { v=vault(r,{narrow:true}); s=v.s;
@@ -211,7 +212,7 @@ function render(key,off,objs,opt){
   // l'hydre : sept têtes au bout de longs cous ; attachée, une corde l'enserre
   if(has(104)||has(105)){ let h=`<ellipse cx="0" cy="-40" rx="90" ry="44" fill="#2a5a3a"/>`;
     for(let i=0;i<7;i++){ const a=-150+i*20, x=Math.cos(a*Math.PI/180)*150, y=-60+Math.sin(a*Math.PI/180)*150;
-      h+=`<path d="M0 -60 Q${(x*.5).toFixed(0)} ${(y+40).toFixed(0)} ${x.toFixed(0)} ${y.toFixed(0)}" stroke="#2a5a3a" stroke-width="16" fill="none"/><ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="20" ry="13" fill="#3a7a4a"/><circle cx="${(x+6).toFixed(0)}" cy="${(y-4).toFixed(0)}" r="3" fill="#ff4020"/>`; }
+      h+=`<g${has(104)?` class="an-sway"${dl(i*.7,'transform-origin:50% 100%;animation-duration:'+(2.5+i%3*.6).toFixed(1)+'s')}`:''}><path d="M0 -60 Q${(x*.5).toFixed(0)} ${(y+40).toFixed(0)} ${x.toFixed(0)} ${y.toFixed(0)}" stroke="#2a5a3a" stroke-width="16" fill="none"/><ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="20" ry="13" fill="#3a7a4a"/><circle cx="${(x+6).toFixed(0)}" cy="${(y-4).toFixed(0)}" r="3" fill="#ff4020"/></g>`; }
     if(has(105)) h+=`<path d="M-90 -50 Q0 -10 90 -50 M-80 -24 Q0 10 80 -24" stroke="#b8945a" stroke-width="7" fill="none"/>`;
     s+=g(598,1,h,358); }
   // créatures, puis objets au sol
@@ -223,7 +224,7 @@ function render(key,off,objs,opt){
   if(has(108)) s+=D.fog();
   // la lumière : la lampe éclaire autour du joueur ; sans elle, on ne voit rien
   if(has(101)) s+=`<rect width="${W}" height="${H}" fill="#020106" opacity=".95"/>`;
-  else if(has(112)) s+=glow(598,300,520,260,'#ffd890',.18);
+  else if(has(112)) s+=`<g class="an-pulse" style="animation-duration:2.4s">${glow(598,300,520,260,'#ffd890',.18)}</g>`;
   const [vu,vd]=grad(['rgba(4,2,10,.55)','rgba(4,2,10,0)','rgba(4,2,10,0)','rgba(4,2,10,.75)']);
   s+=vd+`<rect width="${W}" height="${H}" fill="${vu}"/>`;
   if(opt&&opt.crop) return `<svg viewBox="${opt.crop}" preserveAspectRatio="xMidYMid slice">${s}</svg>`;
