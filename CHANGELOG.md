@@ -14,6 +14,15 @@
   « Before the Bombs » (en surface seulement). Correctifs : la victoire ne tourne plus en boucle ; le trou creusé près
   de la clôture est devient une fin expliquée ; la boîte de jambon ouverte se dit ouverte ; la porte de la baraque n° 3
   se referme vraiment, et son cadenas ne se reverrouille que porte fermée.
+- **Madness and the Minotaur** (Tom Rosenbaum, Spectral Associates, 1981), huitième aventure : seize trésors à
+  rapporter du labyrinthe du roi Minos, huit sortilèges à apprendre, des créatures qui rôdent et le Minotaure. Premier
+  jeu en code machine : le programme 6809 d'origine tourne tel quel (nouveau moteur `moteur/flux.js`) et ses textes sont
+  traduits au fil de l'affichage. Le temps avance à chaque commande (ATTENDRE laisse passer une minute) ; deux niveaux,
+  le jeu d'origine ou « Débutant » (le sol ne tremble plus, la lampe dure deux fois plus longtemps, les sauts
+  manqués ne tuent plus). Traduction française complète, quatre
+  étages illustrés (une teinte par étage, sorties dessinées, le noir sans lampe), carte, pièces magiques qui lisent la
+  partie en cours (tout est tiré au hasard), bruitages, huit fins et une musique, « The Labyrinth of Minos » (hors des
+  dédales). Correctifs de bugs d'origine (voir docs/PLAN-MADNESS.md).
 
 ## 1.0.1 — 19 novembre 2026
 

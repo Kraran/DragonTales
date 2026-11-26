@@ -49,6 +49,8 @@ jobs:
         run: node tests/essai-eno.js
       - name: Stalag dans Chrome
         run: node tests/essai-stalag.js
+      - name: Madness and the Minotaur dans Chrome
+        run: node tests/essai-madness.js
       - name: Fins et bilan dans Chrome
         run: node tests/essai-fins.js
       - name: Lecture à voix haute dans Chrome

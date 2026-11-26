@@ -1,5 +1,5 @@
 // Essai de Madness and the Minotaur dans Chrome : étagère, introduction, choix du niveau, un abandon (UNCLE), partie
-// entière au niveau débutant jusqu'à la victoire (graine 7, quelques commandes tapées en français), textes traduits,
+// entière au niveau débutant jusqu’à la victoire (graine 7, quelques commandes tapées en français), deux pièces magiques, textes traduits,
 // aucune erreur JavaScript.
 //   python build.py && node tests/essai-madness.js
 let chromium; try{ ({chromium}=require('playwright')); }catch(e){ ({chromium}=require('/opt/npm-tools/node_modules/playwright')); }

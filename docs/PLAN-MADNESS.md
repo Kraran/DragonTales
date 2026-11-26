@@ -97,4 +97,12 @@ le dossier porte `EN-COURS.md` (absent de la page normale, `python build.py --to
   trois fois). Indices de situation : la bourrasque (VETAR tout de suite), le noir, l'hydre qui repousse, la piqûre,
   le brouillard, une créature qui attaque, l'Oracle, le bassin, la forêt, l'épuisement. Les commandes citées sont
   comprises en français (REGARDER LE PUITS, REGARDER LE BASSIN ajoutés).
-- Reste : décors, bruitages.
+- Décors (`scenes.js`) : d'après la boîte, voûtes de pierre ; une teinte par étage (sable, violet, vert d'eau, bleu
+  nuit) ; les sorties sont dessinées (arche au fond pour le nord, ouvertures de côté, escalier, trou) ; une scène par
+  sorte de lieu (dédale, couloir, salle, galerie à colonnes, caverne, fosse, bassin, temple, crypte, cave…) ; les
+  créatures, l'hydre (attachée ou non), le petit puits, la corniche, le tas de rochers, le brouillard, l'aura, et le
+  noir quand la lampe n'éclaire pas.
+- Bruitages (`sons.js`) : reconnus dans les messages du jeu (gardés le temps du tour, car le jeu les coupe à
+  32 colonnes) ; ambiances selon la sorte de lieu (gouttes dans les dédales, vent des fosses, chant du temple, forêt
+  la nuit, sifflement de l'hydre).
+- Intégration terminée le 26/11/2026 : `EN-COURS.md` retiré, essai dans la CI, README et journal à jour.

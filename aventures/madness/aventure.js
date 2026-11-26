@@ -78,11 +78,11 @@ DragonTales.register({
  FR, ROOMS, SCENES, HINTS, endings:FINS,
  labels:{
   fr:{
-   sub:"Une aventure de Tom Rosenbaum, Spectral Associates, 1981. Version française (en préparation).",
+   sub:"Une aventure de Tom Rosenbaum, Spectral Associates, 1981. Version française.",
    bye:"Que les dieux te gardent.",
    won:"Tu es sorti du labyrinthe !",
    musicNote:"« The Labyrinth of Minos » : elle joue dans les salles et les couloirs du labyrinthe ; elle se tait dans les dédales de tunnels.",
-   sfxNote:"",
+   sfxNote:"Les bruitages du labyrinthe (créatures, sortilèges, lampe, éboulements…) jouent seulement dans la version moderne.",
    mapHint:"Clique un lieu pour t’y rendre.",
    intro:[
     "On raconte que des trésors sont cachés aux abords du labyrinthe du roi Minos, à Cnossos.",
@@ -92,7 +92,7 @@ DragonTales.register({
    bye:"May the gods keep you.",
    won:"You got out of the labyrinth!",
    musicNote:"“The Labyrinth of Minos”: it plays in the halls and corridors of the labyrinth; it falls silent in the tunnel mazes.",
-   sfxNote:"",
+   sfxNote:"The labyrinth sounds (creatures, spells, lamp, cave-ins…) play only in the modern version.",
    mapHint:"Click a place to walk there.",
    intro:[
     "Rumor has it that there are treasures hidden in the vicinity of King Minos’s labyrinth at Knossos.",
@@ -148,7 +148,20 @@ DragonTales.register({
   status(mem,lang){ if(mem.choosing()) return ''; const c=mem.b(5); return (lang==='fr'?'État physique : ':'Condition: ')+c; },
   sfxFor:(line,cmd,mem)=>mmSfxFor(line,cmd,mem),
   ambient:(mem,off)=>mmAmbient(mem,off),
-  sceneExtras(mem,off){ return []; }
+  // éléments de scène (aventures/madness/scenes.js) : lumière, sorties, et ce que la partie a tiré au hasard
+  sceneExtras(mem,off){ if(mem.choosing()) return [121,123,124];
+   const x=[], lamp=OBJ0+3*11, lf=mem.b(lamp+2), lampHere=lf&0x80||(mem.b(lamp)===off&&!(lf&3));
+   const lit=mem.b(0x0A)&&lampHere;
+   if(off>=40&&off!==202&&!lit) x.push(101); else if(lit) x.push(112);
+   const l=this.links(mem,off); ['N','S','E','W','U','D'].forEach((d,i)=>{ if(l[d]!==null) x.push(121+i); });
+   if(off===mem.b(0x35)||off===203) x.push(102);
+   if(off>=64&&off===mem.b(0x36)) x.push(103);
+   if(off===mem.b(0x33)&&mem.b(0x0E)!==1) x.push(mem.b(0x0E)===0xAA?105:104);
+   if(mem.b(0x10)&&off===mem.b(0x37)) x.push(mem.b(0x11)?107:106);
+   // actions à l'entrée des lieux ($47E4, 3 octets ; la sorte dépend de la place dans la table)
+   for(let k=0;k<36;k++){ if(mem.b(0x47E4+3*k)!==off) continue;
+    if([16,18,19,22].includes(k)) x.push(108); else if(k===27||k===28) x.push(109); else if(k===24) x.push(110); else if(k===34) x.push(111); }
+   return x; }
  }
 });
 })();

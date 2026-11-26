@@ -30,6 +30,8 @@ DragonTales dresses it up: translated texts, mouse play, a map, illustrations, s
 
 ![Stalag in the modern version](docs/stalag.jpg)
 
+![Madness and the Minotaur in the modern version](docs/madness.jpg)
+
 ## Adventures
 
 | Adventure | Author, publisher | Year | Machine | Languages |
@@ -41,6 +43,7 @@ DragonTales dresses it up: translated texts, mouse play, a map, illustrations, s
 | The Final Countdown | Bill and Debbie Cook, Dragon Data | 1983 | Dragon 32 | French, English |
 | Eno | Paul Austin and Leroy C. Smith, Pal Creations / Dragon Data | 1982 | Dragon 32 | French, English |
 | Stalag | Paul Austin and Leroy C. Smith, Pal Creations / Dragon Data | 1982 | Dragon 32 | French, English |
+| Madness and the Minotaur | Tom Rosenbaum, Spectral Associates / Dragon Data | 1982 | Dragon 32 | French, English |
 
 ## Play
 
@@ -113,6 +116,7 @@ node tests/essai-mansion.js         # in Chrome: Mansion of Doom (full game, col
 node tests/essai-finalcountdown.js  # in Chrome: The Final Countdown (skill level, full game despite randomness, endings)
 node tests/essai-eno.js             # in Chrome: Eno (full game in French, deaths, magic coins)
 node tests/essai-stalag.js          # in Chrome: Stalag (full game in French, a death, a magic coin)
+node tests/essai-madness.js         # in Chrome: Madness and the Minotaur (levels, giving up, magic coins, full game)
 node tests/fins.js                  # no browser: the list of endings of each adventure
 node tests/essai-fins.js            # in Chrome: endings collection and end-of-game summary
 node tests/essai-voix.js            # in Chrome: read aloud (simulated Edge voices)
@@ -136,9 +140,11 @@ Warning: the adventures' `solution.txt` files spoil the whole game.
 - **The Final Countdown**: original program and texts by Bill and Debbie Cook, published by Dragon Data in 1983.
   The original program and box belong to their rights holders.
 - **Eno**: original program and texts by Paul Austin and Leroy C. Smith, Pal Creations, distributed by Dragon Data in 1982.
-  The original program and box belong to their rights holders.
+  The original pr
+- **Madness and the Minotaur**: original program and texts by Tom Rosenbaum, Spectral Associates (1981), distributed by Dragon Data in 1982.
+  The original program and box belong to their rights holders. CoCo version disassembly by Chris Cantrell (computerarcheology.com).ogram and box belong to their rights holders.
 - **Stalag**: original program and texts by Paul Austin and Leroy C. Smith, Pal Creations, distributed by Dragon Data in 1982.
   The original program and box belong to their rights holders.
 - Port, French translations, interface, vector illustrations, hints and sound effects: the DragonTales project.
 - Music: “Awakening in the Desert” (El Diablero), “The Guardian's Hoard” (Dragon Mountain), “The Last Waltz” (S.S. Poseidon),
-  “The Count's Last Night” (Mansion of Doom), “T Minus Zero” (The Final Countdown), “The Aunt's Last Will” (Eno) and “Before the Bombs” (Stalag), made for this project.
+  “The Count's Last Night” (Mansion of Doom), “T Minus Zero” (The Final Countdown), “The Aunt's Last Will” (Eno), “Before the Bombs” (Stalag) and “The Labyrinth of Minos” (Madness and the Minotaur), made for this project.
