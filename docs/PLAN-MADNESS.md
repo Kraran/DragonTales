@@ -72,8 +72,14 @@ le dossier porte `EN-COURS.md` (absent de la page normale, `python build.py --to
 
 ### 3. Ensuite
 
-- Traduction (phrases du jeu, descriptions des lieux, descriptions aléatoires des passages, objets, sortilèges).
-- Carte des quatre étages (positions déjà là : la grille du jeu), noms des lieux en français.
+- **Traduction — faite le 26/11/2026.** Le jeu compose ses phrases mot à mot ; `textes.js` coupe chaque ligne en
+  phrases et traduit chacune : 250 phrases connues (passages, objets à leur place, réponses, fins), les 123
+  descriptions de lieux (`lieux-fr.js`, avec un titre court français et anglais pour le bandeau et la carte), et les
+  phrases composées autour d'un nom (l'Oracle, les sortilèges appris, l'inventaire, la créature qui meurt, « je ne
+  vois pas de… », le score). Noms d'objets avec leur genre ; les sortilèges gardent leur nom. Saisie en français
+  (verbes, noms, « allumer la lampe », « anneau de puissance »…). Vérifié par des milliers de commandes tirées au
+  hasard sur 50 parties, plus des événements provoqués (Oracle, sortilège, bassin, créatures) : aucune phrase
+  oubliée ; les deux seuls textes propres à la version Dragon (écran titre) sont traduits.
 - Musique : « The Labyrinth of Minos » (Suno, 3 min 57, Opus 56k), intégrée le 26/11/2026 ; muette dans les dédales.
 - Solution pour une graine fixe (essais automatiques), fins, indices des pièces magiques (lus dans la mémoire :
   combinaisons et lieux changent à chaque partie), décors, bruitages.

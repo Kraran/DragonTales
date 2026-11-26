@@ -107,7 +107,7 @@ DragonTales.register({
  sfx:MM_SFX,
  frSkip:[],
  revExtra:{},
- nounEn:w=>w,
+ nounEn:w=>{ const x=FR.frToEn('PRENDRE '+w).split(' '); return x.length>1?x[1]:''; },
 
  // ---- lecture de l'état du jeu ----
  world:{
@@ -120,6 +120,10 @@ DragonTales.register({
   pos:off=>[off&7,(off>>3)&7,off>>6],
   levelName:(lv,lang)=>(lang==='fr'?'étage ':'floor ')+(lv+1),
   say:(text,lang,classic)=>mmSay(text,lang,classic),
+  proper:(s,lang)=>{ for(const w of ['Minotaure','Minotaur','Oracle','Zeus','Minos','Cnossos','Knossos','Spectral Associates','Dragon Data'])
+     s=s.replace(new RegExp('\\b'+w+'\\b','gi'),w);
+   return s.replace(/\b(vetar|mitra|okkan|akhirom|nergal|belrog|crom|ishtar)\b/gi,x=>x.toUpperCase()); },
+  objLabel:(o,lang)=>lang==='fr'&&MM_OBJ[o.name]?MM_OBJ[o.name][0]:o.name.toLowerCase(),
   clean:(s,moved)=>mmClean(s,moved),
   autoKey:mem=>' ',
   // le niveau, avant la partie
