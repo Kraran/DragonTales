@@ -81,7 +81,7 @@ DragonTales.register({
    sub:"Une aventure de Tom Rosenbaum, Spectral Associates, 1981. Version française (en préparation).",
    bye:"Que les dieux te gardent.",
    won:"Tu es sorti du labyrinthe !",
-   musicNote:"",
+   musicNote:"« The Labyrinth of Minos » : elle joue dans les salles et les couloirs du labyrinthe ; elle se tait dans les dédales de tunnels.",
    sfxNote:"",
    mapHint:"Clique un lieu pour t’y rendre.",
    intro:[
@@ -91,7 +91,7 @@ DragonTales.register({
    sub:"An adventure by Tom Rosenbaum, Spectral Associates, 1981.",
    bye:"May the gods keep you.",
    won:"You got out of the labyrinth!",
-   musicNote:"",
+   musicNote:"“The Labyrinth of Minos”: it plays in the halls and corridors of the labyrinth; it falls silent in the tunnel mazes.",
    sfxNote:"",
    mapHint:"Click a place to walk there.",
    intro:[

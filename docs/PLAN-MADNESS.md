@@ -74,5 +74,6 @@ le dossier porte `EN-COURS.md` (absent de la page normale, `python build.py --to
 
 - Traduction (phrases du jeu, descriptions des lieux, descriptions aléatoires des passages, objets, sortilèges).
 - Carte des quatre étages (positions déjà là : la grille du jeu), noms des lieux en français.
+- Musique : « The Labyrinth of Minos » (Suno, 3 min 57, Opus 56k), intégrée le 26/11/2026 ; muette dans les dédales.
 - Solution pour une graine fixe (essais automatiques), fins, indices des pièces magiques (lus dans la mémoire :
-  combinaisons et lieux changent à chaque partie), décors, bruitages, musique.
+  combinaisons et lieux changent à chaque partie), décors, bruitages.
