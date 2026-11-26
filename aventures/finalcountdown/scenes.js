@@ -12,6 +12,7 @@ function grad(stops,dir){ const id='fcg'+(uid++); const [x2,y2]=dir==='h'?[1,0]:
 function glow(cx,cy,rx,ry,c,o){ const id='fcl'+(uid++); return `<defs><radialGradient id="${id}"><stop offset="0" stop-color="${c}" stop-opacity="${o||.55}"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#${id})"/>`; }
 const veil=()=>{ const [u,d]=grad(['rgba(6,8,10,0)','rgba(6,8,10,0)','rgba(6,8,10,.85)']); return d+`<rect width="${W}" height="${H}" fill="${u}"/>`; };
 const f0=n=>n.toFixed(0);
+const dl=(d,x)=>` style="animation-delay:-${d.toFixed(1)}s${x?';'+x:''}"`;
 
 // ---------- intérieurs de la base ----------
 // mur haut, mur bas, plinthe, sol proche, sol loin, néon
@@ -28,7 +29,7 @@ function room(r,p,o){
   const [u,d]=grad([p[0],p[1]]); let s=d+`<rect width="${W}" height="${H}" fill="${u}"/>`;
   // plafond à dalles et néons
   s+=`<rect width="${W}" height="40" fill="${p[2]}"/>`;
-  if(!o.dark) for(let x=120;x<W;x+=320) s+=glow(x+60,44,200,70,p[5],.22)+`<rect x="${x}" y="30" width="120" height="12" fill="${p[5]}" opacity=".9"/>`;
+  if(!o.dark) for(let x=120;x<W;x+=320){ const bz=o.buzz&&x===440; s+=(bz?`<g class="an-buzz">`:'')+glow(x+60,44,200,70,p[5],.22)+`<rect x="${x}" y="30" width="120" height="12" fill="${p[5]}" opacity=".9"/>`+(bz?'</g>':''); }
   for(let x=0;x<W;x+=80) s+=`<path d="M${x} 0 V40" stroke="#000" stroke-width="2" opacity=".25"/>`;
   // plinthe
   s+=`<rect x="0" y="256" width="${W}" height="12" fill="${p[2]}"/>`;
@@ -46,26 +47,27 @@ function door(x,w,o){ o=o||{}; const h=o.h||190, y=268-h; let s=`<rect x="${x-8}
   return s; }
 function elevator(x,on){ let s=`<rect x="${x-14}" y="60" width="208" height="208" fill="#8a8e92"/><rect x="${x}" y="78" width="180" height="190" fill="#b8bcc0"/><path d="M${x+90} 78 V268" stroke="#6a6e72" stroke-width="4"/>`;
   s+=`<rect x="${x+200}" y="150" width="22" height="50" rx="4" fill="#4a4e52"/><circle cx="${x+211}" cy="165" r="6" fill="${on?'#ffcc4a':'#2a2a2a'}"/><circle cx="${x+211}" cy="185" r="6" fill="#2a2a2a"/>`;
-  if(on) s+=glow(x+211,165,30,30,'#ffcc4a',.5)+`<path d="M${x+80} 66 l10 -8 l10 8Z" fill="#ffcc4a"/>`;
+  if(on) s+=`<g class="an-pulse" style="animation-duration:1.2s">${glow(x+211,165,30,30,'#ffcc4a',.5)}</g>`+`<path d="M${x+80} 66 l10 -8 l10 8Z" fill="#ffcc4a"/>`;
   return s; }
 function deskD(x,w,c){ c=c||'#6a5a48'; return `<rect x="${x}" y="${G-96}" width="${w}" height="14" fill="${c}"/><rect x="${x+8}" y="${G-82}" width="${w*.35}" height="82" fill="#5a5048"/><rect x="${x+w-w*.35-8}" y="${G-82}" width="${w*.35}" height="82" fill="#5a5048"/>`+[0,1,2].map(i=>`<path d="M${x+14} ${G-60+i*26} h${w*.35-12}" stroke="#3a3228" stroke-width="3"/>`).join(''); }
 function chairD(x,c){ c=c||'#3a3a3e'; return `<rect x="${x}" y="${G-120}" width="54" height="56" rx="8" fill="${c}"/><rect x="${x-4}" y="${G-66}" width="62" height="14" rx="5" fill="${c}"/><path d="M${x+27} ${G-52} V${G-10} M${x} ${G} L${x+27} ${G-10} L${x+54} ${G}" stroke="#5a5a60" stroke-width="5"/>`; }
 function filing(x,n){ let s=''; for(let i=0;i<(n||2);i++){ const fx=x+i*74; s+=`<rect x="${fx}" y="${G-150}" width="70" height="150" fill="#8a9098"/>`+[0,1,2,3].map(j=>`<rect x="${fx+6}" y="${G-144+j*36}" width="58" height="30" fill="#9aa0a8" stroke="#6a7078" stroke-width="2"/><rect x="${fx+28}" y="${G-132+j*36}" width="14" height="5" fill="#4a4e54"/>`).join(''); } return s; }
-function flag(x){ return `<path d="M${x} ${G} V${G-230}" stroke="#c8a04a" stroke-width="5"/><rect x="${x+3}" y="${G-226}" width="90" height="56" fill="#b22234"/>`+[1,3,5].map(i=>`<rect x="${x+3}" y="${G-226+i*8}" width="90" height="8" fill="#f4f4f4"/>`).join('')+`<rect x="${x+3}" y="${G-226}" width="38" height="32" fill="#3c3b6e"/>`; }
+function flag(x){ return `<path d="M${x} ${G} V${G-230}" stroke="#c8a04a" stroke-width="5"/><g class="an-swing" style="transform-origin:0% 0%;animation-duration:4s"><rect x="${x+3}" y="${G-226}" width="90" height="56" fill="#b22234"/>`+[1,3,5].map(i=>`<rect x="${x+3}" y="${G-226+i*8}" width="90" height="8" fill="#f4f4f4"/>`).join('')+`<rect x="${x+3}" y="${G-226}" width="38" height="32" fill="#3c3b6e"/></g>`; }
 function clock(x,y){ return `<circle cx="${x}" cy="${y}" r="26" fill="#f4f4ec" stroke="#2a2a2a" stroke-width="5"/><path d="M${x} ${y} V${y-16} M${x} ${y} L${x+11} ${y+6}" stroke="#2a2a2a" stroke-width="3"/>`; }
 // compteur rouge du compte à rebours
 function countdown(x,y,k){ k=k||1; const t=LEFT===null?'--':String(LEFT).padStart(3,'0');
-  return `<g transform="translate(${x} ${y}) scale(${k})"><rect x="-90" y="-34" width="180" height="62" rx="6" fill="#0a0606" stroke="#3a3a3a" stroke-width="5"/>`+glow(0,-3,90,30,'#ff2a1a',.25)+
+  return `<g transform="translate(${x} ${y}) scale(${k})"><rect x="-90" y="-34" width="180" height="62" rx="6" fill="#0a0606" stroke="#3a3a3a" stroke-width="5"/>`+`<g class="an-pulse" style="animation-duration:1s">${glow(0,-3,90,30,'#ff2a1a',.25)}</g>`+
     `<text x="-70" y="12" font-family="monospace" font-size="15" fill="#ff5a4a">T-</text><text x="18" y="18" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="42" fill="#ff3a2a">${t}</text></g>`; }
 function console_(x,w,r){ let s=`<path d="M${x} ${G} V${G-90} L${x+30} ${G-120} H${x+w-30} L${x+w} ${G-90} V${G}Z" fill="#4a545c"/><path d="M${x+30} ${G-120} H${x+w-30} L${x+w} ${G-90} H${x}Z" fill="#5a666e"/>`;
-  for(let i=0;i<Math.floor(w/22)-2;i++) s+=`<circle cx="${x+30+i*22}" cy="${G-104}" r="4" fill="${['#ff4a3a','#4aff6a','#ffd84a','#4ac8ff'][Math.floor(r()*4)]}"/>`;
+  for(let i=0;i<Math.floor(w/22)-2;i++) { const c=['#ff4a3a','#4aff6a','#ffd84a','#4ac8ff'][Math.floor(r()*4)], b=r()<.35; s+=`<circle${b?` class="an-blinkfast"${dl(r()*2,'animation-duration:'+(.6+r()*1.4).toFixed(1)+'s')}`:''} cx="${x+30+i*22}" cy="${G-104}" r="4" fill="${c}"/>`; }
   for(let i=0;i<3;i++) s+=`<rect x="${x+20+i*(w-40)/3}" y="${G-80}" width="${(w-40)/3-14}" height="10" fill="#2a3036"/>`;
   return s; }
-function crt(x,y,w,h,txt,c){ c=c||'#4aff7a'; return `<rect x="${x-10}" y="${y-10}" width="${w+20}" height="${h+20}" rx="8" fill="#3a3e42"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="#071a0e"/>`+glow(x+w/2,y+h/2,w*.6,h*.6,c,.18)+
-  (txt||[]).map((t,i)=>`<text x="${x+12}" y="${y+24+i*20}" font-family="monospace" font-size="15" fill="${c}">${t}</text>`).join(''); }
+function crt(x,y,w,h,txt,c){ c=c||'#4aff7a'; return `<rect x="${x-10}" y="${y-10}" width="${w+20}" height="${h+20}" rx="8" fill="#3a3e42"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="#071a0e"/>`+`<g class="an-pulse" style="animation-duration:2.2s">${glow(x+w/2,y+h/2,w*.6,h*.6,c,.18)}</g>`+
+  (txt||[]).map((t,i)=>`<text x="${x+12}" y="${y+24+i*20}" font-family="monospace" font-size="15" fill="${c}">${t}</text>`).join('')+`<rect class="an-blinkfast" x="${x+12}" y="${y+12+(txt||[]).length*20}" width="9" height="15" fill="${c}"/>`; }
 function mainframe(x,r){ let s=`<rect x="${x}" y="${G-200}" width="110" height="200" fill="#c8ccc4"/><rect x="${x}" y="${G-200}" width="110" height="14" fill="#2a4a6a"/>`;
-  for(const cy of [G-150,G-150]) s+=`<circle cx="${x+30}" cy="${cy}" r="22" fill="#2a2e30"/><circle cx="${x+80}" cy="${cy}" r="22" fill="#2a2e30"/><circle cx="${x+30}" cy="${cy}" r="7" fill="#8a8e90"/><circle cx="${x+80}" cy="${cy}" r="7" fill="#8a8e90"/>`;
-  for(let i=0;i<8;i++) s+=`<circle cx="${x+14+i*12}" cy="${G-96}" r="3.5" fill="${r()<.5?'#ff4a3a':'#ffd84a'}"/>`;
+  const reel=(cx,cy,d)=>`<g class="an-spin"${dl(d,'animation-duration:'+(3+d).toFixed(1)+'s')}><circle cx="${cx}" cy="${cy}" r="22" fill="#2a2e30"/><path d="M${cx} ${cy-20} V${cy+20} M${cx-20} ${cy} H${cx+20}" stroke="#4a4e52" stroke-width="4"/><circle cx="${cx}" cy="${cy}" r="7" fill="#8a8e90"/></g>`;
+  s+=reel(x+30,G-150,r()*2)+reel(x+80,G-150,r()*2);
+  for(let i=0;i<8;i++) s+=`<circle class="an-blinkfast"${dl(r()*2,'animation-duration:'+(.5+r()*1.2).toFixed(1)+'s')} cx="${x+14+i*12}" cy="${G-96}" r="3.5" fill="${r()<.5?'#ff4a3a':'#ffd84a'}"/>`;
   return s+`<rect x="${x+10}" y="${G-80}" width="90" height="60" fill="#a8aca4"/>`; }
 function shelves(x,w,r,boxes){ let s=`<rect x="${x}" y="${G-220}" width="${w}" height="220" fill="#3a3a32"/>`; for(let j=0;j<4;j++){ const y=G-210+j*54; s+=`<rect x="${x}" y="${y+44}" width="${w}" height="8" fill="#6a6a5a"/>`;
   for(let bx=x+8;bx<x+w-30;){ const bw=26+r()*40, bh=20+r()*20; s+=`<rect x="${f0(bx)}" y="${f0(y+44-bh)}" width="${f0(bw)}" height="${f0(bh)}" fill="${boxes[Math.floor(r()*boxes.length)]}" stroke="#2a2418" stroke-width="2"/>`; bx+=bw+6; } } return s; }
@@ -78,7 +80,7 @@ function silo(x,y,w,h,broken){ const [u,d]=grad(['#1a2028','#0a0c10']); let s=d+
   if(broken) s+=`<path d="M${x+w*.3} ${y} L${x+w*.45} ${y+h*.4} L${x+w*.2} ${y+h*.7} M${x+w*.45} ${y+h*.4} L${x+w*.8} ${y+h*.3} M${x+w*.45} ${y+h*.4} L${x+w*.6} ${y+h}" stroke="#e8f0ff" stroke-width="3" opacity=".8"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#000" opacity=".25"/>`;
   else s+=`<path d="M${x+30} ${y+20} l60 -10 M${x+30} ${y+40} l100 -20" stroke="#fff" stroke-width="4" opacity=".15"/>`;
   return s; }
-function fire(x,y,k){ k=k||1; let s=glow(x,y-60*k,220*k,140*k,'#ff7a2a',.55); for(let i=0;i<5;i++){ const dx=(i-2)*34*k; s+=`<path d="M${x+dx-24*k} ${y} Q${x+dx-30*k} ${y-60*k} ${x+dx} ${y-(110+i%2*40)*k} Q${x+dx+30*k} ${y-60*k} ${x+dx+24*k} ${y}Z" fill="${i%2?'#ff9a2a':'#ff5a1a'}" opacity=".9"/><path d="M${x+dx-10*k} ${y} Q${x+dx} ${y-50*k} ${x+dx+10*k} ${y}Z" fill="#ffe08a"/>`; } return s; }
+function fire(x,y,k){ k=k||1; let s=`<g class="an-pulse">${glow(x,y-60*k,220*k,140*k,'#ff7a2a',.55)}</g>`; for(let i=0;i<6;i++) s+=`<circle class="an-rise"${dl(i*1.2)} cx="${x-60*k+i*24*k}" cy="${y-120*k}" r="2.5" fill="#ffd27a"/>`; for(let i=0;i<5;i++){ const dx=(i-2)*34*k; s+=`<path class="an-flicker"${dl(i*.17)} d="M${x+dx-24*k} ${y} Q${x+dx-30*k} ${y-60*k} ${x+dx} ${y-(110+i%2*40)*k} Q${x+dx+30*k} ${y-60*k} ${x+dx+24*k} ${y}Z" fill="${i%2?'#ff9a2a':'#ff5a1a'}" opacity=".9"/><path d="M${x+dx-10*k} ${y} Q${x+dx} ${y-50*k} ${x+dx+10*k} ${y}Z" fill="#ffe08a"/>`; } return s; }
 // le général : uniforme kaki, casquette, médailles, le regard fou
 function general(x){ return `<g transform="translate(${x} ${G})"><path d="M-34 0 L-26 -120 Q0 -134 26 -120 L34 0 H10 L6 -60 H-6 L-10 0Z" fill="#5a6a3a"/><path d="M-26 -116 L-62 -60 L-50 -52 L-20 -92 M26 -116 L64 -62 L52 -54 L20 -92" fill="#5a6a3a" stroke="#5a6a3a" stroke-width="14" stroke-linejoin="round"/>`+
   `<rect x="-20" y="-104" width="16" height="10" fill="#c8a04a"/><rect x="4" y="-104" width="6" height="10" fill="#b22234"/><rect x="11" y="-104" width="6" height="10" fill="#3c3b6e"/><circle cx="0" cy="-146" r="18" fill="#e0b898"/>`+
@@ -88,7 +90,7 @@ function general(x){ return `<g transform="translate(${x} ${G})"><path d="M-34 0
 // ---------- décors des lieux ----------
 const PLACES={
  // le désert : dunes, montagnes, la base au loin derrière ses barbelés
- 1:(r,x)=>{ const [u,d]=grad(['#f4c27a','#e8a85a','#f0d8a8']); let s=d+`<rect width="${W}" height="${H}" fill="${u}"/>`+glow(950,70,160,120,'#fff8e0',.7)+`<circle cx="950" cy="70" r="34" fill="#fff8e0"/>`;
+ 1:(r,x)=>{ const [u,d]=grad(['#f4c27a','#e8a85a','#f0d8a8']); let s=d+`<rect width="${W}" height="${H}" fill="${u}"/>`+`<g class="an-pulse" style="animation-duration:6s">${glow(950,70,160,120,'#fff8e0',.7)}</g><circle cx="950" cy="70" r="34" fill="#fff8e0"/><g class="an-drift"><path d="M100 60 q60 -8 120 0 q40 -6 80 2Z M560 40 q50 -6 100 0 q30 -4 60 2Z" fill="#fff4e0" opacity=".5"/></g>`;
    s+=`<path d="M0 200 L120 150 L230 190 L360 130 L520 195 L700 160 L880 200 L1040 150 L${W} 190 V230 H0Z" fill="#b87a5a" opacity=".6"/>`;
    s+=`<path d="M0 230 Q300 200 600 230 T${W} 220 V${H} H0Z" fill="#e0b070"/><path d="M0 300 Q260 270 520 300 T${W} 290 V${H} H0Z" fill="#d8a060"/>`;
    s+=`<rect x="640" y="196" width="160" height="30" fill="#8a8a80"/><rect x="680" y="182" width="40" height="16" fill="#7a7a70"/>`+[0,1,2,3,4,5,6,7,8,9].map(i=>`<path d="M${560+i*30} 228 V206" stroke="#5a5a52" stroke-width="2"/>`).join('')+`<path d="M560 210 H830" stroke="#5a5a52" stroke-width="1.5"/>`;
@@ -125,7 +127,7 @@ const PLACES={
  7:(r,x)=>{ let s=room(r,PAL.c2,{dark:1}); s+=`<rect x="160" y="50" width="880" height="190" fill="#06141e" stroke="#3a4a5a" stroke-width="8"/>`;
    for(const [cx,cy,rx,ry] of [[330,130,90,50],[300,200,40,30],[560,120,60,50],[600,190,50,40],[820,120,140,60],[900,200,40,25]]) s+=`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#1a5a3a" opacity=".8"/>`;
    for(let i=0;i<9;i++) s+=`<path d="M${160+i*110} 50 V240 M160 ${50+i*24} H1040" stroke="#2a6a8a" stroke-width="1" opacity=".5"/>`;
-   s+=`<path d="M360 140 Q560 30 820 120" stroke="#ff3a2a" stroke-width="4" fill="none" stroke-dasharray="10 8"/><circle cx="360" cy="140" r="7" fill="#ff3a2a"/>`+glow(820,120,40,40,'#ff3a2a',.6);
+   s+=`<path class="an-dash" d="M360 140 Q560 30 820 120" stroke="#ff3a2a" stroke-width="4" fill="none" stroke-dasharray="10 8"/><circle cx="360" cy="140" r="7" fill="#ff3a2a"/><g class="an-pulse" style="animation-duration:.9s">${glow(820,120,40,40,'#ff3a2a',.6)}</g>`;
    s+=countdown(1100,100,.8)+console_(120,420,r)+console_(660,420,r);
    return {s,x0:540,x1:660,y:G-100}; },
  // la réserve obscure : l'armoire métallique, puis l'escalier qu'elle cachait
@@ -154,11 +156,11 @@ const PLACES={
    return {s,x0:220,x1:560,y:G-96}; },
  // la salle de suivi radar
  12:(r,x)=>{ let s=room(r,PAL.tech,{dark:1}); s+=`<circle cx="600" cy="150" r="110" fill="#06180c" stroke="#5a6a6a" stroke-width="14"/>`+[30,60,90].map(rr=>`<circle cx="600" cy="150" r="${rr}" fill="none" stroke="#2a8a4a" stroke-width="2"/>`).join('');
-   s+=`<path d="M490 150 H710 M600 40 V260" stroke="#2a8a4a" stroke-width="2"/>`+glow(600,150,110,110,'#4aff7a',.15)+`<path d="M600 150 L690 90 A110 110 0 0 0 640 48Z" fill="#4aff7a" opacity=".35"/><path d="M600 150 L690 90" stroke="#8aff9a" stroke-width="3"/>`+[[650,110],[540,190],[580,90]].map(([bx,by])=>`<circle cx="${bx}" cy="${by}" r="5" fill="#bfffbf"/>`).join('');
+   s+=`<path d="M490 150 H710 M600 40 V260" stroke="#2a8a4a" stroke-width="2"/>`+glow(600,150,110,110,'#4aff7a',.15)+`<g class="an-spin" style="transform-box:view-box;transform-origin:600px 150px"><path d="M600 150 L690 90 A110 110 0 0 0 640 48Z" fill="#4aff7a" opacity=".35"/><path d="M600 150 L690 90" stroke="#8aff9a" stroke-width="3"/></g>`+[[650,110],[540,190],[580,90]].map(([bx,by],i)=>`<circle class="an-pulse"${dl(i*1.3,'animation-duration:2s')} cx="${bx}" cy="${by}" r="5" fill="#bfffbf"/>`).join('');
    s+=console_(60,360,r)+console_(780,360,r)+crt(120,80,180,100,['TRACK 07','ALT 82000','---'])+crt(890,80,180,100,['NORAD','LINK OK']);
    return {s,x0:460,x1:740}; },
  // le labyrinthe : des couloirs tous pareils, à perte de vue
- 13:(r,x)=>{ let s=room(r,PAL.hall,{stripe:'#8a3a2a'}); s+=`<path d="M380 40 L520 120 H680 L820 40 M380 268 L520 210 H680 L820 268" stroke="#5a6056" stroke-width="4" fill="none"/><rect x="520" y="120" width="160" height="90" fill="#5a6056"/><rect x="560" y="140" width="80" height="70" fill="#1a1e1a"/>`;
+ 13:(r,x)=>{ let s=room(r,PAL.hall,{stripe:'#8a3a2a',buzz:1}); s+=`<path d="M380 40 L520 120 H680 L820 40 M380 268 L520 210 H680 L820 268" stroke="#5a6056" stroke-width="4" fill="none"/><rect x="520" y="120" width="160" height="90" fill="#5a6056"/><rect x="560" y="140" width="80" height="70" fill="#1a1e1a"/>`;
    for(const [dx,w] of [[60,120],[1016,120],[250,90],[856,90]]) s+=door(dx,w,{h:dx<200||dx>1000?200:150,open:true});
    for(let i=0;i<4;i++) s+=`<path d="M${80+i*290} 200 l20 -10 v20Z" fill="#c83a2a" opacity=".7"/>`;
    if(x.has(32)) s+=`<path d="M40 268 V100 Q40 80 60 80 H160 Q180 80 180 100 V268Z" fill="#050505"/><path d="M40 268 V100 Q40 80 60 80 H160 Q180 80 180 100 V268" stroke="#ffd84a" stroke-width="4" fill="none" stroke-dasharray="8 6"/>`;
@@ -177,7 +179,7 @@ const PLACES={
  19:(r,x)=>{ let s=room(r,PAL.c2,{dark:1})+glow(600,230,500,120,'#c8e0ff',.12); s+=`<path d="M220 ${G-60} L320 ${G-130} H880 L980 ${G-60}Z" fill="#2a5a3a"/><path d="M220 ${G-60} H980 V${G-40} H220Z" fill="#3a2a1a"/>`;
    for(const [cx,cy,rx] of [[420,G-100,70],[620,G-90,50],[780,G-105,90]]) s+=`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="16" fill="#6a8a4a"/>`;
    for(let i=0;i<10;i++) s+=`<circle cx="${f0(340+r()*520)}" cy="${f0(G-120+r()*50)}" r="5" fill="${r()<.5?'#ff3a2a':'#4a8aff'}"/>`;
-   s+=`<path d="M420 ${G-100} Q600 ${G-160} 780 ${G-105}" stroke="#ff3a2a" stroke-width="3" fill="none" stroke-dasharray="8 6"/>`+[260,940].map(cx=>chairD(cx)).join('')+frame(120,60,220,110,'#e8e0c8')+frame(860,60,220,110,'#e8e0c8')+`<path d="M140 90 h180 M140 120 h140 M880 90 h180 M880 120 h120" stroke="#5a5a4a" stroke-width="4"/>`;
+   s+=`<path class="an-dash" d="M420 ${G-100} Q600 ${G-160} 780 ${G-105}" stroke="#ff3a2a" stroke-width="3" fill="none" stroke-dasharray="8 6"/>`+[260,940].map(cx=>chairD(cx)).join('')+frame(120,60,220,110,'#e8e0c8')+frame(860,60,220,110,'#e8e0c8')+`<path d="M140 90 h180 M140 120 h140 M880 90 h180 M880 120 h120" stroke="#5a5a4a" stroke-width="4"/>`;
    return {s,x0:340,x1:860,y:G-80}; },
  // le poste de contrôle de tir : le compte à rebours, la rangée de boutons, le panneau du mécanisme d'annulation
  20:(r,x)=>{ let s=room(r,PAL.c2,{dark:1})+glow(600,120,600,140,'#ff2a1a',.12)+countdown(600,100,1.5);
