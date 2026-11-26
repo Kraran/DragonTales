@@ -34,7 +34,40 @@ DragonTales.register({
   keyWait:0xB538, lineRet:0x1380, endRet:0x18A0,
   inkey:0xBBE5, cls:0xBA77, nop:[0xBAC5,0xBAF1],
   irq:{vec:0x125E,hz:60},
-  seconds:5,                                         // temps qui passe à chaque commande (décision à prendre)
+  // Le temps n'avance qu'à chaque commande (décision du 26/11/2026) : quelques secondes de jeu par commande ; ATTENDRE
+  // laisse passer une minute (le temps de laisser se rouvrir un passage bouché, ou de reprendre des forces).
+  seconds:5,
+  wait:{re:/^(WAIT|ATTENDRE)$/,seconds:60,text:'TIME PASSES.'},
+  // Correctifs des bugs d'origine relevés par Chris Cantrell sur la version CoCo (computerarcheology.com), à leur place
+  // dans la version Dragon. Le code ajouté est rangé en $5000, hors du programme (rien ne s'y trouve).
+  patches:{
+   // 1. Boire la potion sans l'avoir répondait « la bouteille est vide » : « tu n'as pas ça ».
+   0x1E38:[0xBD,0x50,0x00,0x12],                                        // JSR $5000 ; NOP (au lieu de BSR $1DE5 ; BCC)
+   0x5000:[0xBD,0x1D,0xE5, 0x24,0x01, 0x39, 0x32,0x62, 0x8E,0x35,0xE4, 0x7E,0x1B,0x9E],
+   // 2. Tuer l'Oracle disait « l'urne est pleine d'huile » : le message de l'Oracle qui disparaît.
+   0x22ED:[0x07],
+   // 3. ISHTAR, pour quitter le brouillard empoisonné, laissait tourner son compteur : il est remis à zéro.
+   0x2009:[0x7E,0x50,0x10], 0x5010:[0xBD,0x12,0x3E, 0x7E,0x1B,0x4F],
+   // 4. Trop chargé pour descendre, on descendait quand même : la descente échoue.
+   0x2650:[0x25,0x04],
+   // 6. Le petit puits du quatrième étage (on y saute vers le temple de Zeus) pouvait tomber dans un lieu qui a déjà son
+   //    saut : celui du temple devenait introuvable. On le replace ailleurs sur l'étage.
+   0x17DC:[0xBD,0x50,0x20],
+   0x5020:[0xB6,0x48,0x3B, 0x81,0xCA,0x27,0x0E, 0x81,0xCB,0x27,0x0A, 0x81,0xD4,0x27,0x06, 0x81,0xD5,0x27,0x02, 0x20,0x0C,
+           0xBD,0x11,0x5C, 0xCA,0xC0, 0x1F,0x98, 0xB7,0x48,0x3B, 0x20,0xE2, 0x39],
+   // 8. « YOUR SIGHT IS DIM » (état physique bas) n'était jamais affiché : mauvaise routine d'affichage.
+   0x1889:[0xBD,0x1B,0x67]
+   // 5. « THERE IS NO HERE. » (le mot WATER manque) : corrigé dans le texte (textes.js). 7 : rien à corriger ici.
+  },
+  // Deux niveaux, choisis avant la partie (décision du 26/11/2026) : le jeu d'origine, ou une version pour débuter.
+  modeAddr:0x5FFF,
+  modes:{
+   NORMAL:{seconds:5},
+   BEGINNER:{seconds:3,patches:{
+    0x132F:[0x20],                                     // le sol ne tremble plus : aucun passage ne se bouche
+    0x173D:[0x0E,0x10], 0x207B:[0x0E,0x10],            // la lampe brûle une heure au lieu d'une demi-heure
+    0x4738:[0x28], 0x4760:[0x28], 0x47A6:[0x28]}}      // les trois sauts mortels deviennent des chutes (40 points d'état)
+  },
   maxLen:30,
   victory:/YOU WIN!/,
   // QUIET (sauvegarde sur cassette) attend une touche du lecteur : remplacé par un renvoi vers les sauvegardes de la page
@@ -65,11 +98,11 @@ DragonTales.register({
     "Rumor has it that there are treasures hidden in the vicinity of King Minos’s labyrinth at Knossos.",
     "Sixteen treasures, eight spells, prowling creatures… and the Minotaur."]}
  },
- helpEn:'VERBS: GET, DROP, THROW, INV, LOOK, OPEN, EAT, DRINK, FILL, ASK, KILL, STAB, RUN, BACK, JUMP, CLIMB, TIE, PLAY, LAMP, SCORE, HELP, UNCLE (GIVE UP).%SPELLS: VETAR, MITRA, OKKAN, AKHIROM, NERGAL, BELROG, CROM, ISHTAR.%DIRECTIONS: N, S, E, W, U, D.',
+ helpEn:'VERBS: GET, DROP, THROW, INV, LOOK, OPEN, EAT, DRINK, FILL, ASK, KILL, STAB, RUN, BACK, JUMP, CLIMB, TIE, PLAY, LAMP, SCORE, HELP, WAIT (ONE MINUTE), UNCLE (GIVE UP).%SPELLS: VETAR, MITRA, OKKAN, AKHIROM, NERGAL, BELROG, CROM, ISHTAR.%DIRECTIONS: N, S, E, W, U, D.',
  verbs:[['GET','Prendre','Take'],['DROP','Poser','Drop'],['LOOK','Regarder','Look',1],['INV','Inventaire','Inventory',1],['OPEN','Ouvrir','Open'],
   ['EAT','Manger','Eat'],['DRINK','Boire','Drink'],['FILL','Remplir','Fill'],['ASK','Interroger','Ask'],['KILL','Tuer','Kill'],['STAB','Poignarder','Stab'],
   ['THROW','Lancer','Throw'],['JUMP','Sauter','Jump'],['CLIMB','Grimper','Climb'],['TIE','Attacher','Tie'],['PLAY','Jouer','Play'],
-  ['LAMP','Lampe','Lamp'],['RUN','Fuir','Run',1],['BACK','Revenir','Back',1],['SCORE','Score','Score',1]],
+  ['LAMP','Lampe','Lamp'],['RUN','Fuir','Run',1],['BACK','Revenir','Back',1],['WAIT','Attendre','Wait',1],['SCORE','Score','Score',1]],
  sfxAt:{},
  sfx:MM_SFX,
  frSkip:[],
@@ -89,19 +122,26 @@ DragonTales.register({
   say:(text,lang,classic)=>mmSay(text,lang,classic),
   clean:(s,moved)=>mmClean(s,moved),
   autoKey:mem=>' ',
-  musicZone:()=>false,
-  roomOff:mem=>mem.b(0),
+  // le niveau, avant la partie
+  menu(mem,lang){ if(!mem.choosing()) return null; const fr=lang==='fr';
+   return {title:fr?'Choisis ton niveau':'Choose your level',
+    text:fr?'Le labyrinthe est le même ; la version débutant l’adoucit.':'The labyrinth is the same; the beginner version softens it.',
+    def:0, choices:[{en:'NORMAL',label:fr?'Normal':'Normal',note:fr?'Le jeu d’origine':'The original game'},
+     {en:'BEGINNER',label:fr?'Débutant':'Beginner',note:fr?'Pas d’éboulements, lampe deux fois plus longue, aucun saut mortel, le temps passe moins vite':'No cave-ins, lamp lasts twice as long, no deadly jumps, time runs slower'}]}; },
+  freeInput:mem=>mem.choosing(),
+  musicZone:(key,kind)=>kind!=='maze',                 // la musique se tait dans les dédales (décision du 26/11/2026)
+  roomOff:mem=>mem.choosing()?18:mem.b(0),             // avant le choix du niveau, le jeu n'a pas commencé : la bibliothèque du départ
   roomKey:(mem,off)=>String(off),
   links(mem,off){ const p=mem.b(PASS+off)&~mem.b(BLOCK+off), out={};
    for(const d in BIT) out[d]=p&BIT[d]?(off+STEP[d])&255:null; return out; },
   exits(mem,off){ const l=this.links(mem,off), e={}; for(const d in l) e[d]=l[d]!==null; return e; },
   locOf:off=>off, carried:-1,
-  objects(mem){ const out=[];
+  objects(mem){ const out=[]; if(mem.choosing()) return out;
    for(let n=1;n<=MM_WORDS.length;n++){ const p=OBJ0+3*(n-1), f=mem.b(p+2);
     if(f&3) continue;                                  // créature morte, objet porté par une créature, sortilège…
     out.push({n,name:MM_WORDS[n-1],word:MM_WORDS[n-1],loc:f&0x80?-1:mem.b(p)}); }
    return out; },
-  status(mem,lang){ const c=mem.b(5); return (lang==='fr'?'État physique : ':'Condition: ')+c; },
+  status(mem,lang){ if(mem.choosing()) return ''; const c=mem.b(5); return (lang==='fr'?'État physique : ':'Condition: ')+c; },
   sfxFor:(line,cmd,mem)=>mmSfxFor(line,cmd,mem),
   ambient:(mem,off)=>mmAmbient(mem,off),
   sceneExtras(mem,off){ return []; }

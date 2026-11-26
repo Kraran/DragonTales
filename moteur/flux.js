@@ -11,6 +11,10 @@
 //   irq:{vec,hz}                routine d'interruption et sa fréquence ; seconds : secondes qui passent à chaque commande
 //   victory                     expression du texte de victoire (fin de partie gagnée plutôt que « rejouer ? »)
 //   traps:{adr:'TEXTE'}         routines remplacées : le texte s'affiche et la routine rend la main (RTS)
+//   patches:{adr:[octets]}      correctifs du programme d'origine, posés à chaque chargement
+//   modes:{MOT:{seconds,patches,label}}, modeAddr   niveaux proposés avant la partie (le mot choisi est la première
+//                               commande) ; le choix est noté en mémoire (modeAddr : 1, 2…) pour les sauvegardes
+//   wait:{re,seconds,text}      commande ajoutée : laisser passer le temps (ATTENDRE)
 //   seed                        hasard fixé (essais) : nombre de tours d'attente à l'écran titre
 const CPU6809F=(typeof window!=='undefined'&&window.CPU6809)||require('./cpu6809.js');   // dans la page : la fonction globale de cpu6809.js
 function Flux(bin,io,cfg){
@@ -19,11 +23,16 @@ function Flux(bin,io,cfg){
   const b64=u=>{ let s=''; for(let i=0;i<u.length;i+=0x8000) s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000)); return btoa(s); };
   const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
   function reset(){
-    mem.fill(0); if(cfg.rom) cfg.rom(mem); mem.set(bin,cfg.load);
+    mem.fill(0); if(cfg.rom) cfg.rom(mem); mem.set(bin,cfg.load); patch(cfg.patches);
     cpu=CPU6809F(mem); cpu.S=cfg.stack||0x7F00; cpu.PC=cfg.entry===undefined?cfg.load:cfg.entry;
     wait=null; queue=[]; buf=''; spins=0; recent=''; yesNo=false;
     spinMax=cfg.seed!==undefined?cfg.seed:Math.floor(Math.random()*5000);
   }
+  const MODES=cfg.modes?Object.keys(cfg.modes):[];
+  function patch(p){ if(p) for(const a in p) mem.set(p[a],+a); }
+  const modeOf=()=>MODES.length?MODES[mem[cfg.modeAddr]-1]||null:null;
+  const choosing=()=>MODES.length>0&&!modeOf();
+  const seconds=()=>{ const md=modeOf(); return md&&cfg.modes[md].seconds!==undefined?cfg.modes[md].seconds:cfg.seconds||0; };
   function flush(){ if(buf){ io.out(buf); buf=''; } }
   function emit(a){
     if(a===8){ buf=buf.slice(0,-1); recent=recent.slice(0,-1); return; }
@@ -44,14 +53,16 @@ function Flux(bin,io,cfg){
         else { wait='key'; yesNo=ret===cfg.endRet; if(yesNo) io.end&&io.end(); }
         flush(); return false;
       }
-      if(pc===cfg.inkey){ if(spins++<spinMax){ cpu.A=0; cpu.setZ(true); } else { cpu.A=32; cpu.setZ(false); } cpu.rts(); return true; }
+      if(pc===cfg.inkey){                        // écran titre : on attend un nombre de tours qui fixe le hasard de la partie
+        if(spins>spinMax) spinMax=spins+(cfg.seed!==undefined?cfg.seed+1:Math.floor(Math.random()*5000));   // nouvelle partie après une fin
+        if(spins++<spinMax){ cpu.A=0; cpu.setZ(true); } else { cpu.A=32; cpu.setZ(false); } cpu.rts(); return true; }
       if(pc===cfg.cls){ flush(); io.cls(); cpu.rts(); return true; }
       if(nop.has(pc)){ cpu.rts(); return true; }
       throw new Error('Appel ROM non géré $'+pc.toString(16)+' (retour $'+ret.toString(16)+')');
     }
     cpu.step(); return true;
   }
-  function run(){ if(wait==='line'||wait==='key'||wait==='end') return wait; let n=0;
+  function run(){ if(wait==='line'||wait==='key'||wait==='end') return wait; if(choosing()){ wait='line'; return wait; } let n=0;
     while(step()){ if(++n>30000000) throw new Error('boucle infinie ? PC=$'+cpu.PC.toString(16)); }
     return wait; }
   // le temps passe (secondes) pendant que le jeu attend : l'interruption tourne, ce qu'elle affiche part vers io.out
@@ -70,11 +81,14 @@ function Flux(bin,io,cfg){
     get wait(){ return wait; }, get yesNo(){ return yesNo; },
     run,
     tick,
-    line(s){ if(wait!=='line') return; if(cfg.seconds) tick(cfg.seconds); if(wait!=='line') return;
+    line(s){ if(wait!=='line') return; s=String(s).toUpperCase().trim();
+      if(choosing()){ const k=MODES.indexOf(s.split(' ')[0]); if(k<0) return; mem[cfg.modeAddr]=k+1; patch(cfg.modes[s.split(' ')[0]].patches); wait=null; return; }
+      if(cfg.wait&&cfg.wait.re.test(s)){ tick(cfg.wait.seconds); if(wait==='line'){ for(const ch of cfg.wait.text) emit(ch.charCodeAt(0)); emit(13); } return; }
+      const sec=seconds(); if(sec) tick(sec); if(wait!=='line') return;
       queue=[...String(s).toUpperCase().slice(0,cfg.maxLen||30)].map(c=>c.charCodeAt(0)&127).concat(13); wait=null; },
     key(c){ if(wait!=='key'&&wait!=='end') return; queue=[typeof c==='number'?c:String(c||' ').toUpperCase().charCodeAt(0)]; wait=null; yesNo=false; },
     reset,
-    mem:{ b:a=>mem[a&0xffff], w:a=>(mem[a&0xffff]<<8)|mem[(a+1)&0xffff], raw:mem },
+    mem:{ b:a=>mem[a&0xffff], w:a=>(mem[a&0xffff]<<8)|mem[(a+1)&0xffff], raw:mem, mode:modeOf, choosing },
     snapshot(){ return {m:JSON.stringify({r:b64(mem.subarray(0,0x8000)),c:cpu.dump(),w:wait,q:queue,y:yesNo,t:recent}),c:{}}; },
     restore(s){ const o=JSON.parse(typeof s.m==='string'?s.m:new TextDecoder().decode(s.m));
       mem.set(unb64(o.r),0); cpu.load(o.c); wait=o.w; queue=o.q||[]; yesNo=!!o.y; recent=o.t||''; buf=''; }

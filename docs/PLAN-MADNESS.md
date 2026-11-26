@@ -48,17 +48,27 @@ le dossier porte `EN-COURS.md` (absent de la page normale, `python build.py --to
 ## Étapes
 
 ### 1. Programme, boîte, couverture, moteur — fait
-### 2. Décisions à prendre
+### 2. Décisions — prises le 26/11/2026
 
-1. **Le temps** : temps réel comme à l'origine (les créatures bougent et frappent pendant qu'on lit et qu'on tape,
-   des messages arrivent seuls), ou un temps qui avance à chaque commande (quelques secondes par commande, avec une
-   commande ATTENDRE pour laisser passer une minute) ?
-2. **Le hasard** : garder une partie différente à chaque fois (fidèle), ou proposer aussi une partie fixe ?
-3. **Les bugs d'origine** (huit relevés sur la version CoCo, par exemple « YOUR SIGHT IS DIM » jamais affiché, ISHTAR
-   qui ne guérit pas du brouillard empoisonné) : les corriger, comme pour les autres aventures ?
-4. **La difficulté** : le jeu est réputé l'un des plus durs de son époque (dédales identiques, éboulements, sauts
-   mortels, temps réel). Le garder tel quel, ou adoucir certains points ?
-5. **La musique** : partout, ou seulement hors du dédale ?
+1. **Le temps** avance à chaque commande : 5 secondes de jeu par commande (3 en débutant) ; la commande ATTENDRE
+   (WAIT) laisse passer une minute. Rien ne bouge pendant qu'on lit.
+2. **Le hasard** est gardé : chaque partie est différente (et après une fin, la partie suivante aussi).
+3. **Les bugs d'origine** sont corrigés, à leur place dans la version Dragon (code ajouté en $5000) :
+   1. boire la potion sans l'avoir répondait « la bouteille est vide » : « tu n'as pas ça » ;
+   2. tuer l'Oracle annonçait « l'urne est pleine d'huile » : il disparaît dans la brume ;
+   3. ISHTAR, pour fuir le brouillard empoisonné, laissait tourner le compteur du poison : il est remis à zéro ;
+   4. trop chargé pour descendre, on descendait quand même : la descente échoue ;
+   5. « THERE IS NO HERE. » : le mot WATER est rétabli (dans le texte) ;
+   6. le petit puits du quatrième étage, d'où l'on saute vers le temple de Zeus, tombait dans plus d'une partie sur
+      quatre dans un lieu qui a déjà son saut, ce qui rendait le temple inaccessible par là : il est replacé ailleurs ;
+   7. « l'huile invisible cache l'urne » : dans la version Dragon, le remplissage de la lampe depuis l'urne marche
+      aussi dans la salle de l'huile ; rien à corriger ;
+   8. « YOUR SIGHT IS DIM » (état physique bas) n'était jamais affiché : il l'est.
+4. **La difficulté** : le jeu d'origine est gardé tel quel (niveau Normal) ; un niveau **Débutant** est proposé avant la
+   partie : le sol ne tremble plus (aucun passage ne se bouche), la lampe brûle une heure au lieu d'une demi-heure, les
+   trois sauts mortels deviennent des chutes (40 points d'état), 3 secondes par commande au lieu de 5. Le choix est
+   noté en mémoire ($5FFF), donc dans les sauvegardes.
+5. **La musique** se tait dans les dédales.
 
 ### 3. Ensuite
 
