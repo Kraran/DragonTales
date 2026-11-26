@@ -208,6 +208,7 @@ const SG_MSG={
  "OK, YOU DUG A HOLE":["OK, you dug a hole.","Voilà, tu as creusé un trou."],
  "YOU DUG, AND THE HOLE IS DEEPER":["You dug, and the hole is deeper.","Tu creuses, le trou est plus profond."],
  "YOU BETTER STOP AND LOOK":["You'd better stop and look.","Tu ferais bien de t'arrêter et de regarder."],
+ "YOU DUG SO DEEP THAT YOU FELL INTO THE HOLE. THE WALLS ARE TOO STEEP TO CLIMB: YOU ARE TRAPPED AT THE BOTTOM OF YOUR OWN GRAVE.":["You dug so deep that you fell into the hole. The walls are too steep to climb: you are trapped at the bottom of your own grave.","Tu as creusé si profond que tu es tombé dans le trou. Les parois sont trop raides pour remonter : te voilà pris au fond de ta propre tombe."],
  "YOU JUST DUG A VERY DEEP GRAVE. YOU HAVE NO WAY TO GET OUT!!!!":["You just dug a very deep grave. You have no way to get out!!!!","Tu viens de creuser ta propre tombe, très profonde. Tu ne peux plus en sortir !!!!"],
  "YOU DUG UNTIL YOUR FINGERS ARE RAW. YOU CAN'T DIG ANY MORE. YOUMADE IT DOWN 3 1/4 INCHES":["You dug until your fingers were raw. You can't dig any more. You made it down 3 1/4 inches.","Tu as gratté jusqu'à t'en écorcher les doigts. Tu n'en peux plus. Tu es descendu de 8 centimètres."],
  "YOU CAN NOT DIG THAT":["You can't dig that.","Tu ne peux pas creuser ça."],
@@ -356,6 +357,8 @@ const SG_MSG={
  "OK, IT IS LOCKED AGAIN":["OK, it is locked again.","Voilà, il est refermé."],
  "OK, IT'S CLOSED":["OK, it's closed.","Voilà, c'est fermé."],
  "OK, IT'S LOCKED AGAIN":["OK, it's locked again.","Voilà, il est refermé."],
+ "IT'S ALREADY CLOSED":["It's already closed.","C'est déjà fermé."],
+ "CLOSE THE DOOR FIRST.":["Close the door first.","Ferme d'abord la porte."],
  "YOU TRIED, BUT IT DOESN'T CLOSE":["You tried, but it doesn't close.","Tu essaies, mais ça ne se ferme pas."],
  // DROP
  "OK, YOU DROPPED IT.":["OK, you dropped it.","C'est posé."],
@@ -447,7 +450,7 @@ function sgSay(text,lang,classic){
 // version moderne : lignes vides en trop retirées ; les morts sont repérées pour la fenêtre de fin
 function sgClean(s,moved){
   s=s.replace(/\n{3,}/g,'\n\n');
-  return {text:s.replace(/^\s+|\s+$/g,''),death:/(BLED TO DEATH|VERY DEEP GRAVE|FRIED ON THE FENCE|RADIO ELECTRICITY|NO LIFE|BOMBS HIT THE CAMP|tout ton sang|ta propre tombe|griller sur la clôture|électrocuté par la radio|plus de vie|pas sorti à temps)/i.test(s)};
+  return {text:s.replace(/^\s+|\s+$/g,''),death:/(BLED TO DEATH|VERY DEEP GRAVE|YOUR OWN GRAVE|FRIED ON THE FENCE|RADIO ELECTRICITY|NO LIFE|BOMBS HIT THE CAMP|tout ton sang|ta propre tombe|griller sur la clôture|électrocuté par la radio|plus de vie|pas sorti à temps)/i.test(s)};
 }
 
 // ---- français -> commandes du jeu ----

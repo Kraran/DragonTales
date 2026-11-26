@@ -1,5 +1,5 @@
 // Essai de Stalag dans Chrome : étagère, introduction, une mort (la radio), partie entière en français jusqu'à la
-// victoire (graine sans bombardement), textes traduits, aucune erreur JavaScript.
+// victoire (graine sans bombardement), une pièce magique, textes traduits, aucune erreur JavaScript.
 //   python build.py && node tests/essai-stalag.js
 let chromium; try{ ({chromium}=require('playwright')); }catch(e){ ({chromium}=require('/opt/npm-tools/node_modules/playwright')); }
 const fs=require('fs'), path=require('path');
@@ -25,9 +25,12 @@ let bad=0; const ok=(k,v,d)=>{ if(!v) bad++; console.log((v?'ok   ':'ÉCHEC ')+k
  let t=await p.innerText('#overlay');
  ok('mort : la radio',/Tu es mort/.test(t)&&/électrocuté par la radio/.test(t)&&/La radio/.test(t),t.replace(/\n+/g,' | ').slice(0,200));
  await clickOv(/Recommencer/); await p.waitForTimeout(500);
+ // une pièce magique au départ : l'inventaire (l'aiguille)
+ await p.click('.coin'); await p.click('#overlay button.main'); await p.waitForTimeout(100);
+ ok('pièce magique : fais l’inventaire',/Fais l’inventaire/.test(await p.innerText('#log .turn.hint:last-of-type')),await p.innerText('#log .turn.hint:last-of-type'));
  const FRC={'PICK HOLE':'CROCHETER LE TROU DE SERRURE','EXAMINE JACKET':'EXAMINER LE BLOUSON','OPEN LOCK':'OUVRIR LE CADENAS A COMBINAISON','GET CANOPENER':'PRENDRE L OUVRE-BOITE',
   'GET AXE':'PRENDRE LA PIOCHE','EXAMINE TABLE':'EXAMINER LA TABLE','DROP HAM':'DONNER LE JAMBON AU CHIEN','CUT LACING':'COUPER LE LACET','PUSH BEDS':'POUSSER LES LITS','DIG TUNNEL':'CREUSER LE TUNNEL'};
- let n=0; for(const c of adv.solution){ if(!(FRC[c]?await type(FRC[c]):await send(c))) break; n++; if(c==='DROP HAM') await p.screenshot({path:OUT+'/stalag-jeu.png'}); }
+ let n=0; for(const c of adv.solution){ if(!(FRC[c]?await type(FRC[c]):await send(c))) break; n++; if(c==='DROP HAM') await p.screenshot({path:OUT+'/stalag-jeu.png'}); if(c==='GET BOARDS') await p.screenshot({path:OUT+'/stalag-baraque3.png'}); }
  await p.waitForTimeout(400);
  const L=await log(); t=await p.innerText('#overlay');
  ok('solution jouée jusqu’au bout',n===adv.solution.length,n+'/'+adv.solution.length);

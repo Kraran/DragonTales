@@ -56,17 +56,32 @@ sur `moteur/basic.js`. Au 26/11/2026, elle tourne, se gagne et se joue en franç
   boucle sans fin (300) ; le bombardement, annoncé seulement par des éclairs, est dit en une phrase (4320).
 - Essai `tests/essai-stalag.js` (Chrome) : étagère, mort par la radio, partie entière avec des commandes françaises.
 
-### 3. Décisions à prendre
+### 3. Décisions — prises le 26/11/2026
 
-1. **Le bombardement au hasard** : le garder tel quel ?
-2. **Le trou très profond** : creuser deux fois près de la clôture est fait tomber au fond d'un trou sans sortie ; on ne
-   peut plus que creuser encore, et mourir. En faire une fin expliquée tout de suite ?
-3. **HELP d'origine** : garder ses conseils à côté des pièces magiques ?
-4. **Petites incohérences** : examiner la boîte de jambon ouverte répond « rien de particulier » ; ouvrir la porte
-   verrouillée de la baraque des gardes ajoute « tu essaies, mais ça ne s'ouvre pas » ; refermer le cadenas ou la porte
-   de la baraque 3 répond « c'est fermé » sans rien fermer. Les corriger ?
-5. **Musique** : dans tout le camp, ou seulement en surface (pas au mitard ni dans les tunnels) ?
+1. **Le bombardement au hasard** : gardé tel quel (environ 2 % de risque sur la solution la plus courte).
+2. **Le trou très profond** : devient une fin expliquée tout de suite (ligne 1380 : « …te voilà pris au fond de ta propre
+   tombe »), au lieu de laisser le joueur creuser jusqu'à la mort.
+3. **HELP d'origine** : gardé, à côté des pièces magiques.
+4. **Petites incohérences** : corrigées. La boîte de jambon ouverte répond « c'est ouvert » (2210) ; la porte verrouillée
+   des gardes ne dit plus « tu essaies » après « Ali Baba » (1630) ; la porte de la baraque 3 se referme vraiment
+   (2780, 2785 nouvelle) et le cadenas ne se reverrouille que porte fermée (2790).
+5. **Musique** : en surface seulement (ni au mitard, ni dans les tunnels, ni au fond du trou).
 
-### 4. À faire ensuite
+### 4. Décors, indices, bruitages — fait
 
-- Décors, indices des pièces magiques, bruitages, musique, puis retirer `EN-COURS.md` et publier.
+- **Décors** (`scenes.js`) : le camp au crépuscule, comme sur la boîte. Dehors : ciel violet et orange, terre rouge,
+  baraques à toit arrondi, miradors, barbelés (des étincelles tant que le courant passe) ; chaque allée a son repère
+  (mât, bidons, corde à linge, château d'eau, panneau). Dedans : planches, fenêtres sur le soir, meubles propres à chaque
+  lieu. Mitard, tunnels et trou sombres ; la forêt. États montrés : cadenas et portes ouverts, chien qui mange ou qui
+  menace, courant coupé, mitard ouvert, ouverture sous le lit, et les bombardiers dans le ciel passé cent tours.
+- **Pièces magiques** (`hints.js`) : douze étapes (mitard, combinaison, ouvre-boîte, jambon, chien, ciseaux, clé, outils,
+  cadenas, porte, ouverture, tunnel) et sept indices de situation (clôture électrique, chien avant le jambon, hémorragie,
+  radio, creux de la clôture est, tunnel nord, mains pleines dans la baraque 3).
+- **Bruitages** (`sons.js`) : serrures, gorges du cadenas, portes qui grincent, ouvre-boîte, chien (grognement, morsure,
+  festin), ciseaux, lit qu'on pousse, carreaux, planches, pelle et pioche, la lumière au bout du tunnel, la forêt ;
+  ambiances : vent, bourdonnement de la clôture, gouttes des douches, poêle du réfectoire, terre du tunnel, oiseaux.
+
+### 5. À faire ensuite
+
+- La musique (`musique.ogg`, Suno), puis retirer `EN-COURS.md`, ajouter `essai-stalag` à l'intégration continue,
+  README, CHANGELOG, et publier.
