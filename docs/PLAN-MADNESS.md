@@ -88,5 +88,13 @@ le dossier porte `EN-COURS.md` (absent de la page normale, `python build.py --to
   commandes jusqu'à « CONGRATULATIONS!!! YOU WIN! ». Huit fins (`fins.js`) : la forêt, l'épuisement, le scorpion, le
   brouillard empoisonné, le champignon, la fosse dans le noir, le saut manqué, l'abandon. Essai dans Chrome
   (`tests/essai-madness.js`) : niveau, abandon, partie entière avec des commandes en français, victoire.
-- Reste : indices des pièces magiques (lus dans la mémoire : combinaisons et lieux changent à chaque partie), décors,
-  bruitages.
+- Pièces magiques (`hints.js`) : tout étant tiré au hasard, le second indice de chaque étape lit la mémoire au moment
+  où l'on dépense la pièce et nomme les lieux de la partie, avec leur étage (plusieurs lieux portent le même nom).
+  Étapes : la lampe, les huit sortilèges dans l'ordre (lieu du sortilège, objets à porter et où ils sont), puis le
+  premier trésor qui manque dans la forêt : celui qu'on porte, un trésor par terre, un trésor protégé (ce qu'il faut
+  porter et connaître), une créature qui le détient (où elle rôde, de quoi la tuer) ou sa cachette (les deux cryptes,
+  le petit puits, la corniche, l'hydre, le tas de rochers, le rat voleur, les lieux à visiter lampe allumée, éteinte ou
+  trois fois). Indices de situation : la bourrasque (VETAR tout de suite), le noir, l'hydre qui repousse, la piqûre,
+  le brouillard, une créature qui attaque, l'Oracle, le bassin, la forêt, l'épuisement. Les commandes citées sont
+  comprises en français (REGARDER LE PUITS, REGARDER LE BASSIN ajoutés).
+- Reste : décors, bruitages.

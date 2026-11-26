@@ -20,7 +20,7 @@ const MM_OBJ={
  WATER:['eau','f'], HYDRA:['hydre','f'], LEDGE:['corniche','f'], CRYPT:['crypte','f'], DRAPES:['tentures','p'], JEWLBOX:['coffret à bijoux','m'],
  OIL:['huile','f'], LAMP2:['lampe','f']
 };
-const MM_ELIDE=/^[aeiouyhéèêâîôûœ]/i;
+const MM_ELIDE=/^(?!hache)[aeiouyhéèêâîôûœ]/i;   // h muet, sauf la hache (h aspiré)
 function mmName(w){ const o=MM_OBJ[w]; return o?o[0]:(MM_SPELLS.includes(w)?w:w.toLowerCase()); }
 function mmLe(w){ if(MM_SPELLS.includes(w)) return w; const o=MM_OBJ[w]; if(!o) return 'le '+w.toLowerCase();
   if(o[1]==='p') return 'les '+o[0]; if(MM_ELIDE.test(o[0])) return 'l’'+o[0]; return (o[1]==='f'?'la ':'le ')+o[0]; }
@@ -327,7 +327,7 @@ const FR=(function(){
   add('ORACLE','ORACLE');add('GOLD','OR');add('SILVER','ARGENT SAC');add('DIAMOND','DIAMANT');add('SPELLBOOK','GRIMOIRE LIVRE');
   add('RUBY','RUBIS');add('FLEECE','TOISON');add('TIARA','DIADEME TIARE');add('POWDER','POUDRE');add('AMULET','AMULETTE');add('POTION','POTION');
   add('CROWN','COURONNE');add('OPAL','OPALE');add('SAPPHIRE','SAPHIR');add('WATER','EAU');add('HYDRA','HYDRE');add('LEDGE','CORNICHE REBORD');
-  add('CRYPT','CRYPTE TOMBE TOMBEAU');add('DRAPES','TENTURES TENTURE RIDEAUX RIDEAU');
+  add('CRYPT','CRYPTE TOMBE TOMBEAU');add('PIT','PUITS FOSSE TROU');add('POOL','BASSIN MARE');add('DRAPES','TENTURES TENTURE RIDEAUX RIDEAU');
   for(const s of MM_SPELLS) NOUNS[s]=s;
   const PHRASES=[['ANNEAU DE PUISSANCE','POWERRING'],['ANNEAU DE LUMIERE','LIGHTRING'],['ANNEAU DE VERITE','TRUTHRING'],
     ['MASSE D ARMES','MACE'],['COFFRET A BIJOUX','JEWELBOX'],['SAC D ARGENT','SILVER'],['SAC DE POUDRE','POWDER'],['TOISON D OR','FLEECE']];

@@ -28,6 +28,10 @@ let bad=0; const ok=(k,v,d)=>{ if(!v) bad++; console.log((v?'ok   ':'ÉCHEC ')+k
  ok('fin : l’abandon',/L’abandon/.test(t)&&/Tu t’es bien battu/.test(t),t.replace(/\n+/g,' | ').slice(0,200));
  await clickOv(/Recommencer/); await p.waitForTimeout(500);
  await clickOv(/Débutant/); await p.waitForTimeout(400);
+ // deux pièces magiques au départ : la lampe, puis l'endroit où elle est dans cette partie (lu dans la mémoire du jeu)
+ const coin=async()=>{ await p.click('.coin'); await p.click('#overlay button.main'); await p.waitForTimeout(100); return p.innerText('#log .turn.hint:last-of-type'); };
+ let h1=await coin(), h2=await coin();
+ ok('pièces magiques : la lampe et où elle est',/Une lampe traîne/.test(h1)&&/La lampe est ici : .+ \(étage 1\)/.test(h2),h1+' | '+h2);
  const FRC={'GET LAMP':'PRENDRE LA LAMPE','LAMP ON':'ALLUMER LA LAMPE','EAT FOOD':'MANGER LA NOURRITURE','KILL NYMPH':'TUER LA NYMPHE','GET POWERRING':'PRENDRE L ANNEAU DE PUISSANCE','OPEN CRYPT':'OUVRIR LA CRYPTE'};
  let n=1, L1=''; for(const c of adv.solution.slice(1)){ if(!(FRC[c]?await type(FRC[c]):await send(c))) break; n++; if(n===120) L1=await log(); if(n===400) await p.screenshot({path:OUT+'/madness-jeu.png'}); }
  await p.waitForTimeout(400);
