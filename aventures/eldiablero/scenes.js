@@ -7,6 +7,11 @@ function rng(seed){ let s=(seed*2654435761+12345)>>>0; return ()=>{ s=(s*1664525
 function grad(stops,horiz){ const id='sg'+(uid++); return [`url(#${id})`,`<defs><linearGradient id="${id}" x1="0" y1="0" x2="${horiz?1:0}" y2="${horiz?0:1}">${stops.map((c,i)=>`<stop offset="${(i/(stops.length-1)).toFixed(2)}" stop-color="${c}"/>`).join('')}</linearGradient></defs>`]; }
 function fillRect(stops){ const [u,d]=grad(stops); return d+`<rect width="${W}" height="${H}" fill="${u}"/>`; }
 function wave(y,amp,r,fill,n){ n=n||4; const st=W/n; let d=`M0 ${(y+(r()-.5)*amp).toFixed(0)}`; for(let i=1;i<=n;i++){ const x=i*st; d+=` Q${(x-st/2).toFixed(0)} ${(y+(r()-.5)*amp*2).toFixed(0)} ${x.toFixed(0)} ${(y+(r()-.5)*amp).toFixed(0)}`; } return `<path d="${d} V${H} H0Z" fill="${fill}"/>`; }
+function saguaro(x,y,h,fill,shadow){ x=+x; y=+y; h=+h; const w=h*.17, a=(h*.13).toFixed(1);
+  let s=shadow?`<path d="M${x} ${y} l${(h*1.6).toFixed(0)} 6 l2 4 l-${(h*1.6).toFixed(0)} -2Z" fill="#2a1322" opacity=".28"/>`:'';
+  s+=`<g stroke="${fill}" stroke-width="${w.toFixed(1)}" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M${x} ${y} v${-h}"/><path d="M${x} ${y-h*.42} h${-h*.24} q-${a} 0 -${a} -${a} v${(-h*.26).toFixed(1)}"/><path d="M${x} ${y-h*.28} h${(h*.22).toFixed(1)} q${a} 0 ${a} -${a} v${(-h*.32).toFixed(1)}"/></g>`;
+  s+=`<path d="M${(x-w*.18).toFixed(1)} ${y-2} v${(-h+w*.3).toFixed(1)}" stroke="#fbe3a4" stroke-width="${(w*.16).toFixed(1)}" opacity=".22" stroke-linecap="round"/>`;
+  return s; }
 function cactus(x,y,h,fill){ const w=h*.16; return `<g stroke="${fill}" stroke-width="${w.toFixed(1)}" fill="none" stroke-linecap="round"><path d="M${x} ${y} v${-h}"/><path d="M${x} ${y-h*.45} h${-h*.26} v${-h*.3}"/><path d="M${x} ${y-h*.3} h${h*.24} v${-h*.36}"/></g>`; }
 function glyphs(x,y,n,c,r,sz){ sz=sz||14; let s=''; for(let i=0;i<n;i++){ const gx=x+i*sz*1.7, k=Math.floor(r()*5);
   s+=k===0?`<rect x="${gx}" y="${y}" width="${sz}" height="${sz}" rx="3" fill="none" stroke="${c}" stroke-width="2.5"/><circle cx="${gx+sz/2}" cy="${y+sz/2}" r="2" fill="${c}"/>`
@@ -15,6 +20,19 @@ function glyphs(x,y,n,c,r,sz){ sz=sz||14; let s=''; for(let i=0;i<n;i++){ const 
     :k===3?`<path d="M${gx} ${y} l${sz/2} ${sz} l${sz/2} ${-sz}" fill="none" stroke="${c}" stroke-width="2.5"/>`
     :`<path d="M${gx} ${y+sz*.3} h${sz} M${gx} ${y+sz*.7} h${sz} M${gx+sz/2} ${y} v${sz}" stroke="${c}" stroke-width="2.5"/>`; }
   return `<g opacity=".8">${s}</g>`; }
+function radial(cx,cy,rx,ry,c,o){ const id='sr'+(uid++); return `<defs><radialGradient id="${id}"><stop offset="0" stop-color="${c}" stop-opacity="${o}"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs><ellipse cx="${cx.toFixed?cx.toFixed(0):cx}" cy="${cy.toFixed?cy.toFixed(0):cy}" rx="${rx}" ry="${ry}" fill="url(#${id})"/>`; }
+// soleil avec son halo
+function sun(x,y,rad,c,halo){ return radial(x,y,rad*4.2,rad*3.2,halo||c,.45)+`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${rad}" fill="${c}"/>`; }
+// longs nuages effilés du soir
+function streaks(r,n,c,y0,y1,o){ let s=''; for(let i=0;i<n;i++){ const x=r()*W, y=y0+r()*(y1-y0), w=120+r()*260;
+  s+=`<path d="M${(x-w/2).toFixed(0)} ${y.toFixed(0)} q${(w/2).toFixed(0)} -${(4+r()*6).toFixed(0)} ${w.toFixed(0)} 0 q-${(w/2).toFixed(0)} ${(5+r()*4).toFixed(0)} -${w.toFixed(0)} 0Z" fill="${c}" opacity="${o||.35}"/>`; } return s; }
+// buttes et mesas lointaines (ouest américain), en une ligne de silhouettes
+function mesas(r,y,c,o,x0,x1){ x0=x0===undefined?-40:x0; x1=x1===undefined?W+40:x1; let d=`M${x0} ${y}`, x=x0;
+  while(x<x1){ const w=40+r()*120; if(r()<.45){ const h=30+r()*70, t=w*(.5+r()*.3); d+=` L${(x+(w-t)/2).toFixed(0)} ${(y-h).toFixed(0)} h${t.toFixed(0)} L${(x+w).toFixed(0)} ${y}`; } else d+=` L${(x+w/2).toFixed(0)} ${(y-4-r()*12).toFixed(0)} L${(x+w).toFixed(0)} ${y}`; x+=w; }
+  return `<path d="${d} V${y+60} H${x0}Z" fill="${c}" opacity="${o}"/>`; }
+// broussailles et cailloux du sol
+function scrub(x,y,k,c){ return `<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)}) scale(${k.toFixed(2)})" fill="${c}"><ellipse cx="0" cy="-8" rx="20" ry="10"/><ellipse cx="-14" cy="-4" rx="11" ry="7"/><ellipse cx="15" cy="-5" rx="12" ry="7"/></g>`; }
+function pebbles(r,n,x0,x1,y0,y1,c){ let s=''; for(let i=0;i<n;i++){ const x=x0+r()*(x1-x0), y=y0+r()*(y1-y0), w=2+r()*6*(y/H); s+=`<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${w.toFixed(1)}" ry="${(w*.55).toFixed(1)}" fill="${c}"/>`; } return s; }
 const veil=()=>{ const [u,d]=grad(['rgba(29,22,38,0)','rgba(29,22,38,0)','rgba(29,22,38,.82)']); return d+`<rect width="${W}" height="${H}" fill="${u}"/>`; };
 
 // ---------- décors de plein air ----------
@@ -23,17 +41,23 @@ function desert(r,o){
   const sk=o.mood==='dark'?['#b98a63','#9c4c40','#43203a']:o.mood==='soft'?['#f7d48a','#eaa066','#8d4d60']:['#f0b765','#d9774a','#7a3550'];
   let s=fillRect(sk);
   const sx=640+r()*430, sy=95+r()*80;
-  s+=`<circle cx="${sx.toFixed(0)}" cy="${sy.toFixed(0)}" r="${o.mood==='dark'?40:54}" fill="${o.mood==='dark'?'#e9b98a':'#fbe3a4'}"/>`;
+  s+=sun(sx,sy,o.mood==='dark'?40:54,o.mood==='dark'?'#e9b98a':'#fbe3a4','#ffd890');
+  s+=streaks(r,4,o.mood==='dark'?'#e9a07a':'#fff0c8',40,180,.3);
+  s+=mesas(r,262,o.mood==='dark'?'#8a4a48':'#c27458',.55,o.mountain?520:-40);
   if(o.mountain) s+=`<path d="M-30 300 L120 150 L190 205 L285 96 L360 180 L420 150 L560 300Z" fill="#a4606b"/><path d="M285 96 L312 132 L290 126 L270 146 L262 124Z" fill="#f1dcc4"/>`;
   s+=wave(280,34,r,'#9c4a3c');
   const n=2+Math.floor(r()*3);
-  for(let i=0;i<n;i++){ const x=(o.mountain?520:150)+r()*(o.mountain?620:980); s+=cactus(x.toFixed(0),(292+r()*8).toFixed(0),(38+r()*44).toFixed(0),'#4a2233'); }
+  for(let i=0;i<n;i++){ const x=(o.mountain?520:150)+r()*(o.mountain?620:980); s+=saguaro(x.toFixed(0),(292+r()*8).toFixed(0),(38+r()*44).toFixed(0),'#4a2233',1); }
+  for(let i=0;i<5;i++) s+=scrub(60+r()*1080,300+r()*14,.5+r()*.4,'#6e3440');
   if(o.edge) s+=`<path d="M300 322 L1196 286 V318 L260 352Z" fill="#2a1322"/><path d="M300 322 L1196 286 V294 L330 328Z" fill="#c26a4a"/><path d="M520 320 l-6 16 M760 309 l-5 15 M990 300 l-5 14" stroke="#5f2c3b" stroke-width="3"/>`;
   if(o.rock==='flat') s+=`<path d="M770 304 Q776 262 840 256 H1000 Q1062 262 1068 304Z" fill="#7b5a66"/><path d="M800 262 H1036" stroke="#b79a96" stroke-width="5" stroke-linecap="round"/>`;
   if(o.rock==='slab') s+=`<path d="M790 306 L826 246 L1030 232 L1062 306Z" fill="#7b5a66"/><path d="M826 246 L1030 232" stroke="#b79a96" stroke-width="5" stroke-linecap="round"/><path d="M900 300 l14 -52 M970 300 l-8 -40" stroke="#5a3f4e" stroke-width="3"/>`;
   if(o.on){ s+=`<path d="M0 396 V332 Q110 300 310 296 H890 Q1090 300 1196 332 V396Z" fill="#7b5a66"/><path d="M300 300 H900" stroke="#b79a96" stroke-width="5" stroke-linecap="round"/><path d="M420 330 l60 22 l80 -10 M760 320 l50 30 M980 338 l40 14" stroke="#5a3f4e" stroke-width="3" fill="none"/>`; }
-  else s+=wave(336,22,r,'#5f2c3b');
-  if(o.pool){ const c=o.pool==='yellow'?['#e6c740','#f7e58c']:['#4fa9c9','#a9e0ee']; s+=`<ellipse cx="600" cy="322" rx="170" ry="24" fill="${c[0]}"/><ellipse cx="560" cy="316" rx="80" ry="7" fill="${c[1]}" opacity=".7"/><ellipse cx="600" cy="322" rx="170" ry="24" fill="none" stroke="#3d1d2c" stroke-width="3"/>`; }
+  else{ s+=wave(336,22,r,'#5f2c3b')+pebbles(r,40,0,W,346,392,'#7b3e45');
+    // un cactus au premier plan, à gauche ou à droite, qui donne la profondeur
+    if(!o.grave&&!o.pool) s+=saguaro((r()<.5?40+r()*80:1080+r()*80).toFixed(0),396,(150+r()*50).toFixed(0),'#2e1424',0); }
+  if(o.pool){ const c=o.pool==='yellow'?['#e6c740','#f7e58c']:['#4fa9c9','#a9e0ee']; s+=`<ellipse cx="600" cy="322" rx="170" ry="24" fill="${c[0]}"/><ellipse cx="560" cy="316" rx="80" ry="7" fill="${c[1]}" opacity=".7"/><ellipse cx="600" cy="322" rx="170" ry="24" fill="none" stroke="#3d1d2c" stroke-width="3"/>`;
+    for(let i=0;i<7;i++){ const x=440+i*9+r()*6; s+=`<path d="M${x.toFixed(0)} 326 q${(-4+r()*8).toFixed(0)} -24 ${(-6+r()*12).toFixed(0)} -${(28+r()*20).toFixed(0)}" stroke="#4a5a2a" stroke-width="3" fill="none"/>`; } }
   if(o.grave) s+=`<ellipse cx="640" cy="326" rx="130" ry="22" fill="#8b5a44"/><ellipse cx="640" cy="320" rx="104" ry="14" fill="#a8704f"/><circle cx="540" cy="336" r="6" fill="#c9b09a"/><circle cx="742" cy="338" r="5" fill="#c9b09a"/><circle cx="600" cy="344" r="5" fill="#c9b09a"/>`;
   return {s,G:330,x0:430,x1:1120};
 }
@@ -41,26 +65,35 @@ function canyon(r,o){
   o=o||{};
   let s=fillRect(['#f3c98b','#c8623f','#5b2433']);
   s+=`<path d="M0 0 H${330+r()*40} L${390+r()*30} 396 H0Z" fill="#7d3a34"/><path d="M1196 0 H${820-r()*40} L${770-r()*30} 396 H1196Z" fill="#6b2f33"/><path d="M0 0 H230 L300 396 H0Z" fill="#572636"/><path d="M1196 0 H930 L880 396 H1196Z" fill="#4a2033"/>`;
-  for(let i=0;i<5;i++){ const y=60+i*58+r()*20; s+=`<path d="M0 ${y} H${250+i*10} M${940-i*8} ${y+18} H1196" stroke="#8d463c" stroke-width="3" opacity=".6"/>`; }
+  s+=mesas(r,330,'#b85e48',.6,330,880);
+  for(let i=0;i<9;i++){ const y=30+i*40+r()*16, c=['#8d463c','#a85a44','#6a2f36'][i%3];
+    s+=`<path d="M0 ${y.toFixed(0)} Q140 ${(y-8+r()*16).toFixed(0)} ${300+i*8} ${(y+6).toFixed(0)}" stroke="${c}" stroke-width="${(3+r()*6).toFixed(0)}" fill="none" opacity=".55"/><path d="M1196 ${(y+14).toFixed(0)} Q1050 ${(y+4+r()*16).toFixed(0)} ${900-i*8} ${(y+20).toFixed(0)}" stroke="${c}" stroke-width="${(3+r()*6).toFixed(0)}" fill="none" opacity=".55"/>`; }
+  s+=`<path d="M330 0 L360 396" stroke="#f3c98b" stroke-width="3" opacity=".25"/><path d="M850 0 L800 396" stroke="#f3c98b" stroke-width="2" opacity=".15"/>`;
   if(o.end){ s+=`<path d="M300 396 L340 60 Q600 20 860 60 L890 396Z" fill="#6a2f36"/><path d="M340 60 Q600 20 860 60" stroke="#8d463c" stroke-width="4" fill="none"/>`+glyphs(455,170,10,'#f3c98b',r,18); }
   if(o.cave) s+=`<path d="M520 300 Q530 200 600 196 Q670 200 680 300Z" fill="#1d0f1c"/>`;
-  s+=`<path d="M300 396 Q600 322 890 396Z" fill="#3a1a2b"/>`;
+  s+=`<path d="M300 396 Q600 322 890 396Z" fill="#3a1a2b"/>`+pebbles(r,26,330,860,370,394,'#6a2f36');
+  for(const [x,k] of [[250,1.2],[960,1.4]]) s+=`<path d="M${x-50*k} 396 l${16*k} -${34*k} l${30*k} -${10*k} l${34*k} ${18*k} l${20*k} ${26*k}Z" fill="#2a1322"/>`;
   return {s,G:356,x0:400,x1:800};
 }
 function mountain(r,o){
   o=o||{};
   let s=fillRect(o.sky||['#9fc3d6','#e2a273','#6b3f55']);
-  s+=`<circle cx="${(220+r()*200).toFixed(0)}" cy="${(90+r()*50).toFixed(0)}" r="44" fill="#fff1cf"/>`;
+  s+=sun(220+r()*200,90+r()*50,44,'#fff1cf','#ffe8b0')+streaks(r,5,'#fff6e0',30,170,.4);
+  s+=`<path d="M-20 290 L120 ${200+r()*30} L260 250 L420 ${190+r()*30} L560 260 L760 ${180+r()*40} L940 250 L1216 ${200+r()*30} V396 H-20Z" fill="#b48aa0" opacity=".45"/>`;
   s+=`<path d="M-20 330 L160 ${200+r()*40} L300 290 L460 ${170+r()*50} L640 320 L820 ${210+r()*40} L1000 300 L1216 ${230+r()*40} V396 H-20Z" fill="#8a6278" opacity=".75"/>`;
   if(o.top){ s+=`<path d="M0 396 V340 Q300 300 600 296 Q900 300 1196 340 V396Z" fill="#553049"/><path d="M380 306 Q600 290 820 306" stroke="#f4e6d2" stroke-width="6" fill="none" stroke-linecap="round"/>`; return {s,G:330,x0:420,x1:900}; }
   if(o.ledge){ s+=`<path d="M0 0 H300 L360 396 H0Z" fill="#553049"/><path d="M0 300 H760 L700 328 H0Z" fill="#70445a"/><path d="M0 328 H700 L640 396 H0Z" fill="#3d2238"/>`+bird(960,120,.5,'#2a1626'); return {s,G:314,x0:400,x1:680}; }
-  if(o.cliff){ s+=`<path d="M560 396 L620 40 Q700 0 1196 0 V396Z" fill="#553049"/><path d="M620 40 L680 396" stroke="#70445a" stroke-width="5"/><path d="M0 396 V350 Q300 320 620 340 V396Z" fill="#3d2238"/>`;
+  if(o.cliff){ s+=`<path d="M560 396 L620 40 Q700 0 1196 0 V396Z" fill="#553049"/><path d="M620 40 L680 396" stroke="#70445a" stroke-width="5"/>`;
+    for(let i=0;i<8;i++){ const y=40+i*44+r()*10; s+=`<path d="M${(640-y*.12+i*4).toFixed(0)} ${y.toFixed(0)} Q900 ${(y-10+r()*20).toFixed(0)} 1196 ${(y+r()*12).toFixed(0)}" stroke="${i%2?'#70445a':'#3d2238'}" stroke-width="${(3+r()*4).toFixed(0)}" fill="none" opacity=".6"/>`; }
+    s+=`<path d="M560 396 L620 40" stroke="#f4c8a0" stroke-width="4" opacity=".35"/><path d="M0 396 V350 Q300 320 620 340 V396Z" fill="#3d2238"/>`;
     s+=`<g transform="translate(700 96)">${nest()}</g>`+bird(o.attack?330:250,o.attack?170:90,o.attack?2.2:1,'#2a1626',o.attack);
     return {s,G:356,x0:140,x1:560}; }
   if(o.nest){ s+=`<path d="M0 396 V300 Q300 268 600 276 Q900 268 1196 300 V396Z" fill="#553049"/>`; return {s,G:306,x0:300,x1:900}; }
   const px=420+r()*300;
   s+=`<path d="M${px-380} 396 L${px} ${o.near?70:120} L${px+150} ${o.near?190:230} L${px+300} ${o.near?140:180} L${px+640} 396Z" fill="#70445a"/><path d="M${px} ${o.near?70:120} l52 84 l-36 -10 l-30 30 l-26 -62Z" fill="#f4e6d2"/>`;
-  s+=`<path d="M0 396 V352 Q260 300 520 330 T1196 318 V396Z" fill="#553049"/><path d="M90 380 Q380 312 640 344 T1120 330" stroke="#8a6278" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="2 22"/>`;
+  s+=`<path d="M0 396 V352 Q260 300 520 330 T1196 318 V396Z" fill="#553049"/>`;
+  for(let i=0;i<6;i++){ const x=40+r()*1100, y=336+r()*30, k=.5+r()*.6; s+=`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)}) scale(${k.toFixed(2)})"><path d="M-3 0 v-10 h6 v10Z" fill="#2e1626"/><path d="M0 -50 q-22 18 -18 34 q-12 6 -4 12 h44 q8 -6 -4 -12 q4 -16 -18 -34Z" fill="#3d2238"/></g>`; }
+  s+=`<path d="M90 380 Q380 312 640 344 T1120 330" stroke="#8a6278" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="2 22"/>`;
   if(o.earth) s+=`<ellipse cx="640" cy="352" rx="210" ry="22" fill="#2f1a22"/><path d="M500 352 q20 -12 40 0 M610 356 q20 -12 40 0 M720 350 q20 -12 40 0" stroke="#5a3a2f" stroke-width="4" fill="none"/>`;
   return {s,G:348,x0:420,x1:900};
 }
@@ -77,7 +110,13 @@ function cabinOut(r,o){
   let doorX=0, eyes=o.window?[615,305,1]:null;   // le regard qu'on sent sur soi apparaît à la fenêtre
   if(!o.window){ const x=460+r()*160; doorX=x+70; eyes=[x+241,305,.55,1]; s+=`<path d="M${x-40} 318 V200 L${x+170} 120 L${x+380} 200 V318Z" fill="#6e4032"/><path d="M${x-70} 206 L${x+170} 110 L${x+410} 206" stroke="#3b2020" stroke-width="16" fill="none" stroke-linejoin="round"/>`;
     for(let i=0;i<6;i++) s+=`<path d="M${x-10+i*62} 215 V318" stroke="#4b2a26" stroke-width="3"/>`;
-    s+=`<rect x="${x+210}" y="226" width="62" height="52" fill="#f6c979"/><path d="M${x+241} 226 v52 M${x+210} 252 h62" stroke="#3b2020" stroke-width="4"/>`; }
+    s+=`<rect x="${x+210}" y="226" width="62" height="52" fill="#f6c979"/><path d="M${x+241} 226 v52 M${x+210} 252 h62" stroke="#3b2020" stroke-width="4"/>`;
+    s+=radial(x+241,252,90,60,'#ffd890',.35);
+    s+=`<rect x="${x+270}" y="110" width="34" height="70" fill="#5a3428"/><rect x="${x+264}" y="104" width="46" height="10" fill="#3b2020"/>`;
+    for(let i=0;i<4;i++) s+=`<circle cx="${x+287+i*14+i*i*4}" cy="${88-i*22}" r="${10+i*5}" fill="#e8d0c0" opacity="${(.32-i*.06).toFixed(2)}"/>`;
+    s+=`<path d="M${x-40} 318 h420" stroke="#3b2020" stroke-width="6"/>`;
+    for(let i=0;i<7;i++){ const fx=x+430+i*34; if(fx<1180) s+=`<path d="M${fx} 322 v-${30+(i%2)*6}" stroke="#4b2a26" stroke-width="7" stroke-linecap="round"/>`; }
+    if(x+430<1180) s+=`<path d="M${x+430} 300 H${Math.min(1180,x+430+6*34)} M${x+430} 312 H${Math.min(1180,x+430+6*34)}" stroke="#4b2a26" stroke-width="4"/>`; }
   s+=wave(338,16,r,'#5f2c3b');
   return {s,G:334,x0:o.window?330:140,x1:o.window?900:430,door:o.window?null:[doorX,322,.6],eyes};
 }
@@ -85,6 +124,13 @@ function cabinIn(r,o){
   o=o||{};
   let s=planks(o.store?'#4a2b29':'#63392f',o.store?'#33191d':'#4b2a26',0,0,W,300,64);
   s+=`<path d="M0 300 H1196 V396 H0Z" fill="${o.store?'#3a2024':'#7a4a3a'}"/><path d="M0 300 H1196" stroke="#33191d" stroke-width="5"/>`;
+  s+=`<path d="M0 0 H1196 V26 H0Z" fill="#33191d"/>`;
+  for(let x=60;x<W;x+=260) s+=`<path d="M${x} 26 v14" stroke="#33191d" stroke-width="10"/>`;
+  for(let y=316;y<396;y+=24) s+=`<path d="M0 ${y} H1196" stroke="#33191d" stroke-width="2" opacity=".5"/>`;
+  if(!o.store){ // table, chaise, lampe à pétrole et sa lumière
+    s+=radial(150,180,260,170,'#ffcf80',.32)+`<path d="M40 250 H260 v10 H40Z" fill="#4b2a26"/><path d="M56 260 v70 M244 260 v70" stroke="#4b2a26" stroke-width="10"/>`;
+    s+=`<path d="M136 250 v-10 h28 v10Z" fill="#a8701f"/><path d="M140 240 q-12 -24 10 -40 q22 16 10 40Z" fill="#fbe3a4" opacity=".85"/><path d="M150 214 q-4 -10 0 -18 q4 8 0 18Z" fill="#f0a040"/>`;
+    s+=`<path d="M290 330 V230 M290 270 H340 V330" stroke="#5a3428" stroke-width="9" fill="none"/>`; }
   if(o.store){ s+=`<path d="M120 110 H520 M120 190 H520" stroke="#2a1218" stroke-width="12"/><rect x="160" y="70" width="46" height="40" fill="#7a5a3a"/><rect x="250" y="146" width="70" height="44" fill="#5d4032"/><circle cx="430" cy="92" r="18" fill="#8b5a44"/>`; }
   else s+=`<rect x="800" y="70" width="150" height="120" fill="#f0b765"/><path d="M800 150 q40 -30 80 -6 t70 -10 v56 h-150Z" fill="#9c4a3c"/><path d="M790 60 h170 v140 h-170Z M875 70 v120 M800 130 h150" fill="none" stroke="#33191d" stroke-width="12"/>`;
   return {s,G:340,x0:300,x1:760,door:[o.store?900:470,300,1.2],eyes:o.store?null:[875,262]};
@@ -102,14 +148,32 @@ function cave(r,o){ // intérieur + sol, puis cadre rocheux au premier plan (dan
   o=o||{};
   let s=fillRect(o.in||['#6a5184','#46325a','#2a1e38']);
   if(o.bricks){ for(let y=30;y<300;y+=44) for(let x=((y/44)%2)*46-10;x<W;x+=92) s+=`<rect x="${x}" y="${y}" width="86" height="38" rx="3" fill="${o.bricks}" opacity="${(.5+r()*.4).toFixed(2)}"/>`; }
+  if(!o.bricks&&!o.plain) for(let i=0;i<7;i++){ const y=40+i*38+r()*14; s+=`<path d="M0 ${y.toFixed(0)} Q300 ${(y-14+r()*28).toFixed(0)} 600 ${(y+r()*10).toFixed(0)} T1196 ${(y-6+r()*12).toFixed(0)}" stroke="#fff" stroke-width="${(2+r()*5).toFixed(0)}" fill="none" opacity=".05"/>`; }
+  if(!o.bricks&&!o.plain&&!o.noBack){ const bx=o.back||(380+r()*440), fl0=o.floorY||306;
+    s+=radial(bx,fl0-60,150,110,'#000',.45)+`<path d="M${(bx-46).toFixed(0)} ${fl0} Q${(bx-50).toFixed(0)} ${fl0-110} ${bx.toFixed(0)} ${fl0-116} Q${(bx+50).toFixed(0)} ${fl0-110} ${(bx+46).toFixed(0)} ${fl0}Z" fill="#0b0710" opacity=".75"/>`; }
+  if(o.light) s+=radial(o.light[0],o.light[1],o.light[2],o.light[2]*.7,o.light[3]||'#ffcf80',o.light[4]||.3);
   const fl=o.floorY||306;
   s+=`<path d="M0 ${fl} ${o.slope?`L1196 ${fl+o.slope}`:'H1196'} V396 H0Z" fill="${o.floor||'#3a2b4a'}"/>`;
+  if(!o.slope&&fl<380){ s+=`<path d="M0 ${fl} H1196" stroke="#fff" stroke-width="2" opacity=".08"/>`+pebbles(r,30,120,1076,fl+8,392,'rgba(0,0,0,.25)');
+    if(!o.noRocks) for(let i=0;i<2;i++){ const x=(i?860+r()*120:180+r()*120), k=.7+r()*.6; s+=`<path d="M${(x-40*k).toFixed(0)} ${fl+30} q${(6*k).toFixed(0)} -${(34*k).toFixed(0)} ${(36*k).toFixed(0)} -${(36*k).toFixed(0)} q${(40*k).toFixed(0)} 0 ${(44*k).toFixed(0)} ${(36*k).toFixed(0)}Z" fill="rgba(0,0,0,.3)"/><path d="M${(x-30*k).toFixed(0)} ${(fl+8).toFixed(0)} q${(20*k).toFixed(0)} -${(16*k).toFixed(0)} ${(40*k).toFixed(0)} -${(10*k).toFixed(0)}" stroke="#fff" stroke-width="2" opacity=".08" fill="none"/>`; } }
   return s;
 }
+// cadre rocheux au premier plan : bord irrégulier, éclairé par la salle, roche veinée, stalactites et stalagmites
+function qpt(a,b,c,t){ const u=1-t; return [u*u*a[0]+2*u*t*b[0]+t*t*c[0], u*u*a[1]+2*u*t*b[1]+t*t*c[1]]; }
 function frame(r,o){
-  o=o||{}; const c=o.c||'#120c19';
-  let s=`<path d="M0 0 H1196 V396 H0Z M${o.l||120} 396 Q${(o.l||120)+10} ${o.t||44} 600 ${o.t?o.t-14:30} Q${(o.rr||1076)-10} ${o.t||44} ${o.rr||1076} 396Z" fill="${c}" fill-rule="evenodd"/>`;
-  for(let i=0;i<6;i++){ const x=260+r()*680, h=30+r()*70; s+=`<path d="M${x.toFixed(0)} ${o.t?o.t-20:20} l${(8+r()*10).toFixed(0)} ${h.toFixed(0)} l${(8+r()*10).toFixed(0)} ${(-h).toFixed(0)}Z" fill="${c}"/>`; }
+  o=o||{}; const c=o.c||'#120c19', l=o.l||120, rr=o.rr||1076, t=o.t||44, top=o.t?o.t-14:30;
+  const pts=[]; const segs=[[[l,396],[l+10,t],[600,top]],[[600,top],[rr-10,t],[rr,396]]];
+  segs.forEach((sg,k)=>{ for(let i=(k?1:0);i<=14;i++){ const [x,y]=qpt(...sg,i/14); const j=(i===0&&!k)||(i===14&&k)?0:(r()-.5)*18; pts.push([x+j*(y>300?.3:1),y+(r()-.5)*12*(y<300?1:0)]); } });
+  const hole='M'+pts.map(p=>p[0].toFixed(0)+' '+p[1].toFixed(0)).join(' L')+'Z';
+  const id='sf'+(uid++);
+  let s=`<defs><clipPath id="${id}"><path d="M0 0 H1196 V396 H0Z ${hole}" clip-rule="evenodd"/></clipPath></defs>`;
+  s+=`<path d="M0 0 H1196 V396 H0Z ${hole}" fill="${c}" fill-rule="evenodd"/>`;
+  // veines de la roche et éclats plus clairs, seulement sur le cadre
+  let v=''; for(let i=0;i<16;i++){ const x=r()*W, y=r()*H, w=60+r()*160; v+=`<path d="M${x.toFixed(0)} ${y.toFixed(0)} q${(w/2).toFixed(0)} ${(-10+r()*20).toFixed(0)} ${w.toFixed(0)} ${(-6+r()*12).toFixed(0)}" stroke="#fff" stroke-width="${(1+r()*3).toFixed(1)}" fill="none" opacity=".05"/>`; }
+  s+=`<g clip-path="url(#${id})">${v}<path d="${hole}" fill="none" stroke="${o.rim||'#8d7aa3'}" stroke-width="10" opacity=".4"/><path d="${hole}" fill="none" stroke="${o.rim||'#8d7aa3'}" stroke-width="30" opacity=".1"/><path d="${hole}" fill="none" stroke="#000" stroke-width="40" opacity=".0"/></g>`;
+  for(let i=0;i<7;i++){ const x=l+80+r()*(rr-l-160), h=24+r()*70, w=7+r()*9, y0=top+6+Math.abs(x-600)/(rr-l)*60;
+    s+=`<path d="M${(x-w).toFixed(0)} ${(y0-10).toFixed(0)} L${x.toFixed(0)} ${(y0+h).toFixed(0)} L${(x+w).toFixed(0)} ${(y0-10).toFixed(0)}Z" fill="${c}"/><path d="M${(x-w*.4).toFixed(0)} ${y0.toFixed(0)} L${x.toFixed(0)} ${(y0+h*.8).toFixed(0)}" stroke="${o.rim||'#8d7aa3'}" stroke-width="2" opacity=".25"/>`; }
+  if(!o.noMites) for(const [x,h] of [[l+30+r()*40,40+r()*40],[rr-40-r()*40,30+r()*50]]) s+=`<path d="M${(x-16).toFixed(0)} 396 L${x.toFixed(0)} ${(396-h).toFixed(0)} L${(x+16).toFixed(0)} 396Z" fill="${c}"/>`;
   return s;
 }
 function abyss(x0,x1,far){ // gouffre entre deux bords
@@ -125,15 +189,22 @@ function coyote(x,y,k){ return `<g transform="translate(${x} ${y}) scale(${k})">
 const U={ // décors souterrains, par clé
  tunnel:(r,o)=>{ let s=cave(r,{in:['#33263f','#241a30','#120c19'],floorY:320})+frame(r,{l:380,rr:816,t:o&&o.low?170:110}); if(o&&o.low) s+=`<path d="M380 396 Q390 180 600 170 Q810 180 816 396Z" fill="#1c1426"/><path d="M470 396 Q480 250 600 244 Q720 250 726 396Z" fill="#120c19"/>`; return {s,G:350,x0:440,x1:760}; },
  shaft:(r,o)=>{ let s=fillRect(['#241a30','#191222','#120c19']); s+=`<path d="M470 0 H726 L800 396 H396Z" fill="#3c2a4b"/>`;
+   for(let i=0;i<12;i++){ const y=10+i*33; s+=`<path d="M${(60+r()*300).toFixed(0)} ${y} l${(60+r()*90).toFixed(0)} ${(r()*12).toFixed(0)}" stroke="#fff" stroke-width="2" opacity=".05"/><path d="M${(800+r()*300).toFixed(0)} ${y+12} l${(60+r()*90).toFixed(0)} ${(r()*12).toFixed(0)}" stroke="#fff" stroke-width="2" opacity=".05"/><path d="M${(470-y*.19+r()*30).toFixed(0)} ${y} h${(30+r()*60).toFixed(0)}" stroke="#57466a" stroke-width="3" opacity=".5"/>`; }
    if(o&&o.mid) s+=`<path d="M726 0 L800 396" stroke="#57466a" stroke-width="4"/><path d="M742 150 q70 -30 110 30 q-10 70 -86 60Z" fill="#07040b"/><path d="M430 60 h60 M440 150 h60 M424 240 h60 M416 330 h60" stroke="#57466a" stroke-width="6" stroke-linecap="round"/>`;
    else s+=`<path d="M520 0 H676 L740 396 H456Z" fill="#fbe3a4" opacity=".22"/><ellipse cx="598" cy="26" rx="100" ry="26" fill="#f0b765"/><ellipse cx="598" cy="26" rx="100" ry="26" fill="none" stroke="#57466a" stroke-width="8"/>`;
-   s+=`<path d="M396 396 L420 340 H776 L800 396Z" fill="#221830"/>`; return {s,G:366,x0:450,x1:750}; },
+   s+=`<path d="M396 396 L420 340 H776 L800 396Z" fill="#221830"/>`;
+   if(!(o&&o.mid)) for(let i=0;i<16;i++) s+=`<circle cx="${(530+r()*140).toFixed(0)}" cy="${(40+r()*300).toFixed(0)}" r="${(1+r()*1.5).toFixed(1)}" fill="#fbe3a4" opacity="${(.3+r()*.4).toFixed(2)}"/>`;
+   return {s,G:366,x0:450,x1:750}; },
  yellow:(r)=>({s:cave(r,{in:['#8a6b2f','#6f5527','#3d2f1c'],bricks:'#b08a3a',floor:'#3a2b1f'})+`<path d="M300 300 q40 -6 60 6 M700 310 q30 -8 70 4" stroke="#5fa9b8" stroke-width="5" opacity=".5" fill="none"/>`+frame(r),G:340,x0:330,x1:880}),
  machete:(r)=>({s:cave(r,{in:['#8a6b2f','#6f5527','#3d2f1c'],bricks:'#b08a3a',floor:'#3a2b1f'})+man(640,360)+frame(r),G:350,x0:330,x1:500}),
- inscr:(r)=>({s:cave(r,{in:['#d9b46a','#b08a3a','#5a4426'],floor:'#4a3823'})+glyphs(300,90,22,'#5a3a1e',r,20)+glyphs(330,150,20,'#5a3a1e',r,20)+glyphs(300,210,22,'#5a3a1e',r,20)+frame(r),G:340,x0:330,x1:880}),
+ inscr:(r)=>({s:cave(r,{in:['#d9b46a','#b08a3a','#5a4426'],floor:'#4a3823',noBack:1})+glyphs(300,90,22,'#5a3a1e',r,20)+glyphs(330,150,20,'#5a3a1e',r,20)+glyphs(300,210,22,'#5a3a1e',r,20)+frame(r),G:340,x0:330,x1:880}),
  dark:(r,o)=>{ let s=cave(r,{in:['#1c1426','#150f1c','#0b0710'],floor:'#0f0a15',slope:o&&o.end?0:50}); if(o&&o.end) s+=`<path d="M330 300 V70 H870 V300Z" fill="#191222"/><path d="M350 300 H850" stroke="#fbe3a4" stroke-width="5"/><path d="M350 300 H850 L900 396 H300Z" fill="#fbe3a4" opacity=".1"/>`; return {s:s+frame(r,{c:'#07040b'}),G:346,x0:340,x1:860}; },
  carved:(r,o)=>{ let s=fillRect(['#4a4257','#353044','#1f1b2a'])+`<path d="M300 300 V60 H900 V300Z" fill="#2a2536"/><path d="M0 0 L300 60 V300 L0 396Z" fill="#3d374a"/><path d="M1196 0 L900 60 V300 L1196 396Z" fill="#332e40"/><path d="M0 396 L300 300 H900 L1196 396Z" fill="#221d2d"/>`;
-   for(let i=0;i<5;i++) s+=`<path d="M${60+i*50} ${20+i*10} v${330-i*20}" stroke="#2a2536" stroke-width="2"/>`;
+   for(let y=84;y<300;y+=36) s+=`<path d="M300 ${y} H900" stroke="#1f1b2a" stroke-width="3"/>`;
+   for(let k=0;k<7;k++){ const y=120+k*36; for(let x=300+(k%2)*50;x<900;x+=100) s+=`<path d="M${x} ${y} v-36" stroke="#1f1b2a" stroke-width="3"/>`; }
+   for(let i=1;i<6;i++){ const t=i/6; s+=`<path d="M0 ${(t*396*.9).toFixed(0)} L300 ${(60+t*240*.95).toFixed(0)}" stroke="#2a2536" stroke-width="3"/><path d="M1196 ${(t*396*.9).toFixed(0)} L900 ${(60+t*240*.95).toFixed(0)}" stroke="#2a2536" stroke-width="3"/>`; }
+   for(let i=0;i<5;i++) s+=`<path d="M${60+i*50} ${20+i*10} v${330-i*20}" stroke="#2a2536" stroke-width="2"/><path d="M${1136-i*50} ${20+i*10} v${330-i*20}" stroke="#2a2536" stroke-width="2"/>`;
+   s+=radial(600,200,320,140,'#c8b8e8',.12)+pebbles(r,20,300,900,310,392,'rgba(0,0,0,.25)');
    if(o&&o.hatch) s+=`<path d="M520 340 l40 -26 h150 l30 26Z" fill="#07040b"/><path d="M710 314 l60 -70 l40 16 l-40 80Z" fill="#6b6478"/><path d="M520 340 l40 -26 h150 l30 26Z" fill="none" stroke="#6b6478" stroke-width="5"/>`;
    return {s,G:356,x0:330,x1:(o&&o.hatch)?500:860}; },
  platform:(r)=>({s:cave(r,{in:['#46325a','#2a1e38','#07040b'],floorY:396})+`<path d="M360 396 V300 H840 V396Z" fill="#4a4257"/><path d="M340 300 H860 v16 H340Z" fill="#6b6478"/>`+frame(r),G:296,x0:400,x1:800}),
@@ -147,12 +218,13 @@ const U={ // décors souterrains, par clé
    let s=fillRect(['#241a30','#120c19','#07040b'])+`<path d="M520 110 H676 L900 396 H296Z" fill="${c[0]}"/><path d="M520 110 L296 396 M676 110 L900 396" stroke="${c[1]}" stroke-width="6"/>`;
    for(let i=0;i<5;i++){ const y=150+i*i*14+i*20; s+=`<path d="M${520-(y-110)*.78} ${y} H${676+(y-110)*.78}" stroke="${c[1]}" stroke-width="2" opacity=".6"/>`; }
    s+=`<path d="M470 110 H726 V70 H470Z" fill="#2b2140"/>`; return {s:s+frame(r,{l:120,rr:1080,c:'#07040b'}),G:340,x0:420,x1:780}; },
- bottom:(r)=>({s:fillRect(['#120c19','#1c1426','#241a30'])+`<path d="M560 0 H640 L720 396 H480Z" fill="#33263f"/><path d="M590 0 h20 l10 120 h-40Z" fill="#fbe3a4" opacity=".25"/><path d="M0 0 H560 L480 396 H0Z" fill="#191222"/><path d="M1196 0 H640 L720 396 H1196Z" fill="#150f1c"/><path d="M420 396 L500 330 H700 L780 396Z" fill="#3c2a4b"/>`,G:366,x0:470,x1:730}),
+ bottom:(r)=>({s:fillRect(['#120c19','#1c1426','#241a30'])+`<path d="M560 0 H640 L720 396 H480Z" fill="#33263f"/><path d="M590 0 h20 l10 120 h-40Z" fill="#fbe3a4" opacity=".25"/><path d="M0 0 H560 L480 396 H0Z" fill="#191222"/><path d="M1196 0 H640 L720 396 H1196Z" fill="#150f1c"/><path d="M420 396 L500 330 H700 L780 396Z" fill="#3c2a4b"/>`+radial(600,360,200,60,'#fbe3a4',.25)+(()=>{ let d=''; for(let i=0;i<18;i++) d+=`<circle cx="${(540+r()*120).toFixed(0)}" cy="${(30+r()*320).toFixed(0)}" r="${(1+r()*1.6).toFixed(1)}" fill="#fbe3a4" opacity="${(.3+r()*.4).toFixed(2)}"/>`;
+   for(let i=0;i<10;i++){ const y=20+i*38; d+=`<path d="M${(80+r()*300).toFixed(0)} ${y} l${(60+r()*80).toFixed(0)} ${(r()*14).toFixed(0)}" stroke="#fff" stroke-width="2" opacity=".05"/><path d="M${(760+r()*300).toFixed(0)} ${y+10} l${(60+r()*80).toFixed(0)} ${(r()*14).toFixed(0)}" stroke="#fff" stroke-width="2" opacity=".05"/>`; } return d; })(),G:366,x0:470,x1:730}),
  path:(r)=>({s:cave(r,{floorY:250,slope:110})+`<path d="M0 260 L1196 372" stroke="#57466a" stroke-width="4" stroke-dasharray="30 26"/>`+frame(r),G:330,x0:420,x1:860}),
- door:(r,o)=>({s:cave(r,{in:o&&o.inside?['#6b6478','#4a4257','#2a2536']:undefined})+goldDoor(o&&o.inside?420:800,306)+`<ellipse cx="${o&&o.inside?420:800}" cy="316" rx="130" ry="14" fill="#eaa93b" opacity=".18"/>`+frame(r),G:344,x0:o&&o.inside?560:330,x1:o&&o.inside?880:660}),
- statues:(r)=>{ let s=cave(r,{in:['#4a3a3a','#3a2a30','#1f1620'],floor:'#2b1f26'}); for(let row=0;row<3;row++) for(let i=0;i<9-row;i++) s+=bull(300+row*24+i*(62+row*10),250+row*40,.5+row*.16,['#8a5a48','#a86a50','#c07a58'][row]); return {s:s+frame(r),G:366,x0:420,x1:800}; },
- lived:(r)=>({s:cave(r,{})+`<path d="M330 306 v-90 h60 v30 h40 v60Z M760 306 v-60 h50 v-40 h50 v100Z" fill="#57466a"/><path d="M520 306 q10 -40 40 -40 q30 0 40 40Z" fill="#8b5a44"/><circle cx="640" cy="318" r="26" fill="#150f1c"/><path d="M622 318 l10 -22 l10 12 l8 -18 l8 28Z" fill="#eaa93b" opacity=".5"/>`+frame(r),G:346,x0:400,x1:860}),
- growl:(r)=>({s:cave(r,{})+`<path d="M690 306 V150 Q780 70 870 150 V306Z" fill="#07040b"/><path d="M690 306 V150 Q780 70 870 150 V306" stroke="#57466a" stroke-width="8" fill="none"/><circle cx="764" cy="230" r="5" fill="#eaa93b"/><circle cx="796" cy="230" r="5" fill="#eaa93b"/>`+frame(r),G:344,x0:330,x1:640}),
+ door:(r,o)=>({s:cave(r,{in:o&&o.inside?['#6b6478','#4a4257','#2a2536']:undefined,noBack:1})+goldDoor(o&&o.inside?420:800,306)+`<ellipse cx="${o&&o.inside?420:800}" cy="316" rx="130" ry="14" fill="#eaa93b" opacity=".18"/>`+frame(r),G:344,x0:o&&o.inside?560:330,x1:o&&o.inside?880:660}),
+ statues:(r)=>{ let s=cave(r,{in:['#4a3a3a','#3a2a30','#1f1620'],floor:'#2b1f26',noBack:1}); for(let row=0;row<3;row++) for(let i=0;i<9-row;i++) s+=bull(300+row*24+i*(62+row*10),250+row*40,.5+row*.16,['#8a5a48','#a86a50','#c07a58'][row]); return {s:s+frame(r),G:366,x0:420,x1:800}; },
+ lived:(r)=>({s:cave(r,{noBack:1})+`<path d="M330 306 v-90 h60 v30 h40 v60Z M760 306 v-60 h50 v-40 h50 v100Z" fill="#57466a"/><path d="M520 306 q10 -40 40 -40 q30 0 40 40Z" fill="#8b5a44"/><circle cx="640" cy="318" r="26" fill="#150f1c"/><path d="M622 318 l10 -22 l10 12 l8 -18 l8 28Z" fill="#eaa93b" opacity=".5"/>`+frame(r),G:346,x0:400,x1:860}),
+ growl:(r)=>({s:cave(r,{noBack:1})+`<path d="M690 306 V150 Q780 70 870 150 V306Z" fill="#07040b"/><path d="M690 306 V150 Q780 70 870 150 V306" stroke="#57466a" stroke-width="8" fill="none"/><circle cx="764" cy="230" r="5" fill="#eaa93b"/><circle cx="796" cy="230" r="5" fill="#eaa93b"/>`+frame(r),G:344,x0:330,x1:640}),
  pondEdge:(r)=>({s:cave(r,{in:['#2f3a52','#243047','#141c2c'],floor:'#221830'})+`<ellipse cx="700" cy="336" rx="210" ry="30" fill="#2d7f8a"/><ellipse cx="660" cy="328" rx="90" ry="8" fill="#8fd3d6" opacity=".5"/>`+frame(r),G:340,x0:300,x1:480}),
  green:(r)=>({s:cave(r,{in:['#3f7a5a','#2d5a45','#16302a'],bricks:'#58a078',floor:'#1b2c28'})+coyote(700,372,1.25)+frame(r),G:350,x0:320,x1:520}),
  pond:(r,o)=>{ o=o||{}; let s=fillRect(o.poison?['#3a4a2c','#2c3a2a','#141c1a']:['#2f3a52','#243047','#141c2c']);
@@ -161,7 +233,11 @@ const U={ // décors souterrains, par clé
    if(o.poison) for(let i=0;i<7;i++) s+=`<ellipse cx="${(100+r()*1000).toFixed(0)}" cy="${(60+r()*120).toFixed(0)}" rx="${(60+r()*80).toFixed(0)}" ry="14" fill="#b6c94a" opacity=".16"/>`;
    return {s:s+frame(r,{l:60,rr:1136,t:40}),G:236,x0:320,x1:860}; },
  under:(r)=>{ let s=fillRect(['#1c4a5c','#123040','#07141f']); for(let i=0;i<22;i++) s+=`<circle cx="${(r()*W).toFixed(0)}" cy="${(r()*H).toFixed(0)}" r="${(2+r()*7).toFixed(0)}" fill="none" stroke="#8fd3d6" stroke-width="2" opacity="${(.2+r()*.4).toFixed(2)}"/>`;
-   s+=`<path d="M0 396 V350 Q300 320 600 344 T1196 336 V396Z" fill="#07141f"/><path d="M200 0 l60 396 M520 0 l-30 396 M900 0 l80 396" stroke="#8fd3d6" stroke-width="26" opacity=".05"/>`; return {s,G:356,x0:300,x1:900}; }
+   s+=`<path d="M0 0 H1196 V40 Q900 20 600 36 T0 30Z" fill="#8fd3d6" opacity=".12"/>`;
+   for(const [x,w,dx] of [[160,70,90],[480,50,-40],[760,90,120],[1020,40,60]]) s+=`<path d="M${x} 0 h${w} l${dx+w*.6} 396 h-${w*1.6}Z" fill="#a8e8f0" opacity=".06"/>`;
+   s+=`<path d="M0 396 V350 Q300 320 600 344 T1196 336 V396Z" fill="#0d2430"/>`+pebbles(r,30,0,W,350,394,'#1c3a44');
+   for(let i=0;i<9;i++){ const x=40+r()*1120, h=60+r()*110, sw=(r()<.5?-1:1)*(10+r()*20); s+=`<path d="M${x.toFixed(0)} 360 q${sw.toFixed(0)} -${(h/2).toFixed(0)} 0 -${h.toFixed(0)} q${(-sw).toFixed(0)} -${(h/3).toFixed(0)} ${(sw/2).toFixed(0)} -${(h/2).toFixed(0)}" stroke="#2f6a4a" stroke-width="${(5+r()*5).toFixed(0)}" fill="none" stroke-linecap="round" opacity=".8"/>`; }
+   return {s,G:356,x0:300,x1:900}; }
 };
 const cf=r=>frame(r);
 

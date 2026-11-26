@@ -1,5 +1,15 @@
 # Journal des versions
 
+## Prochaine version (en préparation)
+
+### Améliorations
+- **El Diablero, illustrations retravaillées** : soleil et halo, nuages du soir, mesas à l'horizon, saguaros avec
+  leur ombre et un cactus au premier plan, broussailles et cailloux ; canyon aux strates colorées ; montagne avec
+  crêtes lointaines et genévriers ; falaise de l'aigle veinée ; cabane avec cheminée qui fume, palissade et fenêtre
+  éclairée, intérieur avec table et lampe à pétrole ; grottes au bord rocheux irrégulier et éclairé, parois veinées,
+  passage qui s'enfonce au fond, rochers et stalagmites ; passage taillé en blocs ; puits avec poussière dans la
+  lumière ; sous l'eau, rayons, algues et fond de sable.
+
 ## 1.1.0 — 26 novembre 2026
 
 Trois nouvelles aventures : huit jeux sur l'étagère.
