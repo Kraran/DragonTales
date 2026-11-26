@@ -16,6 +16,13 @@
   et les bulles remontent sous l'eau, les vaguelettes de l'étang glissent, les mares scintillent, la poussière flotte
   dans la lumière des puits, les nuages dérivent, l'aigle plane, le rêve respire, les yeux dans l'ombre clignent, la
   statue d'or étincelle. Rien ne bouge sur la carte, ni si le système demande de réduire les animations.
+- **Dragon Mountain, illustrations retravaillées et animées** : murs aux pierres nuancées et fissurées, ombre au pied
+  des murs, dallage, voûtes de grotte avec stalactites ; torches murales, bannières, toiles d'araignée dans les
+  pièces sombres ; fenêtre avec la lune et des nuages qui passent ; objets en relief (épée et couronne qui
+  scintillent, coupe, bouteille, tonneau cerclé, corbeille tressée…). Animations : flammes des torches, des bougies,
+  de la cheminée, du feu de camp et de la grande lampe, fumée du poêle, braises du repaire, poussière dans la lumière,
+  reflets des miroirs, éclats du trésor et de la grille d'or ; le dragon bat de la queue et fume des naseaux, les
+  yeux du démon clignent.
 
 ## 1.1.0 — 26 novembre 2026
 
