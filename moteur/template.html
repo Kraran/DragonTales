@@ -292,6 +292,35 @@ svg.links.top{pointer-events:none;z-index:2}
 .help{text-align:left}
 .help p{font-size:22px}
 @media (prefers-reduced-motion:no-preference){ #log .turn:last-child{animation:fade .35s ease-out} @keyframes fade{from{opacity:0}to{opacity:1}} }
+/* petites animations des décors (classes an-… posées par scenes.js) : seulement dans le grand décor, pas sur la carte,
+   et jamais si le système demande moins de mouvement */
+@media (prefers-reduced-motion:no-preference){
+ #sceneArt [class^="an-"]{transform-box:fill-box}
+ #sceneArt .an-smoke{animation:an-smoke 7s linear infinite;transform-origin:center}
+ #sceneArt .an-sway{animation:an-sway 5s ease-in-out infinite alternate;transform-origin:center bottom}
+ #sceneArt .an-rise{animation:an-rise 8s linear infinite}
+ #sceneArt .an-drift{animation:an-drift 50s ease-in-out infinite alternate}
+ #sceneArt .an-glide{animation:an-glide 9s ease-in-out infinite alternate}
+ #sceneArt .an-flicker{animation:an-flicker .9s ease-in-out infinite alternate;transform-origin:center bottom}
+ #sceneArt .an-float{animation:an-float 7s ease-in-out infinite alternate}
+ #sceneArt .an-pulse{animation:an-pulse 4s ease-in-out infinite alternate}
+ #sceneArt .an-shimmer{animation:an-shimmer 3s ease-in-out infinite alternate}
+ #sceneArt .an-blink{animation:an-blink 6s linear infinite;transform-origin:center}
+ #sceneArt .an-twinkle{animation:an-twinkle 2.4s ease-in-out infinite alternate;transform-origin:center}
+ #sceneArt .an-wave{animation:an-wave 6s ease-in-out infinite alternate}
+ @keyframes an-smoke{0%{transform:translate(0,0) scale(.5);opacity:0}15%{opacity:.6}100%{transform:translate(40px,-110px) scale(2.2);opacity:0}}
+ @keyframes an-sway{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+ @keyframes an-rise{0%{transform:translate(0,0);opacity:0}15%{opacity:.7}100%{transform:translate(8px,-180px);opacity:0}}
+ @keyframes an-drift{from{transform:translateX(-30px)}to{transform:translateX(30px)}}
+ @keyframes an-glide{from{transform:translate(0,0)}to{transform:translate(-40px,10px)}}
+ @keyframes an-flicker{0%{transform:scale(1,1);opacity:1}50%{transform:scale(.9,1.12);opacity:.85}100%{transform:scale(1.05,.94);opacity:1}}
+ @keyframes an-float{from{transform:translate(0,0)}to{transform:translate(8px,-16px)}}
+ @keyframes an-pulse{from{opacity:.55}to{opacity:1}}
+ @keyframes an-shimmer{from{opacity:.25}to{opacity:.9}}
+ @keyframes an-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+ @keyframes an-twinkle{from{transform:scale(.6);opacity:.3}to{transform:scale(1.15);opacity:1}}
+ @keyframes an-wave{from{transform:translateX(-12px)}to{transform:translateX(12px)}}
+}
 </style>
 </head>
 <body>

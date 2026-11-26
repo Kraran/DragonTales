@@ -12,6 +12,10 @@
 - **El Diablero, objets retravaillés** : reliefs, reflets et ombres au sol ; serpent à sonnette avec sa sonnette et
   sa langue, lézard tacheté, scarabées irisés, masque de jade gravé, statue et clé d'or qui brillent, cloche de bronze,
   puits avec treuil et seau, pierre tombale fendue et moussue, plume, crâne, corde, coffre, bête ailée aux yeux rouges.
+- **El Diablero, petites animations** : la fumée de la cabane monte, la lampe à pétrole vacille, les algues ondulent
+  et les bulles remontent sous l'eau, les vaguelettes de l'étang glissent, les mares scintillent, la poussière flotte
+  dans la lumière des puits, les nuages dérivent, l'aigle plane, le rêve respire, les yeux dans l'ombre clignent, la
+  statue d'or étincelle. Rien ne bouge sur la carte, ni si le système demande de réduire les animations.
 
 ## 1.1.0 — 26 novembre 2026
 
