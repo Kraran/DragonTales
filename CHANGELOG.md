@@ -9,6 +9,9 @@
   éclairée, intérieur avec table et lampe à pétrole ; grottes au bord rocheux irrégulier et éclairé, parois veinées,
   passage qui s'enfonce au fond, rochers et stalagmites ; passage taillé en blocs ; puits avec poussière dans la
   lumière ; sous l'eau, rayons, algues et fond de sable.
+- **El Diablero, objets retravaillés** : reliefs, reflets et ombres au sol ; serpent à sonnette avec sa sonnette et
+  sa langue, lézard tacheté, scarabées irisés, masque de jade gravé, statue et clé d'or qui brillent, cloche de bronze,
+  puits avec treuil et seau, pierre tombale fendue et moussue, plume, crâne, corde, coffre, bête ailée aux yeux rouges.
 
 ## 1.1.0 — 26 novembre 2026
 
