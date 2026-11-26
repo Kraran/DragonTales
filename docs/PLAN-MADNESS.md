@@ -81,5 +81,12 @@ le dossier porte `EN-COURS.md` (absent de la page normale, `python build.py --to
   hasard sur 50 parties, plus des événements provoqués (Oracle, sortilège, bassin, créatures) : aucune phrase
   oubliée ; les deux seuls textes propres à la version Dragon (écran titre) sont traduits.
 - Musique : « The Labyrinth of Minos » (Suno, 3 min 57, Opus 56k), intégrée le 26/11/2026 ; muette dans les dédales.
-- Solution pour une graine fixe (essais automatiques), fins, indices des pièces magiques (lus dans la mémoire :
-  combinaisons et lieux changent à chaque partie), décors, bruitages.
+- **Solution et fins — faites le 26/11/2026.** Comme tout change à chaque partie, la solution est écrite par un joueur
+  automatique qui lit la mémoire du jeu (`outils/madness-agent.js` : plan, passages, sauts, gardiens, poids et volume,
+  lampe, soins ; quand un pas tourne mal, il revient en arrière et laisse passer quelques secondes pour tomber sur un
+  autre tirage) et par le déroulé de la partie (`outils/madness-solution.js`) : graine 7, niveau débutant, 1158
+  commandes jusqu'à « CONGRATULATIONS!!! YOU WIN! ». Huit fins (`fins.js`) : la forêt, l'épuisement, le scorpion, le
+  brouillard empoisonné, le champignon, la fosse dans le noir, le saut manqué, l'abandon. Essai dans Chrome
+  (`tests/essai-madness.js`) : niveau, abandon, partie entière avec des commandes en français, victoire.
+- Reste : indices des pièces magiques (lus dans la mémoire : combinaisons et lieux changent à chaque partie), décors,
+  bruitages.
